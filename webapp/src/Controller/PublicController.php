@@ -38,7 +38,7 @@ class PublicController extends BaseController
         protected readonly EntityManagerInterface $em
     ) {}
 
-    #[Route(path: '', name: 'public_index')]
+    #[Route(path: '/scoreboard', name: 'public_scoreboard')]
     public function scoreboardAction(
         Request $request,
         #[MapQueryParameter(name: 'contest')]
