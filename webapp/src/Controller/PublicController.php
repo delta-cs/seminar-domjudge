@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
@@ -38,11 +39,15 @@ class PublicController extends BaseController
     ) {}
 
     #[Route(path: '', name: 'public_index')]
-    public function scoreboardAction(Request $request): Response
-    {
+    public function scoreboardAction(
+        Request $request,
+        #[MapQueryParameter(name: 'contest')]
+        ?string $contestId = null,
+        #[MapQueryParameter]
+        ?bool $static = false,
+    ): Response {
         $response   = new Response();
-        $static     = $request->query->getBoolean('static');
-        $refreshUrl = $this->generateUrl('public_index');
+        $refreshUrl = $this->generateUrl('public_scoreboard');
         $contest    = $this->dj->getCurrentContest(onlyPublic: true);
 
         if ($static) {
@@ -50,7 +55,7 @@ class PublicController extends BaseController
                 'static' => 1,
             ];
 
-            if ($requestedContest = $this->getContestFromRequest($request)) {
+            if ($requestedContest = $this->getContestFromRequest($contestId)) {
                 $contest                  = $requestedContest;
                 $refreshParams['contest'] = $contest->getCid();
             }
@@ -74,79 +79,25 @@ class PublicController extends BaseController
         return $this->render('public/scoreboard.html.twig', $data, $response);
     }
 
-    #[Route(path: '/scoreboard-data.zip', name: 'public_scoreboard_data_zip')]
+    #[Route(path: '/scoreboard-zip/contest.zip', name: 'public_scoreboard_data_zip')]
     public function scoreboardDataZipAction(
         RequestStack $requestStack,
-        #[Autowire('%kernel.project_dir%')]
-        string $projectDir,
-        #[Autowire('%domjudge.libvendordir%')]
-        string $vendorDir,
-        Request $request
+        Request $request,
+        #[MapQueryParameter(name: 'contest')]
+        ?string $contestId = null
     ): Response {
-        $contest = $this->getContestFromRequest($request) ?? $this->dj->getCurrentContest(onlyPublic: true);
-        $data    = $this->scoreboardService->getScoreboardTwigData(
-                $request, null, '', false, true, true, $contest
-            ) + ['hide_menu' => true, 'current_contest' => $contest];
-
-        $request = $requestStack->pop();
-        // Use reflection to change the basepath property of the request, so we can detect
-        // all requested and assets
-        $requestReflection = new ReflectionClass($request);
-        $basePathProperty  = $requestReflection->getProperty('basePath');
-        $basePathProperty->setAccessible(true);
-        $basePathProperty->setValue($request, '/CHANGE_ME');
-        $requestStack->push($request);
-
-        $contestPage = $this->renderView('public/scoreboard.html.twig', $data);
-
-        // Now get all assets that are used
-        $assetRegex = '|/CHANGE_ME/([/a-z0-9_\-\.]*)(\??[/a-z0-9_\-\.=]*)|i';
-        preg_match_all($assetRegex, $contestPage, $assetMatches);
-        $contestPage = preg_replace($assetRegex, '$1$2', $contestPage);
-
-        $zip = new ZipArchive();
-        if (!($tempFilename = tempnam($this->dj->getDomjudgeTmpDir(), "contest-"))) {
-            throw new ServiceUnavailableHttpException(null, 'Could not create temporary file.');
-        }
-
-        $res = $zip->open($tempFilename, ZipArchive::OVERWRITE);
-        if ($res !== true) {
-            throw new ServiceUnavailableHttpException(null, 'Could not create temporary zip file.');
-        }
-        $zip->addFromString('index.html', $contestPage);
-
-        $publicPath = realpath(sprintf('%s/public/', $projectDir));
-        foreach ($assetMatches[1] as $file) {
-            $filepath = realpath($publicPath . '/' . $file);
-            if (!str_starts_with($filepath, $publicPath) &&
-                !str_starts_with($filepath, $vendorDir)
-            ) {
-                // Path outside of known good dirs: path traversal
-                continue;
-            }
-
-            $zip->addFile($filepath, $file);
-        }
-
-        // Also copy in the webfonts
-        $webfontsPath = $publicPath . '/webfonts/';
-        foreach (glob($webfontsPath . '*') as $fontFile) {
-            $fontName = basename($fontFile);
-            $zip->addFile($fontFile, 'webfonts/' . $fontName);
-        }
-        $zip->close();
-
-        return Utils::streamZipFile($tempFilename, 'contest.zip');
+        $contest = $this->getContestFromRequest($contestId) ?? $this->dj->getCurrentContest(onlyPublic: true);
+        return $this->dj->getScoreboardZip($request, $requestStack, $contest, $this->scoreboardService);
     }
 
     /**
      * Get the contest from the request, if any
      */
-    protected function getContestFromRequest(Request $request): ?Contest
+    protected function getContestFromRequest(?string $contestId = null): ?Contest
     {
         $contest = null;
         // For static scoreboards, allow to pass a contest= param.
-        if ($contestId = $request->query->get('contest')) {
+        if ($contestId) {
             if ($contestId === 'auto') {
                 // Automatically detect the contest that is activated the latest.
                 $activateTime = null;
@@ -183,7 +134,7 @@ class PublicController extends BaseController
         if ($this->isLocalReferer($router, $request)) {
             $response = new RedirectResponse($request->headers->get('referer'));
         } else {
-            $response = $this->redirectToRoute('public_index');
+            $response = $this->redirectToRoute('public_scoreboard');
         }
         return $this->dj->setCookie('domjudge_cid', (string)$contestId, 0, null, '', false, false,
                                                  $response);
