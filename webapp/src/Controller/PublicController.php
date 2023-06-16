@@ -55,7 +55,7 @@ class PublicController extends BaseController
     }
 
     /**
-     * @Route("", name="public_scoreboard")
+     * @Route("/scoreboard", name="public_scoreboard")
      */
     public function scoreboardAction(Request $request): Response
     {
