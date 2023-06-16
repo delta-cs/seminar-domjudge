@@ -9,8 +9,8 @@
 
     <div class="collapse navbar-collapse" id="menuDefault">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item {% if current_route in ['public_index', 'public_team'] %}active{% endif %}">
-                <a class="nav-link" href="{{ path('public_index') }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
+            <li class="nav-item {% if current_route in ['public_scoreboard', 'public_team'] %}active{% endif %}">
+                <a class="nav-link" href="{{ path('public_scoreboard') }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
             </li>
             <li class="nav-item {% if current_route == 'public_problems' %}active{% endif %}">
                 {% if is_granted('ROLE_JURY') or (current_public_contest is not null and current_public_contest.freezeData.started) %}
