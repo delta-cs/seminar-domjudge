@@ -55,13 +55,13 @@ class PublicController extends BaseController
     }
 
     /**
-     * @Route("", name="public_index")
+     * @Route("", name="public_scoreboard")
      */
     public function scoreboardAction(Request $request): Response
     {
         $response   = new Response();
         $static     = $request->query->getBoolean('static');
-        $refreshUrl = $this->generateUrl('public_index');
+        $refreshUrl = $this->generateUrl('public_scoreboard');
         // Determine contest to use
         $contest = $this->dj->getCurrentContest(-1);
 
@@ -217,7 +217,7 @@ class PublicController extends BaseController
         if ($this->isLocalReferer($router, $request)) {
             $response = new RedirectResponse($request->headers->get('referer'));
         } else {
-            $response = $this->redirectToRoute('public_index');
+            $response = $this->redirectToRoute('public_scoreboard');
         }
         return $this->dj->setCookie('domjudge_cid', (string)$contestId, 0, null, '', false, false,
                                                  $response);
