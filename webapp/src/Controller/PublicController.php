@@ -55,6 +55,13 @@ class PublicController extends BaseController
     }
 
     /**
+     * @Route("", name="public_index")
+     */
+    public function homepageAction(): Response {
+        return $this->render('public/homepage.html.twig');
+    }
+
+    /**
      * @Route("/scoreboard", name="public_scoreboard")
      */
     public function scoreboardAction(Request $request): Response
