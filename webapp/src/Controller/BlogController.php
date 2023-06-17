@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/public/blog')]
 class BlogController extends BaseController
 {
-    #[Route(path: '/{id}', name: 'public_blogpost')]
+    #[Route(path: '/{id}', name: 'public_blog_post')]
     public function blogPostAction(int $id): Response {
         return $this->render('public/blog_post.html.twig');
     }
