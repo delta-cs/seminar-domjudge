@@ -6,6 +6,12 @@
     <div class="alert alert-secondary">No problem texts available at this point.</div>
 {% else %}
     <div class="container">
+        <div class="d-flex justify-content-center mb-4">
+            <a href="https://github.com/delta-cs/seminar" class="btn btn-primary" target="_blank">
+                <i class="fa-brands fa-github"></i> View on GitHub
+            </a>
+        </div>
+
         {% if show_jury_warning is defined and show_jury_warning %}
             <div class="alert alert-warning">
                 This is a preview of how the page will look like for teams and the public after the contest has started.
