@@ -39,9 +39,12 @@ class ProblemController extends BaseController
     #[Route(path: '/problems', name: 'team_problems')]
     public function problemsAction(): Response
     {
-        $teamId = $this->dj->getUser()->getTeam()->getTeamid();
-        return $this->render('team/problems.html.twig',
-            $this->dj->getTwigDataForProblemsAction($this->stats, $teamId));
+        $team = $this->dj->getUser()->getTeam();
+
+        $data = $this->dj->getTwigDataForProblemsAction($this->stats, $team->getTeamid());
+        $data['team'] = $team;
+
+        return $this->render('team/problems.html.twig', $data);
     }
 
 
