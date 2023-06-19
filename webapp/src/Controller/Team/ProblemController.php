@@ -52,9 +52,12 @@ class ProblemController extends BaseController
      */
     public function problemsAction(): Response
     {
-        $teamId = $this->dj->getUser()->getTeam()->getTeamid();
-        return $this->render('team/problems.html.twig',
-            $this->dj->getTwigDataForProblemsAction($teamId, $this->stats));
+        $team = $this->dj->getUser()->getTeam();
+
+        $data = $this->dj->getTwigDataForProblemsAction($team->getTeamid(), $this->stats);
+        $data['team'] = $team;
+
+        return $this->render('team/problems.html.twig', $data);
     }
 
 
