@@ -14,7 +14,7 @@ final class Version20230620100736 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Expands configuration name to allow key names up to 64 characters';
+        return 'Expands configuration name to allow key names up to 64 characters. Especially used in allow_custom_team_name_registration.';
     }
 
     public function up(Schema $schema): void
