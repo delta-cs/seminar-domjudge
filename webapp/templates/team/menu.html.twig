@@ -54,11 +54,11 @@
             {% endif %}
         </ul>
 
-        <div class="ms-auto me-3 d-flex gap-3">
-            {% include 'partials/help_button.html.twig' %}
+        <div class="d-flex flex-column align-items-start gap-2 gap-xl-0 flex-xl-row">
+            {% include 'partials/menu_help_button.html.twig' %}
 
             {% if team is defined and team.unreadClarifications|length > 0 %}
-                <div class="nav-link dropdown">
+                <div class="dropdown me-3">
                     <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Unread messages
                         <span class="badge text-bg-secondary">{{ team.unreadClarifications|length }}</span>
@@ -76,21 +76,21 @@
             {% endif %}
 
             {% if is_granted('ROLE_JURY') or (current_team_contest is not null and current_team_contest.freezeData.started) %}
-                <a class="nav-link" data-ajax-modal data-ajax-modal-after="initSubmitModal" href="{{ path('team_submit') }}">
-                    <span class="btn btn-success btn-sm">
-                        <i class="fas fa-cloud-upload-alt"></i> Submit
-                    </span>
+                <a class="me-3" data-ajax-modal data-ajax-modal-after="initSubmitModal" href="{{ path('team_submit') }}">
+                <span class="btn btn-success btn-sm">
+                    <i class="fas fa-cloud-upload-alt"></i> Submit
+                </span>
                 </a>
             {% else %}
-                <a class="nav-link">
-                    <span class="btn btn-success btn-sm disabled">
-                        <i class="fas fa-cloud-upload-alt"></i> Submit
-                    </span>
+                <a class="me-3">
+                <span class="btn btn-success btn-sm disabled">
+                    <i class="fas fa-cloud-upload-alt"></i> Submit
+                </span>
                 </a>
             {% endif %}
-        </div>
 
-        {% include 'partials/menu_login_logout_button.html.twig' with {confirmLogout: true} %}
+            {% include 'partials/menu_login_logout_button.html.twig' with {confirmLogout: true} %}
+        </div>
 
         <ul class="navbar-nav">
             {% if current_team_contests | length > 1 %}
