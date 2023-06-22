@@ -10,7 +10,9 @@
     <div class="collapse navbar-collapse" id="menuDefault">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item {% if current_route in ['public_blog_list'] %}active{% endif %}">
-                <a class="nav-link" href="{{ path('public_blog_list') }}"><i class="fa-regular fa-newspaper"></i> News</a>
+                <a class="nav-link" href="{{ path('public_blog_list') }}">
+                    <i class="fa-regular fa-newspaper"></i> News
+                </a>
             </li>
             <li class="nav-item {% if current_route in ['public_scoreboard', 'public_team'] %}active{% endif %}">
                 <a class="nav-link" href="{{ path('public_scoreboard') }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
