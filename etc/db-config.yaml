@@ -259,6 +259,11 @@
             default_value: true
             public: true
             description: Show submission and problem statistics on the team and public pages.
+        -   name: blog_posts_per_page
+            type: int
+            default_value: 10
+            public: true
+            description: Maximum number of public blog posts on a single page.
 -   category: Authentication
     description: Options related to authentication.
     items:
