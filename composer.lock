@@ -6754,7 +6754,7 @@
             "version": "0.1.x-dev",
             "source": {
                 "type": "git",
-                "url": "https://github.com/matous-volf/editorjs-php.git",
+                "url": "git@github.com:matous-volf/editorjs-php.git",
                 "reference": "29bdb51580e238f700ff16a3a77ca0fcb6a40b1a"
             },
             "dist": {
@@ -6815,15 +6815,6 @@
                 }
             ],
             "description": "PHP library for handling data from the EditorJS",
-            "support": {
-                "source": "https://github.com/matous-volf/editorjs-php/tree/seminar"
-            },
-            "funding": [
-                {
-                    "type": "github",
-                    "url": "https://github.com/Setono"
-                }
-            ],
             "time": "2023-07-16T11:59:53+00:00"
         },
         {
