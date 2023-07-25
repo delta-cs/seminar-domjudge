@@ -3,6 +3,7 @@
 namespace App\Controller\Team;
 
 use App\Controller\BaseController;
+use App\Entity\Clarification;
 use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Service\ConfigurationService;
@@ -55,7 +56,9 @@ class ProblemController extends BaseController
         $team = $this->dj->getUser()->getTeam();
 
         $data = $this->dj->getTwigDataForProblemsAction($team->getTeamid(), $this->stats);
-        $data['team'] = $team;
+        $data['unreadClarifications'] = $team->getUnreadClarifications()->filter(
+            fn(Clarification $c) => $c->getContest()->getCid() === $this->dj->getCurrentContest($team->getTeamid())->getCid()
+        );
 
         return $this->render('team/problems.html.twig', $data);
     }
