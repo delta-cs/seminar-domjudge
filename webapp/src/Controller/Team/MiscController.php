@@ -8,8 +8,10 @@ use App\Entity\Language;
 use App\Form\Type\PrintType;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
+use App\Service\EventLogService;
 use App\Service\ScoreboardService;
 use App\Service\SubmissionService;
+use App\Utils\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -39,6 +41,7 @@ class MiscController extends BaseController
     protected EntityManagerInterface $em;
     protected ScoreboardService $scoreboardService;
     protected SubmissionService $submissionService;
+    private EventLogService $eventLogService;
 
     /**
      * MiscController constructor.
@@ -48,13 +51,15 @@ class MiscController extends BaseController
         ConfigurationService $config,
         EntityManagerInterface $em,
         ScoreboardService $scoreboardService,
-        SubmissionService $submissionService
+        SubmissionService $submissionService,
+        EventLogService $eventLogService
     ) {
         $this->dj                = $dj;
         $this->config            = $config;
         $this->em                = $em;
         $this->scoreboardService = $scoreboardService;
         $this->submissionService = $submissionService;
+        $this->eventLogService = $eventLogService;
     }
 
     /**
@@ -68,6 +73,8 @@ class MiscController extends BaseController
         $team    = $user->getTeam();
         $teamId  = $team->getTeamid();
         $contest = $this->dj->getCurrentContest($teamId);
+
+        $this->checkForSendingWelcomeMessage($contest->getCid());
 
         $data = [
             'team' => $team,
@@ -155,6 +162,8 @@ class MiscController extends BaseController
      */
     public function changeContestAction(Request $request, RouterInterface $router, int $contestId): Response
     {
+        $this->checkForSendingWelcomeMessage($contestId);
+
         if ($this->isLocalReferer($router, $request)) {
             $response = new RedirectResponse($request->headers->get('referer'));
         } else {
@@ -217,5 +226,36 @@ class MiscController extends BaseController
     public function docsAction(): Response
     {
         return $this->render('team/docs.html.twig');
+    }
+
+    private function checkForSendingWelcomeMessage(int $contestId)
+    {
+        $team = $this->dj->getUser()->getTeam();
+        $contest = $this->dj->getContest($contestId);
+
+        if ($team->getReceivedClarifications()->exists(
+            fn(int $key, Clarification $c) => $c->getContest()->getCid() === $contestId
+        )) {
+            return;
+        }
+
+        $clarification = new Clarification();
+
+        $clarification->setContest($contest);
+
+        // to be changed
+        $clarification->setRecipient($team);
+        $clarification->setAnswered(true);
+        $clarification->setBody($this->config->get('welcome_message_body'));
+        $clarification->setSubmittime(Utils::now());
+
+        $team->addUnreadClarification($clarification);
+
+        $this->em->persist($clarification);
+        $this->em->flush();
+
+        $clarId = $clarification->getClarId();
+        $this->dj->auditlog('clarification', $clarId, 'added', null, null, $contest->getCid());
+        $this->eventLogService->log('clarification', $clarId, 'create', $contest->getCid());
     }
 }
