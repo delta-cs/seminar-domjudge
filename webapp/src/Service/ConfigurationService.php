@@ -220,6 +220,7 @@ EOF;
                     break;
 
                 case 'string':
+                case 'textarea':
                     $optionToSet->setValue($val);
                     break;
 
