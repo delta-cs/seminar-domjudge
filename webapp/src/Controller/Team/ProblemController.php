@@ -56,9 +56,11 @@ class ProblemController extends BaseController
         $team = $this->dj->getUser()->getTeam();
 
         $data = $this->dj->getTwigDataForProblemsAction($team->getTeamid(), $this->stats);
-        $data['unreadClarifications'] = $team->getUnreadClarifications()->filter(
-            fn(Clarification $c) => $c->getContest()->getCid() === $this->dj->getCurrentContest($team->getTeamid())->getCid()
-        );
+        if ($contest = $this->dj->getCurrentContest($team->getTeamid())) {
+            $data['unreadClarifications'] = $team->getUnreadClarifications()->filter(
+                fn(Clarification $c) => $c->getContest()->getCid() === $contest->getCid()
+            );
+        }
 
         return $this->render('team/problems.html.twig', $data);
     }
