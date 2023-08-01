@@ -15,6 +15,7 @@ use App\Service\ScoreboardService;
 use App\Utils\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr\Join;
+use GuzzleHttp\Psr7\Uri;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -335,7 +336,8 @@ class JuryMiscController extends BaseController
     public function changeContestAction(Request $request, RouterInterface $router, int $contestId): Response
     {
         if ($this->isLocalReferer($router, $request)) {
-            $response = new RedirectResponse($request->headers->get('referer'));
+            $uri = new Uri($request->headers->get('referer'));
+            $response = new RedirectResponse((string)$uri->withQuery(''));
         } else {
             $response = $this->redirectToRoute('jury_index');
         }

@@ -15,6 +15,7 @@ use App\Utils\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use GuzzleHttp\Psr7\Uri;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -167,7 +168,8 @@ class MiscController extends BaseController
         }
 
         if ($this->isLocalReferer($router, $request)) {
-            $response = new RedirectResponse($request->headers->get('referer'));
+            $uri = new Uri($request->headers->get('referer'));
+            $response = new RedirectResponse((string)$uri->withQuery(''));
         } else {
             $response = $this->redirectToRoute('team_index');
         }
