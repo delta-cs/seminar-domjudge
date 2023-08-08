@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="{{ asset("css/bootstrap.min.css") }}">
     <link rel="stylesheet" href="{{ asset("css/fontawesome-all.min.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/base.css") }}">
     <script src="{{ asset("js/jquery.min.js") }}"></script>
     <script src="{{ asset("js/bootstrap.bundle.min.js") }}"></script>
 
@@ -69,7 +70,9 @@
         initializeAjaxModals();
     });
 </script>
-{% block footer %}{% endblock %}
+{% block footer %}
+    {% include 'partials/footer.html.twig' %}
+{% endblock %}
 {% block extrafooter %}{% endblock %}
 </body>
 </html>
