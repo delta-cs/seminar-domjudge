@@ -351,3 +351,8 @@
             default_value: 120
             public: false
             description: Time in seconds after an external contest source reader last checked in before showing its status as `critical`.
+        -   name: google_analytics_tracking_id
+            type: string
+            default_value: ""
+            public: false
+            description: The tracking ID for Google Analytics.
