@@ -31,6 +31,7 @@ class AddContentSecurityPolicyListener implements EventSubscriberInterface
             $this->getStyleSrcCsp(),
             $this->getScriptSrcCsp(),
             $this->getImageSrcCsp(),
+            $this->getConnectSrcCsp(),
         ]);
 
         $response->headers->set('Content-Security-Policy', $csp);
@@ -57,5 +58,10 @@ class AddContentSecurityPolicyListener implements EventSubscriberInterface
     private function getImageSrcCsp(): string
     {
         return "img-src " . $this->cspConfig['imgSrc'];
+    }
+
+    private function getConnectSrcCsp(): string
+    {
+        return "connect-src " . $this->cspConfig['connectSrc'];
     }
 }
