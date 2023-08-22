@@ -167,7 +167,8 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
                                                $this->authorizationChecker->isGranted('ROLE_ADMIN') &&
                                                $this->config->get('data_source') === DOMJudgeService::DATA_SOURCE_CONFIGURATION_AND_LIVE_EXTERNAL,
             'doc_links'                     => $this->dj->getDocLinks(),
-            'google_analytics_tracking_id'  => $this->config->get('google_analytics_tracking_id'),
+            'google_analytics_tracking_id'  => $this->authorizationChecker->isGranted('ROLE_ADMIN') ?
+                '' : $this->config->get('google_analytics_tracking_id'),
         ];
     }
 
