@@ -355,6 +355,7 @@ class SubmissionService
      * @param Language|string     $language
      * @param UploadedFile[]      $files
      * @param Submission|int|null $originalSubmission
+     * @param bool|null           $ignoreSubmission
      * @throws DBALException
      */
     public function submitSolution(
@@ -370,7 +371,8 @@ class SubmissionService
         ?string $entryPoint = null,
         ?string $externalId = null,
         ?float $submitTime = null,
-        ?string &$message = null
+        ?string &$message = null,
+        ?bool $ignoreSubmission = false
     ): ?Submission {
         if (!$team instanceof Team) {
             $team = $this->em->getRepository(Team::class)->find($team);
@@ -568,7 +570,8 @@ class SubmissionService
             ->setSubmittime($submitTime)
             ->setOriginalSubmission($originalSubmission)
             ->setEntryPoint($entryPoint)
-            ->setExternalid($externalId);
+            ->setExternalid($externalId)
+            ->setValid(!$ignoreSubmission);
 
         // Add expected results from source. We only do this for jury submissions
         // to prevent accidental auto-verification of team submissions.
