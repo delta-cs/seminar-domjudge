@@ -176,7 +176,7 @@ class Problem extends BaseApiEntity
 
     /**
      * @ORM\OneToMany(targetEntity=ProblemAttachment::class, mappedBy="problem", orphanRemoval=true)
-     * @ORM\OrderBy({"name"="ASC"})
+     * @ORM\OrderBy({"type"="ASC"})
      * @Serializer\Exclude()
      */
     private Collection $attachments;

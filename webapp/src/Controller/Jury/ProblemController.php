@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Entity\Judging;
+use App\Entity\Language;
 use App\Entity\Problem;
 use App\Entity\ProblemAttachment;
 use App\Entity\ProblemAttachmentContent;
@@ -439,7 +440,14 @@ class ProblemController extends BaseController
             $name = $file->getClientOriginalName();
             $fileParts = explode('.', $name);
             if (count($fileParts) > 0) {
-                $type = $fileParts[count($fileParts) - 1];
+                $extension = $fileParts[count($fileParts) - 1];
+                /** @var Language|null $language */
+                $language = $problemAttachmentForm->get('language')->getData();
+                if ($language) {
+                    $type = $language->getLangid();
+                } else {
+                    $type = $extension;
+                }
             } else {
                 $type = 'txt';
             }
