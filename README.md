@@ -6,7 +6,7 @@ DOMjudge
 [![Coverity Scan Status](https://img.shields.io/coverity/scan/671.svg)](https://scan.coverity.com/projects/domjudge)
 [![LGTM alerts](https://img.shields.io/lgtm/alerts/g/DOMjudge/domjudge.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/DOMjudge/domjudge/alerts/)
 
-This is the Programming Contest Jury System "DOMjudge" version 8.2.3-0.1.15
+This is the Programming Contest Jury System "DOMjudge" version 8.2.3-0.1.16
 
 DOMjudge is a system for running a programming contest, like the
 ICPC regional and world championship programming contests.
@@ -44,7 +44,7 @@ https://github.com/DOMjudge/domjudge/wiki
 Copyright & Licensing
 ---------------------
 
-DOMjudge is Copyright (c) 2004 - 2024 by the DOMjudge developers and
+DOMjudge is Copyright (c) 2004 - 2023 by the DOMjudge developers and
 all respective contributors. The current DOMjudge developers are Jaap
 Eldering, Nicky Gerritsen, Keith Johnson, Thijs Kinkhorst, Mart
 Pluijmaekers, Michael Vasseur and Tobias Werth; see the manual for
