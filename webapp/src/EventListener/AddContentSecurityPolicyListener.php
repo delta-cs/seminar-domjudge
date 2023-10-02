@@ -32,6 +32,7 @@ class AddContentSecurityPolicyListener implements EventSubscriberInterface
             $this->getScriptSrcCsp(),
             $this->getImageSrcCsp(),
             $this->getConnectSrcCsp(),
+            $this->getFrameAncestorsCsp()
         ]);
 
         $response->headers->set('Content-Security-Policy', $csp);
@@ -63,5 +64,10 @@ class AddContentSecurityPolicyListener implements EventSubscriberInterface
     private function getConnectSrcCsp(): string
     {
         return "connect-src " . $this->cspConfig['connectSrc'];
+    }
+
+    private function getFrameAncestorsCsp(): string
+    {
+        return "frame-ancestors " . $this->cspConfig['frameAncestors'];
     }
 }
