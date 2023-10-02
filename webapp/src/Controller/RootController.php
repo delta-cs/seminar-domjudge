@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Service\DOMJudgeService;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -25,8 +25,9 @@ class RootController extends BaseController
 
     /**
      * @Route("", name="root")
+     * @Route("", name="public_index")
      */
-    public function redirectAction(AuthorizationCheckerInterface $authorizationChecker): RedirectResponse
+    public function rootAction(AuthorizationCheckerInterface $authorizationChecker): Response
     {
         if ($authorizationChecker->isGranted('IS_AUTHENTICATED_FULLY')) {
             if ($this->dj->checkrole('jury')) {
@@ -42,6 +43,6 @@ class RootController extends BaseController
                 return $this->redirectToRoute('jury_clarifications');
             }
         }
-        return $this->redirectToRoute('public_index');
+        return $this->forward(PublicController::class . '::homepageAction');
     }
 }

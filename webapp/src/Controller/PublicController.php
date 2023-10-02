@@ -58,7 +58,7 @@ class PublicController extends BaseController
     }
 
     /**
-     * @Route("", name="public_index")
+     * @Route("")
      */
     public function homepageAction(): Response {
         /** @var BlogPost[] $blogPosts */
