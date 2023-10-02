@@ -8,6 +8,7 @@ use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
+use App\Service\ScoreboardService;
 use App\Service\StatisticsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
@@ -34,17 +35,20 @@ class ProblemController extends BaseController
     protected ConfigurationService $config;
     protected StatisticsService $stats;
     protected EntityManagerInterface $em;
+    protected ScoreboardService $scoreboardService;
 
     public function __construct(
         DOMJudgeService $dj,
         ConfigurationService $config,
         StatisticsService $stats,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        ScoreboardService $scoreboardService
     ) {
         $this->dj     = $dj;
         $this->config = $config;
         $this->stats  = $stats;
         $this->em     = $em;
+        $this->scoreboardService = $scoreboardService;
     }
 
     /**
@@ -60,6 +64,8 @@ class ProblemController extends BaseController
             $data['unreadClarifications'] = $team->getUnreadClarifications()->filter(
                 fn(Clarification $c) => $c->getContest()->getCid() === $contest->getCid()
             );
+
+            $data['teamScoreboard'] = $this->scoreboardService->getTeamScoreboard($contest, $team->getTeamid());
         }
 
         return $this->render('team/problems.html.twig', $data);
