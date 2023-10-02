@@ -606,6 +606,7 @@ tr.ignore td, td.ignore, span.ignore {
 
 .problem-badge {
     font-size: 100%;
+    white-space: normal;
 }
 
 .tooltip .tooltip-inner {
