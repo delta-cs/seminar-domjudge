@@ -171,7 +171,7 @@ abstract class AbstractRestController extends AbstractFOSRestController
             ->select('c')
             ->andWhere('c.enabled = 1')
             ->orderBy('c.ranknumber')
-            ->orderBy('c.activatetime');
+            ->addOrderBy('c.activatetime');
 
         if ($onlyActive || !$this->dj->checkrole('api_reader')) {
             $qb
