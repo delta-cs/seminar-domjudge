@@ -67,6 +67,13 @@ class Judging extends BaseApiEntity implements ExternalRelationshipEntityInterfa
     private ?string $result;
 
     /**
+     * @ORM\Column(type="float", name="points_scored",
+     *     options={"comment"="Points scored in this judging", "default"=null, "unsigned"=true})
+     * @Serializer\Exclude()
+     */
+    private ?float $points_scored;
+
+    /**
      * @ORM\Column(type="boolean", name="verified",
      *     options={"comment"="Result verified by jury member?",
      *              "default"="0"},
@@ -304,6 +311,26 @@ class Judging extends BaseApiEntity implements ExternalRelationshipEntityInterfa
     public function getResult(): ?string
     {
         return $this->result;
+    }
+
+    public function getPointsScored(): ?float
+    {
+        return $this->points_scored;
+    }
+
+    public function setPointsScored(?float $points_scored): void
+    {
+        $this->points_scored = $points_scored;
+    }
+
+    public function getOutputCompileAsString(): ?string
+    {
+        return $this->output_compile_as_string;
+    }
+
+    public function setOutputCompileAsString(?string $output_compile_as_string): void
+    {
+        $this->output_compile_as_string = $output_compile_as_string;
     }
 
     public function setVerified(bool $verified): Judging
