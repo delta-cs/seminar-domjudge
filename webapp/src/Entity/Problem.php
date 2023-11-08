@@ -175,6 +175,12 @@ class Problem extends BaseApiEntity
     private Collection $testcases;
 
     /**
+     * @ORM\OneToMany(targetEntity="TestcaseGroup", mappedBy="problem")
+     * @Serializer\Exclude()
+    */
+    private Collection $testcase_groups;
+
+    /**
      * @ORM\OneToMany(targetEntity=ProblemAttachment::class, mappedBy="problem", orphanRemoval=true)
      * @ORM\OrderBy({"type"="ASC"})
      * @Serializer\Exclude()
@@ -543,5 +549,18 @@ class Problem extends BaseApiEntity
         $response->headers->set('Content-Length', strlen($problemText));
 
         return $response;
+    }
+
+    /**
+     * @return TestcaseGroup[]|Collection
+     */
+    public function getTestcaseGroups(): Collection
+    {
+        return $this->testcase_groups;
+    }
+
+    public function setTestcaseGroups(Collection $testcase_groups): void
+    {
+        $this->testcase_groups = $testcase_groups;
     }
 }
