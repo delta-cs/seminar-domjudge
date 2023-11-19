@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Constraints as Assert;
+use function Sodium\add;
 
 /**
  * Stores testcases per problem.
@@ -173,12 +174,6 @@ class Problem extends BaseApiEntity
      * Note that we order the test cases here by ranknumber to make use of it during judgetask creation.
      */
     private Collection $testcases;
-
-    /**
-     * @ORM\OneToMany(targetEntity="TestcaseGroup", mappedBy="problem")
-     * @Serializer\Exclude()
-    */
-    private Collection $testcase_groups;
 
     /**
      * @ORM\OneToMany(targetEntity=ProblemAttachment::class, mappedBy="problem", orphanRemoval=true)
@@ -556,11 +551,18 @@ class Problem extends BaseApiEntity
      */
     public function getTestcaseGroups(): Collection
     {
-        return $this->testcase_groups;
-    }
+        $testcaseGroups = new ArrayCollection();
 
-    public function setTestcaseGroups(Collection $testcase_groups): void
-    {
-        $this->testcase_groups = $testcase_groups;
+        foreach ($this->testcases as $testcase) {
+            $group = $testcase->getTestcaseGroup();
+
+            if ($group === null || $testcaseGroups->contains($group)) {
+                continue;
+            }
+
+            $testcaseGroups->add($group);
+        }
+
+        return $testcaseGroups;
     }
 }
