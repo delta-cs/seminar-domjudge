@@ -1120,6 +1120,7 @@ class ProblemController extends BaseController
         }
         $testcase->setDeleted(true);
         $testcase->setProblem(null);
+        $testcase->setTestcaseGroup(null);
         $oldRank = $testcase->getRank();
 
         /** @var Testcase[] $testcases */
