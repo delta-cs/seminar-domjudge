@@ -93,7 +93,6 @@
                     </td>
                     <td rowspan="2">
                         <select name="group[{{ testcase.rank }}]" class="form-control">
-                            <option value="-1">none</option>
                             {% if problem.testcaseGroups|length > 0 %}
                                 <optgroup label="problem groups">
                                     {% for group in problem.testcaseGroups %}
@@ -207,6 +206,35 @@
                     <input type="file" class="custom-file-input" name="add_image" id="add_image">
                     <label class="custom-file-label text-truncate text-muted" for="add_image">Image</label>
                 </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-sm-4">
+                <label for="add_group">Group</label>
+                <select class="form-control" name="add_group" id="add_group">
+                    {% if problem.testcaseGroups|length + emptyTestcaseGroups|length < 1 %}
+                        <option value="-1">create default</option>
+                    {% endif %}
+                    {% if problem.testcaseGroups|length > 0 %}
+                        <optgroup label="problem groups">
+                            {% for group in problem.testcaseGroups %}
+                                <option value="{{ group.testcaseGroupid }}">
+                                {{ group.name }}
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endif %}
+                    {% if emptyTestcaseGroups|length > 0 %}
+                        <optgroup label="empty groups">
+                            {% for group in emptyTestcaseGroups %}
+                                <option value="{{ group.testcaseGroupid }}">
+                                    {{ group.name }}
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endif %}
+                </select>
             </div>
         </div>
 
