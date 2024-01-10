@@ -68,10 +68,11 @@ class Judging extends BaseApiEntity implements ExternalRelationshipEntityInterfa
 
     /**
      * @ORM\Column(type="float", name="points_scored",
-     *     options={"comment"="Points scored in this judging", "default"=null, "unsigned"=true})
+     *     options={"comment"="Points scored in this judging", "default"=0, "unsigned"=true},
+     *     nullable=false)
      * @Serializer\Exclude()
      */
-    private ?float $points_scored;
+    private float $points_scored = 0;
 
     /**
      * @ORM\Column(type="boolean", name="verified",
