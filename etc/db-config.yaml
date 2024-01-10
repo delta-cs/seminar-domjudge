@@ -106,6 +106,11 @@
                 1: Lazy
                 2: Full judging
                 3: Only on request
+        -   name: partial_points_scoring
+            type: bool
+            default_value: false
+            public: false
+            description: Use partial scoring? Enabling also requires setting "Lazy eval results" to "Full judging". If enabled, when scoring submissions, uses the testcase group percentages, otherwise ignores them and scores either 0 or full points.
         -   name: judgehost_warning
             type: int
             default_value: 30

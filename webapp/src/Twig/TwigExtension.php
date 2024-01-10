@@ -96,6 +96,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('printHosts', [$this, 'printHosts'], ['is_safe' => ['html']]),
             new TwigFilter('printFiles', [$this, 'printFiles'], ['is_safe' => ['html']]),
             new TwigFilter('printLazyMode', [$this, 'printLazyMode']),
+            new TwigFilter('printPartialPointsScoringMode', [$this, 'printPartialPointsScoringMode']),
             new TwigFilter('printYesNo', [$this, 'printYesNo']),
             new TwigFilter('printSize', [Utils::class, 'printSize'], ['is_safe' => ['html']]),
             new TwigFilter('testcaseResults', [$this, 'testcaseResults'], ['is_safe' => ['html']]),
@@ -263,6 +264,16 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             default:
                 return "Unknown mode $val";
         }
+    }
+
+    public static function printPartialPointsScoringMode(?bool $val): string
+    {
+        if ($val === null){
+            return "-";
+        } else if ($val) {
+            return "Yes";
+        }
+        return "No";
     }
 
     public static function printYesNo(bool $val): string

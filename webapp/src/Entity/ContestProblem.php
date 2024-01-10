@@ -91,6 +91,15 @@ class ContestProblem
     private ?int $lazyEvalResults = null;
 
     /**
+     * @ORM\Column(type="boolean", name="partial_points_scoring",
+     *     options={"comment"="Whether to score this problem partially; if set this overrides the global configuration setting",
+     *               "unsigned"="true"},
+     *     nullable=true)
+     * @Serializer\Exclude()
+     */
+    private ?bool $partialPointsScoring = true;
+
+    /**
      * @var Contest|int
      * @ORM\Id()
      * @ORM\ManyToOne(targetEntity="Contest", inversedBy="problems")
@@ -198,6 +207,16 @@ class ContestProblem
     public function getLazyEvalResults(): ?int
     {
         return $this->lazyEvalResults;
+    }
+
+    public function setPartialPointsScoring(?bool $partialPointsScoring): void
+    {
+        $this->partialPointsScoring = $partialPointsScoring;
+    }
+
+    public function getPartialPointsScoring(): ?bool
+    {
+        return $this->partialPointsScoring;
     }
 
     public function setContest(?Contest $contest = null): ContestProblem
