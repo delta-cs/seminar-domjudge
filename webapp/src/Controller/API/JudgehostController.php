@@ -65,6 +65,7 @@ class JudgehostController extends AbstractFOSRestController
     protected EventLogService $eventLogService;
     protected ScoreboardService $scoreboardService;
     protected SubmissionService $submissionService;
+    protected PointsScoreService $pointsScoreService;
     protected BalloonService $balloonService;
     protected RejudgingService $rejudgingService;
     protected LoggerInterface $logger;
@@ -76,6 +77,7 @@ class JudgehostController extends AbstractFOSRestController
         EventLogService $eventLogService,
         ScoreboardService $scoreboardService,
         SubmissionService $submissionService,
+        PointsScoreService $pointsScoreService,
         BalloonService $balloonService,
         RejudgingService $rejudgingService,
         LoggerInterface $logger
@@ -86,6 +88,7 @@ class JudgehostController extends AbstractFOSRestController
         $this->eventLogService   = $eventLogService;
         $this->scoreboardService = $scoreboardService;
         $this->submissionService = $submissionService;
+        $this->pointsScoreService = $pointsScoreService;
         $this->balloonService    = $balloonService;
         $this->rejudgingService  = $rejudgingService;
         $this->logger            = $logger;
@@ -1036,7 +1039,7 @@ class JudgehostController extends AbstractFOSRestController
             $judging->setResult($result);
 
             if ($lazyEval === DOMJudgeService::EVAL_FULL) {
-                $pointsScored = PointsScoreService::getScoredPoints($judging, $runs, $judging->getSubmission()->getContestProblem(), $this->dj);
+                $pointsScored = $this->pointsScoreService->getScoredPoints($judging, $runs);
                 $judging->setPointsScored($pointsScored);
             }
 
