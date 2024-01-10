@@ -11,6 +11,7 @@
             <th scope="col">problem</th>
             <th scope="col">lang</th>
             <th scope="col">result</th>
+            <th scope="col">points</th>
             {% if allowDownload %}
                 <th scope="col"></th>
             {% endif %}
@@ -57,6 +58,11 @@
                         {%- else %}
                             {{- submission.judgings.first.result | printResult -}}
                         {%- endif %}
+                    </a>
+                </td>
+                <td>
+                    <a data-ajax-modal data-ajax-modal-after="markSeen" {% if link %}href="{{ link }}"{% endif %}>
+                        {{ submission.judgings.first.pointsScored }}/{{ submission.contestProblem.points }}
                     </a>
                 </td>
         {% if allowDownload %}
