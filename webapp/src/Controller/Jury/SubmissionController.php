@@ -386,6 +386,16 @@ class SubmissionController extends BaseController
             }
         }
 
+        $testcaseGroupsRuns = [];
+        foreach ($runs as $run) {
+            $group = $run->getTestcaseGroup();
+            if (!isset($testcaseGroupsRuns[$group->getTestcasegroupid()])) {
+                $testcaseGroupsRuns[$group->getTestcasegroupid()] = [$group, [$run]];
+            } else {
+                $testcaseGroupsRuns[$group->getTestcasegroupid()][1][] = $run;
+            }
+        }
+
         if ($submission->getOriginalSubmission()) {
             $lastSubmission = $submission->getOriginalSubmission();
         } else {
@@ -487,6 +497,7 @@ class SubmissionController extends BaseController
             'selectedJudging' => $selectedJudging,
             'lastJudging' => $lastJudging,
             'runs' => $runs,
+            'testcaseGroupsRuns' => $testcaseGroupsRuns,
             'runsOutstanding' => $runsOutstanding,
             'judgehosts' => $judgehosts,
             'sameTestcaseIds' => $sameTestcaseIds,
