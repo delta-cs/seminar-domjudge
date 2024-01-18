@@ -415,6 +415,10 @@
                 {% endif %}
             </div>
 
+            {% if selectedJudging is not null %}
+                <p class="mb-1">Points scored: {{ selectedJudging.pointsScored }}/{{ submission.contestProblem.points }}</p>
+            {% endif %}
+
             {# Display testcase results #}
             {% if externalJudgement is not null or (selectedJudging is not null and selectedJudging.result != 'compiler-error') %}
                 <table>
@@ -458,6 +462,16 @@
                         </tr>
                     {% endif %}
                 </table>
+
+                <ul>
+                    {% for groupRuns in testcaseGroupsRuns %}
+                        <li>
+                            {% set group = groupRuns[0] %}
+                            {% set gRuns = groupRuns[1] %}
+                            {{ group.name }} ({{ group.pointsPercentage }}): {{ gRuns | displayTestcaseResults(judgingDone) }},
+                        </li>
+                    {% endfor %}
+                </ul>
 
                 {# Show JS toggle of previous submission results #}
                 {% if lastJudging is not null %}
