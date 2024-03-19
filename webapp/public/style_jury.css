@@ -196,3 +196,9 @@ table.submissions-table {
 .devmode-icon {
     color: white;
 }
+
+#currentContests .collapsing {
+    -webkit-transition: none;
+    transition: none;
+    display: none;
+}
