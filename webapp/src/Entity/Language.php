@@ -316,6 +316,8 @@ class Language extends BaseApiEntity
                 return 'ruby';
             case 'rs':
                 return 'rust';
+            case 'csharp-dotnet':
+                return 'csharp';
         }
         return $this->getLangid();
     }
