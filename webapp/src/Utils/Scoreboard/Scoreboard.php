@@ -332,13 +332,14 @@ class Scoreboard
      */
     public function showPoints(): bool
     {
-        foreach ($this->problems as $problem) {
-            if ($problem->getPoints() != 1) {
-                return true;
-            }
-        }
-
-        return false;
+        //foreach ($this->problems as $problem) {
+        //    if ($problem->getPoints() != 1) {
+        //        return true;
+        //    }
+        //}
+        //
+        //return false;
+        return true;
     }
 
     /**
