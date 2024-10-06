@@ -291,7 +291,7 @@ html[data-bs-theme="dark"] .scoreheader th {
 #scoresolv,#scoretotal { width: 2.5em; }
 .scorenc,.scorett,.scorepl { text-align: center; width: 2ex; }
 .scorenc { font-weight: bold; }
-td.scorenc { border-color: silver; border-right: 0; }
+td.scorenc { border-color: silver; }
 
 .scoreprob { width: 3.0em; vertical-align: middle; }
 .scoreaffil { text-align: center; }
