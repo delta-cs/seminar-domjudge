@@ -253,9 +253,9 @@
                 {% set totalPoints = score.numPoints %}
                 <td class="scorenc">{{ totalPoints }}</td>
                 {% if scoreboard.getRuntimeAsScoreTiebreaker() %}
-                    <td class="scorett">{{ "%0.3f s" | format(score.totalRuntime/1000.0) }}</td>
+                    <td class="scorett px-2">{{ "%0.3f s" | format(score.totalRuntime/1000.0) }}</td>
                 {% else %}
-                    <td class="scorett">{{ totalTime }}</td>
+                    <td class="scorett px-2">{{ totalTime }}</td>
                 {% endif %}
             {% endif %}
 
