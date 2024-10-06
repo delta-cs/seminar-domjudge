@@ -94,6 +94,20 @@ class ScoreCache
     ])]
     private bool $is_first_to_solve = false;
 
+    #[ORM\Column(options: [
+        'comment' => 'Number of points scored by this team on this problem (restricted audience)',
+        'unsigned' => true,
+        'default' => 0,
+    ])]
+    private float $points_restricted = 0;
+
+    #[ORM\Column(options: [
+        'comment' => 'Number of points scored by this team on this problem (public)',
+        'unsigned' => true,
+        'default' => 0,
+    ])]
+    private float $points_public = 0;
+
     #[ORM\Id]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'cid', referencedColumnName: 'cid', onDelete: 'CASCADE')]
@@ -286,5 +300,10 @@ class ScoreCache
     public function getIsCorrect(bool $restricted): bool
     {
         return $restricted ? $this->getIsCorrectRestricted() : $this->getIsCorrectPublic();
+    }
+
+    public function getPoints(bool $restricted): float
+    {
+        return $restricted ? $this->points_restricted : $this->points_public;
     }
 }
