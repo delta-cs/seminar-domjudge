@@ -286,19 +286,17 @@
                     {% endif %}
 
                     {# If correct, print time scored. The format will vary depending on the scoreboard resolution setting #}
-                    {% set time = '' %}
-                    {% if matrixItem.isCorrect %}
-                        {% set time = matrixItem.time %}
-                        {% if scoreboard.getRuntimeAsScoreTiebreaker() %}
-                            {% set time = "%0.3f s" | format(matrixItem.runtime / 1000.0) %}
-                        {% elseif scoreInSeconds %}
-                            {% set time = time | scoreTime | printTimeRelative %}
-                            {% if matrixItem.numSubmissions > 1 %}
-                                {% set time = time ~ ' + ' ~ (calculatePenaltyTime(true, matrixItem.numSubmissions) | printTimeRelative) %}
-                            {% endif %}
-                        {% else %}
-                            {% set time = time | scoreTime %}
+                    {% set points = matrixItem.points %}
+                    {% set time = matrixItem.time %}
+                    {% if scoreboard.getRuntimeAsScoreTiebreaker() %}
+                        {% set time = "%0.3f s" | format(matrixItem.runtime / 1000.0) %}
+                    {% elseif scoreInSeconds %}
+                        {% set time = time | scoreTime | printTimeRelative %}
+                        {% if matrixItem.numSubmissions > 1 %}
+                            {% set time = time ~ ' + ' ~ (calculatePenaltyTime(true, matrixItem.numSubmissions) | printTimeRelative) %}
                         {% endif %}
+                    {% else %}
+                        {% set time = time | scoreTime %}
                     {% endif %}
 
                     {% set link = null %}
@@ -310,8 +308,18 @@
                     <td class="score_cell">
                         {% if numSubmissions != '0' %}
                             <a {% if link %}href="{{ link }}"{% endif %}>
-                                <div class="{{ scoreCssClass }}">
-                                    {% if matrixItem.isCorrect %}{{ time }}{% else %}&nbsp;{% endif %}
+                                <div class="{{ scoreCssClass }}" data-bs-toggle="tooltip" data-placement="top"
+                                     {% if show_points_on_scoreboard %}
+                                         data-bs-title="time: {{ time }}"
+                                     {% else %}
+                                         data-bs-title="points: {{ points }}"
+                                     {% endif %}
+                                >
+                                    {% if show_points_on_scoreboard %}
+                                        {{ points }}
+                                    {% else %}
+                                        {{ time }}
+                                    {% endif %}
                                     <span>
                                         {% if numSubmissions is same as(1) %}
                                             1 try
@@ -438,6 +446,7 @@
     {% endfor %}
 </style>
 <script>
+    $('[data-bs-toggle="tooltip"]').tooltip();
     document.querySelectorAll(".forceWidth:not(.toolong)").forEach(el => {
         if (el instanceof Element && el.scrollWidth > el.offsetWidth) {
             el.classList.add("toolong");

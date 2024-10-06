@@ -158,18 +158,18 @@ class Scoreboard
                 $scoreRow->getPending($this->restricted),
                 $scoreRow->getSolveTime($this->restricted),
                 $penalty,
-                $scoreRow->getRuntime($this->restricted)
+                $scoreRow->getRuntime($this->restricted),
+                $scoreRow->getPoints($this->restricted),
             );
 
-            if ($scoreRow->getIsCorrect($this->restricted)) {
-                $solveTime      = Utils::scoretime($scoreRow->getSolveTime($this->restricted),
-                                                   $this->scoreIsInSeconds);
-                $contestProblem = $this->problems[$scoreRow->getProblem()->getProbid()];
-                $this->scores[$teamId]->numPoints += $contestProblem->getPoints();
-                $this->scores[$teamId]->solveTimes[] = $solveTime;
-                $this->scores[$teamId]->totalTime += $solveTime + $penalty;
-                $this->scores[$teamId]->totalRuntime += $scoreRow->getRuntime($this->restricted);
-            }
+            $solveTime = Utils::scoretime(
+                $scoreRow->getSolveTime($this->restricted),
+                $this->scoreIsInSeconds
+            );
+            $this->scores[$teamId]->numPoints += $scoreRow->getPoints($this->restricted);
+            $this->scores[$teamId]->solveTimes[] = $solveTime;
+            $this->scores[$teamId]->totalTime += $solveTime + $penalty;
+            $this->scores[$teamId]->totalRuntime += $scoreRow->getRuntime($this->restricted);
         }
 
         // Now sort the scores using the scoreboard sort function.
@@ -216,7 +216,7 @@ class Scoreboard
                 $problemId = $contestProblem->getProbid();
                 // Provide default scores when nothing submitted for this team + problem yet
                 if (!isset($this->matrix[$teamId][$problemId])) {
-                    $this->matrix[$teamId][$problemId] = new ScoreboardMatrixItem(false, false, 0, 0, 0, 0, 0);
+                    $this->matrix[$teamId][$problemId] = new ScoreboardMatrixItem(false, false, 0, 0, 0, 0, 0, 0);
                 }
 
                 $problemMatrixItem = $this->matrix[$teamId][$problemId];
