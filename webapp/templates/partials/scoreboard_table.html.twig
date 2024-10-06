@@ -80,7 +80,17 @@
         {% endif %}
         <th title="team name" scope="col" colspan="{{ teamColspan }}">team</th>
         {% if enable_ranking %}
-            <th title="# solved / penalty time" colspan="2" scope="col">score</th>
+            <th title="# points" scope="col" class="px-2">points</th>
+            <th title="# solved / penalty time" scope="col" class="px-2">
+                time
+                <span style="font-variant: none; font-size: 0.75rem">
+                    {% if scoreInSeconds %}
+                        (s)
+                    {% else %}
+                        (m)
+                    {% endif %}
+                </span>
+            </th>
         {% endif %}
         {% if showTeamSubmissions or jury %}
             {% for problem in problems %}
