@@ -6,7 +6,7 @@ use App\Entity\ContestProblem;
 
 class Summary
 {
-    /** @var int[] */
+    /** @var float[] */
     protected array $numberOfPoints = [];
 
     /** @var int[] */
@@ -28,12 +28,12 @@ class Summary
         }
     }
 
-    public function getNumberOfPoints(int $sortorder): int
+    public function getNumberOfPoints(int $sortorder): float
     {
         return $this->numberOfPoints[$sortorder] ?? 0;
     }
 
-    public function addNumberOfPoints(int $sortorder, int $numberOfPoints): void
+    public function addNumberOfPoints(int $sortorder, float $numberOfPoints): void
     {
         if (!isset($this->numberOfPoints[$sortorder])) {
             $this->numberOfPoints[$sortorder] = 0;

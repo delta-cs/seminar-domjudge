@@ -328,6 +328,8 @@ class ScoreboardService
         $correctPubl     = false;
         $runtimeJury     = PHP_INT_MAX;
         $runtimePubl     = PHP_INT_MAX;
+        $pointsJury      = 0;
+        $pointsPubl      = 0;
 
         foreach ($submissions as $submission) {
             /** @var Judging|ExternalJudgement|null $judging */
@@ -339,6 +341,8 @@ class ScoreboardService
 
             // three things will happen in the loop in this order:
             // 1. update fastest runtime
+            // 1.b. update most points scored
+            // 1.c. update time of the submission with the most points
             // 2. count submissions until correct submission
             // 3. determine time of first correct submission
 
@@ -349,6 +353,26 @@ class ScoreboardService
                 $runtimeJury = min($runtimeJury, $runtime);
                 if (!$submission->isAfterFreeze()) {
                     $runtimePubl = min($runtimePubl, $runtime);
+                }
+            }
+
+            // STEP 1.b:
+            // partial of full points to be awarded for this submission
+            if (!is_null($judging)) {
+                $pointsJury = max($pointsJury, $judging->getPointsScored());
+                if (!$submission->isAfterFreeze()) {
+                    $pointsPubl = max($pointsPubl, $judging->getPointsScored());
+                }
+            }
+
+            // STEP 1.c:
+            // time of the submission with the most points
+            if (!is_null($judging) && $judging->getPointsScored() == $pointsJury) {
+                $absSubmitTime = (float)$submission->getSubmittime();
+                $submitTime    = $contest->getContestTime($absSubmitTime);
+                $timeJury      = $submitTime;
+                if (!$submission->isAfterFreeze()) {
+                    $timePubl = $submitTime;
                 }
             }
 
@@ -483,13 +507,19 @@ class ScoreboardService
             'runtimePublic' => $runtimePubl === PHP_INT_MAX ? 0 : $runtimePubl,
             'isCorrectPublic' => (int)$correctPubl,
             'isFirstToSolve' => (int)$firstToSolve,
+            'pointsRestricted' => $pointsJury,
+            'pointsPublic' => $pointsPubl,
         ];
         $this->em->getConnection()->executeQuery('REPLACE INTO scorecache
             (cid, teamid, probid,
              submissions_restricted, pending_restricted, solvetime_restricted, runtime_restricted, is_correct_restricted,
-             submissions_public, pending_public, solvetime_public, runtime_public, is_correct_public, is_first_to_solve)
+             submissions_public, pending_public, solvetime_public, runtime_public, is_correct_public, is_first_to_solve,
+             points_restricted, points_public
+            )
             VALUES (:cid, :teamid, :probid, :submissionsRestricted, :pendingRestricted, :solvetimeRestricted, :runtimeRestricted, :isCorrectRestricted,
-            :submissionsPublic, :pendingPublic, :solvetimePublic, :runtimePublic, :isCorrectPublic, :isFirstToSolve)', $params);
+             :submissionsPublic, :pendingPublic, :solvetimePublic, :runtimePublic, :isCorrectPublic, :isFirstToSolve,
+             :pointsRestricted, :pointsPublic
+            )', $params);
 
         if ($this->em->getConnection()->fetchOne('SELECT RELEASE_LOCK(:lock)',
                                                     ['lock' => $lockString]) != 1) {
@@ -569,19 +599,18 @@ class ScoreboardService
         // Process all score cache rows.
         foreach ($scoreCacheRows as $scoreCache) {
             foreach ($variants as $variant => $isRestricted) {
-                $probId = $scoreCache->getProblem()->getProbid();
-                if (isset($contestProblems[$probId]) && $scoreCache->getIsCorrect($isRestricted)) {
-                    $penalty = Utils::calcPenaltyTime($scoreCache->getIsCorrect($isRestricted),
-                                                      $scoreCache->getSubmissions($isRestricted),
-                                                      $penaltyTime, $scoreIsInSeconds);
-
-                    $numPoints[$variant] += $contestProblems[$probId]->getPoints();
-                    $totalTime[$variant] += Utils::scoretime(
-                        (float)$scoreCache->getSolveTime($isRestricted),
-                        $scoreIsInSeconds
-                    ) + $penalty;
-                    $totalRuntime[$variant] += $scoreCache->getRuntime($isRestricted);
-                }
+                $penalty = Utils::calcPenaltyTime(
+                    $scoreCache->getIsCorrect($isRestricted),
+                    $scoreCache->getSubmissions($isRestricted),
+                    $penaltyTime,
+                    $scoreIsInSeconds
+                );
+                $numPoints[$variant] += $scoreCache->getPoints($isRestricted);
+                $totalTime[$variant] += Utils::scoretime(
+                    (float)$scoreCache->getSolveTime($isRestricted),
+                    $scoreIsInSeconds
+                ) + $penalty;
+                $totalRuntime[$variant] += $scoreCache->getRuntime($isRestricted);
             }
         }
 

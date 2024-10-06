@@ -323,6 +323,11 @@
                 2: After first submission
             regex: /^\d+$/
             error_message: A value between 0 and 2 is required.
+        -   name: show_points_on_scoreboard
+            type: bool
+            default_value: false
+            public: true
+            description: Show points on the scoreboard instead of the time?
         -   name: enable_ranking
             type: bool
             default_value: true

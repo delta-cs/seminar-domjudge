@@ -6,7 +6,7 @@ use App\Entity\Team;
 
 class TeamScore
 {
-    public int $numPoints = 0;
+    public float $numPoints = 0;
 
     /** @var float[] */
     public array $solveTimes = [];
