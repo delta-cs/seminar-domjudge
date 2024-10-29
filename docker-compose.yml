@@ -17,7 +17,7 @@ services:
       - 127.0.0.1:13306:3306
     command: --max-connections=1000 --max-allowed-packet=512M
     volumes:
-      - /var/lib/mysql
+      - database:/var/lib/mysql
   domjudge:
     image: deltacs/seminar-domjudge-contributor:8.3.1
     hostname: domjudge-contributor
@@ -33,3 +33,6 @@ services:
     working_dir: ${PWD}
     environment:
       - PROJECT_DIR=${PWD}
+
+volumes:
+  database:
