@@ -14,17 +14,13 @@
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
                 <a class="nav-link{% if current_route in ['team_index', 'team_clarification', 'team_clarification_add', 'team_submission'] %} active{% endif %}"
-                    href="{{ path('team_index') }}"><i class="fas fa-home"></i> Home</a>
+                    href="{{ path('team_index') }}"><i class="fas fa-home"></i> Team</a>
             </li>
             <li class="nav-item">
-                {% if current_team_contest is not null and (is_granted('ROLE_JURY') or current_team_contest.freezeData.started) %}
-                    <a class="nav-link{% if current_route == 'team_problems' %} active{% endif %}"
-                        href="{{ path('team_problems', {'cid': current_team_contest.cid}) }}">
-                        <i class="fas fa-book-open"></i> Problemset
-                    </a>
-                {% else %}
-                    <a class="nav-link disabled"><i class="fas fa-book-open"></i> Problemset</a>
-                {% endif %}
+                <a class="nav-link{% if current_route in ['blog_list'] %} active{% endif %}"
+                   href="{{ path('blog_list') }}">
+                    <i class="fa-regular fa-newspaper"></i> News
+                </a>
             </li>
             {% if show_languages_to_teams %}
                 <li class="nav-item">
