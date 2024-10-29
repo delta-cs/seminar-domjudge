@@ -1,4 +1,4 @@
-{% extends "public/base.html.twig" %}
+{% extends is_granted('IS_AUTHENTICATED_FULLY') ? "team/base.html.twig" : "public/base.html.twig" %}
 
 {% block extrahead %}
     {{ parent() }}
@@ -10,7 +10,7 @@
     <div class="container">
         <h1>News</h1>
         {% for post in posts %}
-            {% include 'public/partials/blog_post_in_list.html.twig' with {'post': post} %}
+            {% include 'blog/partials/blog_post_in_list.html.twig' with {'post': post} %}
             <hr>
         {% endfor %}
 
@@ -19,7 +19,7 @@
                 <li class="page-item{% if page < 2 %} disabled{% endif %}">
                     <a class="page-link"
                         {% if page >= 2 %}
-                            href="{{ path('public_blog_list', {'page': page - 1}) }}"
+                            href="{{ path('blog_list', {'page': page - 1}) }}"
                         {% else %}
                             href="#"
                         {% endif %}
@@ -28,7 +28,7 @@
 
                 {% if page >= 2 %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ path('public_blog_list', {'page': page - 1}) }}">
+                        <a class="page-link" href="{{ path('blog_list', {'page': page - 1}) }}">
                             {{ page - 1 }}
                         </a>
                     </li>
@@ -38,7 +38,7 @@
 
                 {% if page < totalPages %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ path('public_blog_list', {'page': page + 1}) }}">
+                        <a class="page-link" href="{{ path('blog_list', {'page': page + 1}) }}">
                             {{ page + 1 }}
                         </a>
                     </li>
@@ -47,7 +47,7 @@
                 <li class="page-item {% if page >= totalPages %} disabled{% endif %}">
                     <a class="page-link"
                        {% if page < totalPages %}
-                           href="{{ path('public_blog_list', {'page': page + 1}) }}"
+                           href="{{ path('blog_list', {'page': page + 1}) }}"
                        {% else %}
                            href="#"
                        {% endif %}

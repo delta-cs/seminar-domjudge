@@ -1,2 +1,25 @@
 logout:
     path: /logout
+
+redirect_old_blog_list:
+    path: /public/blog
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: blog_list
+        permanent: true
+
+redirect_old_blog_post:
+    path: /public/blog/{slug}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: blog_post
+        permanent: true
+    requirements:
+        slug: ".+"
+
+redirect_old_public_help:
+    path: /public/help
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: help
+        permanent: true

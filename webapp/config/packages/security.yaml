@@ -79,5 +79,7 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/public, roles: PUBLIC_ACCESS }
+        - { path: ^/blog, roles: PUBLIC_ACCESS }
+        - { path: ^/help, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
