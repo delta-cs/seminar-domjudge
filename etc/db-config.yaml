@@ -206,6 +206,11 @@
 -   category: Display
     description: Options related to the DOMjudge user interface.
     items:
+        -   name: website_title
+            type: string
+            default_value: "DOMjudge"
+            public: true
+            description: The title of the website.
         -   name: output_display_limit
             type: int
             default_value: 2000
