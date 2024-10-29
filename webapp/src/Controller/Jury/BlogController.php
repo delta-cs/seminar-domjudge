@@ -209,7 +209,7 @@ class BlogController extends BaseController
                 return $this->redirectToRoute('jury_blog');
             }
 
-            return $this->redirectToRoute('public_blog_post', ['slug' => $blogPost->getSlug()]);
+            return $this->redirectToRoute('blog_post', ['slug' => $blogPost->getSlug()]);
         }
 
         return $this->renderForm('jury/blog_post_send.html.twig', [

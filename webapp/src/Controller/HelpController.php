@@ -5,12 +5,12 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/public/help')]
+#[Route('/help')]
 class HelpController extends BaseController
 {
-    #[Route('', name: 'public_help')]
+    #[Route('', name: 'help')]
     public function helpAction(): Response
     {
-        return $this->render('public/help.html.twig');
+        return $this->render('help/page.html.twig');
     }
 }

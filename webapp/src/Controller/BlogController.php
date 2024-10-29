@@ -22,12 +22,14 @@ use Setono\EditorJS\Renderer\BlockRenderer\ListBlockRenderer;
 use Setono\EditorJS\Renderer\BlockRenderer\ParagraphBlockRenderer;
 use Setono\EditorJS\Renderer\BlockRenderer\TableBlockRenderer;
 use Setono\EditorJS\Renderer\Renderer;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route("/public/blog")]
+
+#[Route("/blog")]
 class BlogController extends BaseController
 {
     private int $postsPerPage;
@@ -36,13 +38,14 @@ class BlogController extends BaseController
         protected EntityManagerInterface $em,
         protected DOMJudgeService        $dj,
         protected ConfigurationService   $config,
-        protected EventLogService        $eventLogService
+        protected EventLogService        $eventLogService,
+        protected readonly Security      $security
     )
     {
         $this->postsPerPage = $this->config->get('blog_posts_per_page');
     }
 
-    #[Route("", name: "public_blog_list")]
+    #[Route("", name: "blog_list")]
     public function listAction(Request $request): Response
     {
         $totalPosts = $this->em->getRepository(BlogPost::class)
@@ -68,14 +71,14 @@ class BlogController extends BaseController
             ->setParameter('now', new DateTime())
             ->getResult();
 
-        return $this->render('public/blog_list.html.twig', [
+        return $this->render('blog/blog_list.html.twig', [
             'posts' => $blogPosts,
             'page' => $page,
             'totalPages' => $totalPages,
         ]);
     }
 
-    #[Route("/{slug}", name: "public_blog_post")]
+    #[Route("/{slug}", name: "blog_post")]
     public function viewAction(string $slug): Response
     {
         /** @var BlogPost $blogPost */
@@ -112,7 +115,7 @@ class BlogController extends BaseController
             'publishTime' => $blogPost->getPublishtime(),
         ];
 
-        return $this->render('public/blog_post.html.twig',
+        return $this->render('blog/blog_post.html.twig',
             $blogPostData
         );
     }

@@ -78,12 +78,12 @@
     <div class="container mt-4">
         <div class="d-flex flex-row align-items-center">
             <h2 class="me-3">Novinky</h2>
-            <a class="btn btn-sm btn-info" href="{{ path('public_blog_list') }}">Číst všechny</a>
+            <a class="btn btn-sm btn-info" href="{{ path('blog_list') }}">Číst všechny</a>
         </div>
 
         <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
             {% for post in blogPosts %}
-                {% include 'public/partials/blog_post_on_homepage.html.twig' with {'post': post} %}
+                {% include 'blog/partials/blog_post_on_homepage.html.twig' with {'post': post} %}
             {% endfor %}
         </div>
     </div>
