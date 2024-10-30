@@ -25,7 +25,7 @@ class ProblemAttachment
     #[ORM\Column(options: ['comment' => 'Filename of attachment'])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 4, options: ['comment' => 'File type of attachment'])]
+    #[ORM\Column(length: 32, options: ['comment' => 'File type of attachment'])]
     private ?string $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'attachments')]
