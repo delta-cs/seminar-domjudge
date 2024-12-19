@@ -834,8 +834,13 @@ function initializeKeyboardShortcuts() {
         if (keysCookie != 1 && keysCookie != "") {
             return;
         }
-        // Check if the user is not typing in an input field.
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // Check if the user is not typing in an input field or editor-js src:https://github.com/delta-cs/seminar-domjudge/blob/8.3.1/webapp/public/js/editorjs/editorjs.js.
+        if (
+            e.target.tagName === 'INPUT' || 
+            e.target.tagName === 'TEXTAREA' || 
+            e.target.classList.contains('codex-editor') || 
+            e.target.closest('.codex-editor')
+        ) {
             return;
         }
         var key = e.key.toLowerCase();
