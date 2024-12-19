@@ -835,9 +835,15 @@ function initializeKeyboardShortcuts() {
             return;
         }
         // Check if the user is not typing in an input field.
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        if (
+            e.target.tagName === 'INPUT' || 
+            e.target.tagName === 'TEXTAREA' || 
+            e.target.classList.contains('codex-editor') || 
+            e.target.closest('.codex-editor')
+        ) {
             return;
         }
+
         var key = e.key.toLowerCase();
         if (key === '?') {
             var $keyhelp = $('#keyhelp');
