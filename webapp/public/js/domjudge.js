@@ -834,7 +834,7 @@ function initializeKeyboardShortcuts() {
         if (keysCookie != 1 && keysCookie != "") {
             return;
         }
-        // Check if the user is not typing in an input field.
+        // Check if the user is not typing in an input field or editor-js.
         if (
             e.target.tagName === 'INPUT' || 
             e.target.tagName === 'TEXTAREA' || 
@@ -843,7 +843,6 @@ function initializeKeyboardShortcuts() {
         ) {
             return;
         }
-
         var key = e.key.toLowerCase();
         if (key === '?') {
             var $keyhelp = $('#keyhelp');

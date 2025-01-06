@@ -6,7 +6,7 @@
 	"repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/matous-volf/editorjs-php/tree/0.1.x"
+            "url": "https://github.com/matous-volf/editorjs-php"
         },
         {
 			"type": "package",
