@@ -107,6 +107,11 @@ kbd {
     color: black;
 }
 
+[data-bs-theme="dark"] kbd {
+    background-color: var(--bs-secondary-bg);
+    color: white;
+}
+
 .teamid { font-family: monospace; }
 .filename, .hostname { font-family: monospace; }
 
@@ -116,6 +121,8 @@ kbd {
 }
 
 a.collapse-link { color: black; text-decoration: none; }
+
+[data-bs-theme="dark"] a.collapse-link { color: white }
 
 table.lcsdiff {
     border-spacing: 0;
@@ -284,6 +291,9 @@ html[data-bs-theme="dark"] .scoreheader th {
 .score_pending   { background: #6666FF; }
 .score_incorrect { background: #e87272; }
 
+[data-bs-theme="dark"] .score_correct { background: #1daa1d; }
+[data-bs-theme="dark"] .score_first   { background: #0b610b !important; }
+
 .gold-medal   { background-color: #EEC710 }
 .silver-medal { background-color: #AAA }
 .bronze-medal { background-color: #C08E55 }
@@ -370,15 +380,30 @@ table.rejudgetable td {
 table.rejudgetable td,th {
     padding: .5rem;
 }
+
 table.rejudgetable td.changed {
     background-color: #fdd;
     font-weight: bold;
 }
+
+[data-bs-theme="dark"] table.rejudgetable td.changed {
+    background-color: var(--bs-danger);
+}
+
 table.rejudgetable td.identical {
     background-color: #dfd;
 }
+
+[data-bs-theme="dark"] table.rejudgetable td.identical {
+    color: var(--bs-dark);
+}
+
 table.rejudgetable td.zero {
     background-color: #f0f8ff;
+}
+
+[data-bs-theme="dark"] table.rejudgetable td.zero {
+    background-color: var(--bs-secondary-bg);
 }
 
 tr.ignore td, td.ignore, span.ignore {
@@ -830,4 +855,9 @@ blockquote {
     background-color: var(--bs-body-bg);
     border-color: white;
   }
+}
+
+/* Dark mode DomJudge logo */
+[data-bs-theme="dark"] img[src^="/images/DOMjudgelogo.svg"] {
+  filter: brightness(1.2) invert(0.7) contrast(1.1);
 }

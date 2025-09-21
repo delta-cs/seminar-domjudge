@@ -154,12 +154,18 @@ div.submission-summary > span {
 .importexport h2 {
     margin-top: 1rem;
 }
+
 .importexport div.tile {
     background-color: aliceblue;
     padding: 1rem;
     margin: .5rem;
     height: 95%;
 }
+
+[data-bs-theme="dark"] .importexport div.tile {
+    background-color: var(--bs-secondary-bg);
+}
+
 .importexport div.tile h3 {
     font-size: 22px;
 }
