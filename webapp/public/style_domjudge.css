@@ -752,8 +752,8 @@ blockquote {
     color: #28a745;
 }
 
-/* xs to (not including) lg */
-@media (max-width: 1200px) {
+/* xs to (not including) md */
+@media (max-width: 768px) {
     nav.navbar {
         max-height: 100vh;
         overflow-y: scroll;
