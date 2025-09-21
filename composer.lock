@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c0c9896c4525611cae4f9383ba61b043",
+    "content-hash": "ac7934279d656e5b5b9c33deca44ec4c",
     "packages": [
         {
             "name": "apalfrey/select2-bootstrap-5-theme",
@@ -5508,16 +5508,10 @@
         {
             "name": "setono/editorjs-php",
             "version": "0.1.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/matous-volf/editorjs-php.git",
-                "reference": "29bdb51580e238f700ff16a3a77ca0fcb6a40b1a"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/matous-volf/editorjs-php/zipball/29bdb51580e238f700ff16a3a77ca0fcb6a40b1a",
-                "reference": "29bdb51580e238f700ff16a3a77ca0fcb6a40b1a",
-                "shasum": ""
+                "type": "path",
+                "url": "webapp/packages/matous-volf/editorjs-php",
+                "reference": "d7bfb2a34e6d4cdf45e93c1a41993969e9bdf8cc"
             },
             "require": {
                 "ext-json": "*",
@@ -5571,16 +5565,9 @@
                 }
             ],
             "description": "PHP library for handling data from the EditorJS",
-            "support": {
-                "source": "https://github.com/matous-volf/editorjs-php/tree/seminar"
-            },
-            "funding": [
-                {
-                    "type": "github",
-                    "url": "https://github.com/Setono"
-                }
-            ],
-            "time": "2023-07-16T11:59:53+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "symfony/asset",

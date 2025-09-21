@@ -5,8 +5,8 @@
 	"license": "GPL-2.0+",
 	"repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/matous-volf/editorjs-php"
+            "type": "path",
+            "url": "webapp/packages/matous-volf/editorjs-php"
         },
         {
 			"type": "package",
