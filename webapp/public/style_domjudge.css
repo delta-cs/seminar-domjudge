@@ -759,3 +759,75 @@ blockquote {
         overflow-y: scroll;
     }
 }
+
+/* Editor.js Bootstrap Dark Mode */
+[data-bs-theme="dark"] .ce-toolbar__plus,
+[data-bs-theme="dark"] .ce-toolbar__settings-btn,
+[data-bs-theme="dark"] .ce-popover-item__title,
+[data-bs-theme="dark"] .ce-popover-item__icon {
+  color: white;
+}
+
+[data-bs-theme="dark"] .cdx-search-field.ce-popover__search {
+  background-color: #1e293b4d;
+  border-color: white;
+}
+
+[data-bs-theme="dark"] .cdx-search-field__input {
+  color: white;
+}
+
+[data-bs-theme="dark"] .cdx-block,
+[data-bs-theme="dark"] .ce-block {
+  color: white;
+}
+
+[data-bs-theme="dark"] .ce-inline-toolbar,
+[data-bs-theme="dark"] .ce-conversion-tool__icon,
+[data-bs-theme="dark"] .ce-popover-item__icon,
+[data-bs-theme="dark"] .tc-popover__item-icon {
+  color: white;
+  background-color: var(--bs-body-bg);
+}
+
+[data-bs-theme="dark"] .ce-popover,
+[data-bs-theme="dark"] .ce-conversion-toolbar,
+[data-bs-theme="dark"] .ce-inline-toolbar,
+[data-bs-theme="dark"] .tc-popover {
+  background-color: var(--bs-body-bg);
+}
+
+[data-bs-theme="dark"] .ce-inline-tool:hover,
+[data-bs-theme="dark"] .ce-inline-toolbar__dropdown:hover,
+[data-bs-theme="dark"] .ce-toolbar__plus:hover,
+[data-bs-theme="dark"] .ce-toolbar__settings-btn:hover,
+[data-bs-theme="dark"] .ce-conversion-tool:hover,
+[data-bs-theme="dark"] .ce-popover-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="dark"] *::selection,
+[data-bs-theme="dark"] .ce-block.ce-block--selected .ce-block__content {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="dark"] .ce-popover__items {
+  scrollbar-color: white var(--bs-body-bg);
+}
+/* table class wrapper */
+[data-bs-theme="dark"] .tc-wrap,
+[data-bs-theme="dark"] .tc-wrap * {
+  --color-border: white;
+  --color-text-secondary: white;
+  --color-background: rgba(255, 255, 255, 0.2);
+  --toggler-dots-color: rgba(255, 255, 255, 0.2);
+  --toggler-dots-color-hovered: white;
+}
+
+@media (max-width: 650px) {
+  [data-bs-theme="dark"] .ce-toolbar__settings-btn,
+  [data-bs-theme="dark"] .ce-toolbar__plus {
+    background-color: var(--bs-body-bg);
+    border-color: white;
+  }
+}
