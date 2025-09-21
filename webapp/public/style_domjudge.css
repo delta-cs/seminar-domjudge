@@ -163,6 +163,12 @@ del {
     padding: 0.5rem;
 }
 
+[data-bs-theme="dark"] .source-tab {
+    border-bottom: 1px solid var(--bs-body-bg);
+    border-right: 1px solid var(--bs-body-bg);
+    border-left: 1px solid var(--bs-body-bg);
+}
+
 #lastmod {
     position: absolute; right: 1ex; margin-top: 1em;
 }
