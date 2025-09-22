@@ -701,6 +701,10 @@ blockquote {
     font-size: smaller;
 }
 
+[data-bs-theme="dark"] .rendered-preview-badge {
+    background-color: var(--bs-gray-dark);
+}
+
 .right {
     text-align: right;
 }
