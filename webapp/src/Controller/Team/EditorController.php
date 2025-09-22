@@ -124,6 +124,15 @@ class EditorController extends BaseController
                     ->setSourcecode($attachment->getContent()->getContent());
             }
 
+            if (empty($files) 
+                && $language->getDefaultEditorTemplateFilename()
+                && $language->getDefaultEditorTemplateContent()) {
+                $files[] = (new SubmissionFile())
+                    ->setFilename($language->getDefaultEditorTemplateFilename())
+                    ->setRank(0)
+                    ->setSourcecode($language->getDefaultEditorTemplateContent());
+            }
+
             if (empty($files)) {
                 $this->logger->error(
                     sprintf('Problem %s without pre-set attachment for %s',

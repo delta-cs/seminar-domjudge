@@ -147,6 +147,14 @@ class Language extends BaseApiEntity
     #[Serializer\Exclude]
     private ?string $runnerVersionCommand = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => 'Editor template filename for this language'])]
+    #[Serializer\Groups([ARC::GROUP_NONSTRICT])]
+    private ?string $defaultEditorTemplateFilename = null;
+
+    #[ORM\Column(type: 'text', nullable: true, options: ['comment' => 'Editor template for this language'])]
+    #[Serializer\Groups([ARC::GROUP_NONSTRICT])]
+    private ?string $defaultEditorTemplateContent = null;
+
     /**
      * @param Collection<int, Version> $versions
      */
@@ -205,6 +213,28 @@ class Language extends BaseApiEntity
     public function setRunnerVersionCommand(?string $runnerVersionCommand): Language
     {
         $this->runnerVersionCommand = $runnerVersionCommand;
+        return $this;
+    }
+
+    public function getDefaultEditorTemplateFilename(): ?string
+    {
+        return $this->defaultEditorTemplateFilename;
+    }
+
+    public function setDefaultEditorTemplateFilename(?string $defaultEditorTemplateFilename): Language
+    {
+        $this->defaultEditorTemplateFilename = $defaultEditorTemplateFilename;
+        return $this;
+    }
+
+    public function getDefaultEditorTemplateContent(): ?string
+    {
+        return $this->defaultEditorTemplateContent;
+    }
+
+    public function setDefaultEditorTemplateContent(?string $defaultEditorTemplateContent): Language
+    {
+        $this->defaultEditorTemplateContent = $defaultEditorTemplateContent;
         return $this;
     }
 
