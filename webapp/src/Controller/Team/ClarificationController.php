@@ -11,6 +11,7 @@ use App\Form\Type\TeamClarificationType;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
 use App\Service\EventLogService;
+use App\Service\DiscordWebhookService;
 use App\Utils\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
@@ -38,6 +39,7 @@ class ClarificationController extends BaseController
         protected readonly ConfigurationService $config,
         protected readonly EntityManagerInterface $em,
         protected readonly EventLogService $eventLogService,
+        protected readonly DiscordWebhookService $discordService,
         protected readonly FormFactoryInterface $formFactory
     ) {}
 
@@ -199,6 +201,13 @@ class ClarificationController extends BaseController
         $this->dj->auditlog('clarification', $newClarification->getClarid(), 'added', null, null,
             $contest->getCid());
         $this->eventLogService->log('clarification', $newClarification->getClarid(), 'create', $contest->getCid());
+
+        try {
+            // Send Discord notification
+            $this->discordService->sendClarificationNotification($newClarification);
+        } catch (\Exception $e) {
+            // pass
+        }
 
         $this->addFlash('success', 'Clarification sent to the jury');
     }

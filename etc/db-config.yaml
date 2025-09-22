@@ -203,6 +203,11 @@
             default_value: ""
             public: true
             description: Queue to assign to problem clarifications.
+        -   name: discord_webhook_url
+            type: string
+            default_value: ""
+            public: false
+            description: Discord webhook URL for sending incomming clarification notifications. Leave empty to disable Discord notifications.
 -   category: Display
     description: Options related to the DOMjudge user interface.
     items:
