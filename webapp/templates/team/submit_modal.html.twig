@@ -65,6 +65,11 @@
                 if(!fileValidChars) {
                     className = 'bg-danger';
                     message += ', invalid filename';
+                    if(!file.name.match(/^[a-zA-Z0-9]/)) {
+                        message += ', Filename should start with only alphanumeric characters without diacritics or a digit. ';
+                    } else {
+                        message += ', Filename should only contain alphanumeric characters without diacritics, "+" or "-" or "_" or "."';
+                    }
                 }
                 if(file.size == 0) {
                     className = 'bg-warning';
