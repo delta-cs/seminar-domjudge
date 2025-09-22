@@ -509,6 +509,12 @@ class SubmissionService
             }
             if (!preg_match(self::FILENAME_REGEX, $file->getClientOriginalName())) {
                 $message = sprintf("Illegal filename '%s'.", $file->getClientOriginalName());
+                // Find out what part is illegal
+                if (!preg_match("/^[a-zA-Z0-9]/", $file->getClientOriginalName())) {
+                    $message .= ' Filename should start with only alphanumeric characters without diacritics or a digit. ';
+                } else {
+                    $message .= ' Filename should only contain alphanumeric characters without diacritics, "+" or "-" or "_" or "."';
+                }
                 if ($forceImportInvalid) {
                     $importError = $message;
                 } else {
