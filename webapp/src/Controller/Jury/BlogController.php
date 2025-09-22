@@ -218,7 +218,7 @@ class BlogController extends BaseController
         ]);
     }
 
-    #[Route(path: '/{id<\d+>}/delete', name: 'jury_blog_post_delete', methods: ['POST'])]
+    #[Route(path: '/{id<\d+>}/delete', name: 'jury_blog_post_delete')]
     #[IsGranted('ROLE_ADMIN')]
     public function deleteBlogPostAction(Request $request, int $id): Response
     {
