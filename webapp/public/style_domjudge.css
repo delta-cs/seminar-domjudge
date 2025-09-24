@@ -92,6 +92,12 @@ a {
     white-space: pre;
 }
 
+[data-bs-theme="dark"] .output_text {
+    border-top: 1px dotted var(--bs-dark);
+    border-bottom: 1px dotted var(--bs-dark);
+    background-color: var(--bs-secondary-bg);
+}
+
 .clarificationform pre {
     border-top: 1px dotted #C0C0C0;
     border-bottom: 1px dotted #C0C0C0;
