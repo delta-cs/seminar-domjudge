@@ -164,14 +164,24 @@ class ContestController extends BaseController
                 if ($contest->isLocked()) {
                     // The number of table columns and thus the number of actions need
                     // to match for all rows to not get DataTables errors.
-                    // Since we add five actions for non-locked contests, we need to add
-                    // five empty actions for locked contests.
+                    // Since we add seven actions for non-locked contests, we need to add
+                    // seven empty actions for locked contests.
+                    $contestactions[] = [];
+                    $contestactions[] = [];
                     $contestactions[] = [];
                     $contestactions[] = [];
                     $contestactions[] = [];
                     $contestactions[] = [];
                     $contestactions[] = [];
                 } else {
+                    $contestactions[] = [
+                        'icon' => 'angle-double-up',
+                        'title' => 'move contest to top',
+                        'link' => $this->generateUrl('jury_contest_move', [
+                            'contestId' => $contest->getCid(),
+                            'direction' => 'top'
+                        ])
+                    ];
                     $contestactions[] = [
                         'icon' => 'caret-up',
                         'title' => 'move up this contest',
@@ -186,6 +196,14 @@ class ContestController extends BaseController
                         'link' => $this->generateUrl('jury_contest_move', [
                             'contestId' => $contest->getCid(),
                             'direction' => 'down'
+                        ])
+                    ];
+                    $contestactions[] = [
+                        'icon' => 'angle-double-down',
+                        'title' => 'move contest to bottom',
+                        'link' => $this->generateUrl('jury_contest_move', [
+                            'contestId' => $contest->getCid(),
+                            'direction' => 'bottom'
                         ])
                     ];
                     $contestactions[] = [
@@ -1134,7 +1152,7 @@ class ContestController extends BaseController
     }
 
     #[Route(
-        '/{contestId<\d+>}/move/{direction<up|down>}',
+        '/{contestId<\d+>}/move/{direction<up|down|top|bottom>}',
         name: 'jury_contest_move'
     )]
     #[IsGranted('ROLE_ADMIN')]
@@ -1154,42 +1172,96 @@ class ContestController extends BaseController
             ->getQuery()
             ->getResult();
 
-        // First find contest to switch with.
-        /** @var Contest|null $last */
-        $last = null;
-        /** @var Contest|null $other */
-        $other = null;
-        /** @var Contest|null $current */
-        $current = $contest;
-
         $numContests = count($contests);
 
-        foreach ($contests as $currentContest) {
-            if ($currentContest->getCid() === $contestId && $direction === 'up') {
-                $other = $last;
-                break;
+        if ($direction === 'top' || $direction === 'bottom') {
+            // Handle movements to top/bottom
+            $currentRank = $contest->getRank();
+            
+            if ($direction === 'top' && $currentRank > 1) {
+                // Move to top (rank 1)
+                $this->em->wrapInTransaction(function () use ($contest, $contests, $numContests) {
+                    $currentRank = $contest->getRank();
+                    
+                    // First, set the current contest to a temporary rank
+                    $contest->setRank($numContests + 1);
+                    $this->em->flush();
+                    
+                    // Shift all contests with rank < currentRank down by 1
+                    foreach ($contests as $c) {
+                        if ($c->getCid() !== $contest->getCid() && $c->getRank() < $currentRank) {
+                            $c->setRank($c->getRank() + 1);
+                        }
+                    }
+                    $this->em->flush();
+                    
+                    // Finally, set the contest to rank 1
+                    $contest->setRank(1);
+                });
+                
+                $this->dj->auditlog('contest', $contestId, 'moved to top',
+                    sprintf("from rank %d to rank 1", $currentRank));
+            } elseif ($direction === 'bottom' && $currentRank < $numContests) {
+                // Move to bottom (highest rank)
+                $this->em->wrapInTransaction(function () use ($contest, $contests, $numContests) {
+                    $currentRank = $contest->getRank();
+                    
+                    // First, set the current contest to a temporary rank
+                    $contest->setRank($numContests + 1);
+                    $this->em->flush();
+                    
+                    // Shift all contests with rank > currentRank up by 1
+                    foreach ($contests as $c) {
+                        if ($c->getCid() !== $contest->getCid() && $c->getRank() > $currentRank) {
+                            $c->setRank($c->getRank() - 1);
+                        }
+                    }
+                    $this->em->flush();
+                    
+                    // Finally, set the contest to the last rank
+                    $contest->setRank($numContests);
+                });
+                
+                $this->dj->auditlog('contest', $contestId, 'moved to bottom',
+                    sprintf("from rank %d to rank %d", $currentRank, $numContests));
             }
-            if ($last !== null && $contestId === $last->getCid() && $direction === 'down') {
-                $other = $currentContest;
-                break;
+        } else {
+            // Handle regular up/down movements
+            // First find contest to switch with.
+            /** @var Contest|null $last */
+            $last = null;
+            /** @var Contest|null $other */
+            $other = null;
+            /** @var Contest|null $current */
+            $current = $contest;
+
+            foreach ($contests as $currentContest) {
+                if ($currentContest->getCid() === $contestId && $direction === 'up') {
+                    $other = $last;
+                    break;
+                }
+                if ($last !== null && $contestId === $last->getCid() && $direction === 'down') {
+                    $other = $currentContest;
+                    break;
+                }
+                $last = $currentContest;
             }
-            $last = $currentContest;
-        }
 
-        if ($other !== null) {
-            // (rank) is a unique key, so we must switch via a temporary rank, and use a transaction.
-            $this->em->wrapInTransaction(function () use ($current, $other, $numContests) {
-                $otherRank = $other->getRank();
-                $currentRank = $current->getRank();
-                $other->setRank($numContests + 1);
-                $current->setRank($numContests + 2);
-                $this->em->flush();
-                $current->setRank($otherRank);
-                $other->setRank($currentRank);
-            });
+            if ($other !== null) {
+                // (rank) is a unique key, so we must switch via a temporary rank, and use a transaction.
+                $this->em->wrapInTransaction(function () use ($current, $other, $numContests) {
+                    $otherRank = $other->getRank();
+                    $currentRank = $current->getRank();
+                    $other->setRank($numContests + 1);
+                    $current->setRank($numContests + 2);
+                    $this->em->flush();
+                    $current->setRank($otherRank);
+                    $other->setRank($currentRank);
+                });
 
-            $this->dj->auditlog('contest', $contestId, 'switch rank',
-                sprintf("%d <=> %d", $current->getRank(), $other->getRank()));
+                $this->dj->auditlog('contest', $contestId, 'switch rank',
+                    sprintf("%d <=> %d", $current->getRank(), $other->getRank()));
+            }
         }
 
         return $this->redirect($this->generateUrl('jury_contests'));
