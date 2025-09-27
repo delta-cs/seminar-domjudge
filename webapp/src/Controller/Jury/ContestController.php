@@ -164,8 +164,11 @@ class ContestController extends BaseController
                 if ($contest->isLocked()) {
                     // The number of table columns and thus the number of actions need
                     // to match for all rows to not get DataTables errors.
-                    // Since we add two actions for non-locked contests, we need to add
-                    // two empty actions for locked contests.
+                    // Since we add five actions for non-locked contests, we need to add
+                    // five empty actions for locked contests.
+                    $contestactions[] = [];
+                    $contestactions[] = [];
+                    $contestactions[] = [];
                     $contestactions[] = [];
                     $contestactions[] = [];
                 } else {
@@ -189,6 +192,13 @@ class ContestController extends BaseController
                         'icon' => 'edit',
                         'title' => 'edit this contest',
                         'link' => $this->generateUrl('jury_contest_edit', [
+                            'contestId' => $contest->getCid(),
+                        ])
+                    ];
+                    $contestactions[] = [
+                        'icon' => 'copy',
+                        'title' => 'duplicate this contest',
+                        'link' => $this->generateUrl('jury_contest_duplicate', [
                             'contestId' => $contest->getCid(),
                         ])
                     ];
@@ -587,7 +597,7 @@ class ContestController extends BaseController
                 $this->eventLogService->log($problemEndpoint, $problem->getProbid(),
                     EventLogService::ACTION_DELETE, $contest->getCid(), null, null, false);
             }
-            return $this->redirectToRoute('jury_contest', ['contestId' => $contest->getcid()]);
+            return $this->redirectToRoute('jury_contest', ['contestId' => $contest->getCid()]);
         }
 
         $this->em->refresh($contest);
@@ -631,6 +641,24 @@ class ContestController extends BaseController
         $this->em->flush();
 
         return $response;
+    }
+
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route(path: '/{contestId<\d+>}/duplicate', name: 'jury_contest_duplicate')]
+    public function duplicateAction(Request $request, int $contestId): Response
+    {
+        /** @var Contest|null $contest */
+        $contest = $this->em->getRepository(Contest::class)->find($contestId);
+        if (!$contest) {
+            throw new NotFoundHttpException(sprintf('Contest with ID %s not found', $contestId));
+        }
+
+        $newContest = $this->duplicateContest($contest);
+        
+        $this->addFlash('success', sprintf('Contest "%s" duplicated successfully as "%s"', 
+            $contest->getName(), $newContest->getName()));
+        
+        return $this->redirectToRoute('jury_contest_edit', ['contestId' => $newContest->getCid()]);
     }
 
     #[IsGranted('ROLE_ADMIN')]
@@ -703,7 +731,7 @@ class ContestController extends BaseController
                 // dependent event) anyway and adding the code here would
                 // overcomplicate this function.
             });
-            return $this->redirectToRoute('jury_contest', ['contestId' => $contest->getcid()]);
+            return $this->redirectToRoute('jury_contest', ['contestId' => $contest->getCid()]);
         }
 
         return $this->render('jury/contest_add.html.twig', [
@@ -1165,5 +1193,92 @@ class ContestController extends BaseController
         }
 
         return $this->redirect($this->generateUrl('jury_contests'));
+    }
+
+    /**
+     * Duplicate a contest with all its settings and problems
+     */
+    private function duplicateContest(Contest $sourceContest): Contest
+    {
+        $newContest = new Contest();
+        
+        // Copy basic properties
+        $newContest->setName($sourceContest->getName() . ' (Copy)');
+        $newContest->setShortname($sourceContest->getShortname() . '_copy_' . time());
+        $newContest->setActivatetimeString($sourceContest->getActivatetimeString());
+        $newContest->setStarttimeString($sourceContest->getStarttimeString());
+        $newContest->setStarttimeEnabled($sourceContest->getStarttimeEnabled());
+        $newContest->setFreezetimeString($sourceContest->getFreezetimeString());
+        $newContest->setEndtimeString($sourceContest->getEndtimeString());
+        $newContest->setUnfreezetimeString($sourceContest->getUnfreezetimeString());
+        $newContest->setDeactivatetimeString($sourceContest->getDeactivatetimeString());
+        
+        // Set as disabled
+        $newContest->setEnabled(false);
+        
+        // Copy other settings
+        $newContest->setAllowSubmit($sourceContest->getAllowSubmit());
+        $newContest->setProcessBalloons($sourceContest->getProcessBalloons());
+        $newContest->setRuntimeAsScoreTiebreaker($sourceContest->getRuntimeAsScoreTiebreaker());
+        $newContest->setPublic($sourceContest->getPublic());
+        $newContest->setOpenToAllTeams($sourceContest->getOpenToAllTeams());
+        $newContest->setGoldMedals($sourceContest->getGoldMedals());
+        $newContest->setSilverMedals($sourceContest->getSilverMedals());
+        $newContest->setBronzeMedals($sourceContest->getBronzeMedals());
+        
+        // Set the contest rank to be at the end
+        $contestsCount = $this->em->getRepository(Contest::class)->count([]);
+        $newContest->setRank($contestsCount + 1);
+        
+        // Persist the contest first to get an ID
+        $this->em->persist($newContest);
+        $this->em->flush();
+        
+        // Copy contest problems
+        foreach ($sourceContest->getProblems() as $sourceProblem) {
+            $newProblem = new ContestProblem();
+            $newProblem->setContest($newContest);
+            $newProblem->setProblem($sourceProblem->getProblem());
+            $newProblem->setShortname($sourceProblem->getShortname());
+            $newProblem->setPoints($sourceProblem->getPoints());
+            $newProblem->setAllowSubmit($sourceProblem->getAllowSubmit());
+            $newProblem->setAllowJudge($sourceProblem->getAllowJudge());
+            $newProblem->setColor($sourceProblem->getColor());
+            $newProblem->setLazyEvalResults($sourceProblem->getLazyEvalResults());
+            $newProblem->setPartialPointsScoring($sourceProblem->getPartialPointsScoring());
+            
+            $this->em->persist($newProblem);
+        }
+        
+        // Copy team categories
+        foreach ($sourceContest->getTeamCategories() as $teamCategory) {
+            $newContest->addTeamCategory($teamCategory);
+        }
+        
+        // Copy medal categories
+        foreach ($sourceContest->getMedalCategories() as $medalCategory) {
+            $newContest->addMedalCategory($medalCategory);
+        }
+        
+        // Copy teams if not open to all teams
+        if (!$sourceContest->getOpenToAllTeams()) {
+            foreach ($sourceContest->getTeams() as $team) {
+                $newContest->addTeam($team);
+            }
+        }
+        
+        // Update assets
+        $this->assetUpdater->updateAssets($newContest);
+        
+        // Save everything
+        $this->saveEntity($this->em, $this->eventLogService, $this->dj, $newContest, null, true);
+        
+        // Log the duplication in audit log
+        $this->dj->auditlog('contest', $sourceContest->getCid(), 'duplicated', 
+            sprintf('Created copy as contest c%d (%s)', $newContest->getCid(), $newContest->getShortname()));
+        $this->dj->auditlog('contest', $newContest->getCid(), 'created', 
+            sprintf('Duplicated from contest c%d (%s)', $sourceContest->getCid(), $sourceContest->getShortname()));
+        
+        return $newContest;
     }
 }
