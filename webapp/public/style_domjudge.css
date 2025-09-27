@@ -141,6 +141,10 @@ table.lcsdiff td.linenr {
     padding-right: 7px;
 }
 
+[data-bs-theme="dark"] table.lcsdiff td.linenr {
+    background-color: var(--bs-gray-700);
+}
+
 ins {
     background: #dfd;
     text-decoration: none;
@@ -148,6 +152,15 @@ ins {
 del {
     background: #fdd;
     text-decoration: none;
+}
+
+[data-bs-theme="dark"] ins {
+    color: white;
+    background-color: #037703;
+}
+[data-bs-theme="dark"] del {
+    color: white;
+    background-color: #b81b1b;
 }
 
 
