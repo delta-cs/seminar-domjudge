@@ -21,12 +21,290 @@
         }
 
         @media only screen and (min-width: 768px) {
-            #problemText .modal-dialog {
+            #problemText .modal-dialog, #revisionHistory .modal-dialog {
                 max-width: 90vw;
             }
         }
+
+        /* Revision history styles */
+        .revision-item {
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .revision-item.active {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+
+        /* Light mode - active item text colors */
+        .revision-item.active .text-muted,
+        .revision-item.active .text-secondary {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .revision-item.active .text-primary {
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        /* Dark mode adjustments for active items */
+        [data-bs-theme="dark"] .revision-item.active {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        
+        [data-bs-theme="dark"] .revision-item.active .text-muted,
+        [data-bs-theme="dark"] .revision-item.active .text-secondary {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        [data-bs-theme="dark"] .revision-item.active .text-primary {
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+
+        .revision-item:hover:not(.active) {
+            background-color: var(--bs-gray-100);
+        }
+
+        [data-bs-theme="dark"] .revision-item:hover:not(.active) {
+            background-color: var(--bs-gray-800);
+        }
+
+        .revision-result {
+            font-size: 0.8rem;
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        /* Light mode result badges */
+        .revision-result.correct {
+            background-color: #198754;
+            color: white;
+        }
+
+        .revision-result.wrong-answer {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .revision-result.compiler-error {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .revision-result.timelimit,
+        .revision-result.no-output,
+        .revision-result.output-limit {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .revision-result.run-error {
+            background-color: #fd7e14;
+            color: white;
+        }
+
+        .revision-result.pending {
+            background-color: #0dcaf0;
+            color: #000;
+        }
+
+        /* Dark mode result badges with proper contrast */
+        [data-bs-theme="dark"] .revision-result.correct {
+            background-color: #146c43;
+            color: #b1dfbb;
+        }
+
+        [data-bs-theme="dark"] .revision-result.wrong-answer {
+            background-color: #842029;
+            color: #ea868f;
+        }
+
+        [data-bs-theme="dark"] .revision-result.compiler-error {
+            background-color: #495057;
+            color: #dee2e6;
+        }
+
+        [data-bs-theme="dark"] .revision-result.timelimit,
+        [data-bs-theme="dark"] .revision-result.no-output,
+        [data-bs-theme="dark"] .revision-result.output-limit {
+            background-color: #664d03;
+            color: #ffda6a;
+        }
+
+        [data-bs-theme="dark"] .revision-result.run-error {
+            background-color: #653208;
+            color: #feb272;
+        }
+
+        [data-bs-theme="dark"] .revision-result.pending {
+            background-color: #055160;
+            color: #6edff6;
+        }
+
+        /* Diff styles */
+        .diff-wrapper {
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+            border: 1px solid var(--bs-border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            white-space: pre;
+        }
+
+        .diff-added {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #155724;
+        }
+
+        [data-bs-theme="dark"] .diff-added {
+            background-color: rgba(40, 167, 69, 0.3);
+            color: #75dd9b;
+        }
+
+        .diff-removed {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #721c24;
+            text-decoration: line-through;
+        }
+
+        [data-bs-theme="dark"] .diff-removed {
+            background-color: rgba(220, 53, 69, 0.3);
+            color: #f1959b;
+        }
+
+        .diff-line-number {
+            display: inline-block;
+            width: 50px;
+            text-align: right;
+            padding-right: 10px;
+            color: var(--bs-gray-600);
+            user-select: none;
+        }
+
+        .source-preview {
+            overflow-x: auto;
+        }
+
+        .source-preview pre {
+            margin: 0;
+            font-size: 13px;
+            color: var(--bs-body-color);
+        }
+        
+        /* Source toolbar styling */
+        .source-container {
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+        
+        .source-toolbar {
+            background-color: var(--bs-gray-100);
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-bs-theme="dark"] .source-toolbar {
+            background-color: var(--bs-gray-800);
+        }
+        
+        .source-toolbar .btn-group {
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        
+        .source-toolbar .btn {
+            border: none;
+            background-color: transparent;
+            color: var(--bs-body-color);
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .source-toolbar .btn:hover:not(.active) {
+            background-color: var(--bs-gray-200);
+        }
+        
+        [data-bs-theme="dark"] .source-toolbar .btn:hover:not(.active) {
+            background-color: var(--bs-gray-700);
+        }
+        
+        .source-toolbar .btn.active {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        
+        .toolbar-label {
+            font-size: 0.875rem;
+        }
+        
+        .source-preview {
+            background-color: var(--bs-body-bg);
+            padding: 1rem;
+        }
+        
+        /* Editor button improvements */
+        .nav .btn {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .nav .btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .nav .btn-success {
+            font-weight: 500;
+            background-color: #198754;
+            border-color: #198754;
+        }
+        
+        .nav .btn-success:hover {
+            background-color: #157347;
+            border-color: #146c43;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+        
+        [data-bs-theme="dark"] .nav .btn-success {
+            background-color: #146c43;
+            border-color: #146c43;
+        }
+        
+        [data-bs-theme="dark"] .nav .btn-success:hover {
+            background-color: #198754;
+            border-color: #198754;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.5);
+        }
+        
+        .nav .btn-outline-primary:hover {
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+        
+        [data-bs-theme="dark"] .nav .btn-outline-primary:hover {
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.5);
+        }
+        
+        /* Make save button stand out more */
+        .save-button {
+            border-width: 2px;
+        }
+        
+        /* Icon in buttons */
+        .nav .btn i {
+            font-size: 0.875rem;
+        }
     </style>
     <script src="{{ asset('js/ace/ace.js') }}"></script>
+    <script src="{{ asset('js/diff_match_patch.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -85,6 +363,42 @@
         </div>
     {% endif %}
 
+    <!-- revision history modal -->
+    <div class="modal fade" id="revisionHistory" tabindex="-1" role="dialog" aria-labelledby="revisionHistoryModal" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submission History</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="list-group" id="revisionList" style="max-height: 60vh; overflow-y: auto;">
+                                <div class="text-center p-3">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="revisionDiffContainer" style="max-height: 60vh; overflow-y: auto;">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Select a submission from the list to view its source code
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="loadRevisionButton" style="display:none;">
+                        <i class="fas fa-code"></i> Load in Editor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{ form_start(form, {'attr': {'id': 'teamEditorForm'}}) }}
 
     <ul class="nav mt-3 mb-2">
@@ -115,10 +429,31 @@
 
         <!-- Right side buttons -->
         <li class="nav-item my-1 me-2">
-            {{ form_widget(form.save) }}
+            <button type="button"
+                    class="btn btn-outline-secondary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#revisionHistory"
+                    id="revisionHistoryButton"
+                    title="View revision history">
+                <i class="fas fa-history"></i>
+                <span class="d-none d-md-inline">Revisions</span>
+            </button>
+        </li>
+        <li class="nav-item my-1 me-2">
+            {{ form_widget(form.save, {
+                'attr': {
+                    'class': 'btn btn-outline-primary save-button',
+                    'title': 'Save without submitting (Ctrl+S)'
+                }
+            }) }}
         </li>
         <li class="nav-item my-1">
-            {{ form_widget(form.submit) }}
+            {{ form_widget(form.submit, {
+                'attr': {
+                    'class': 'btn btn-success submit-button',
+                    'title': 'Save and submit for judging'
+                }
+            }) }}
         </li>
     </ul>
 
@@ -170,6 +505,20 @@
                     $newProgress.parent().remove();
                 }
             };
+            
+            // Add icons to buttons
+            var saveBtn = $('.save-button');
+            var submitBtn = $('.submit-button');
+            
+            if (saveBtn.length) {
+                var saveText = saveBtn.text();
+                saveBtn.html('<i class="fas fa-save me-1"></i><span class="d-none d-md-inline">' + saveText + '</span>');
+            }
+            
+            if (submitBtn.length) {
+                var submitText = submitBtn.text();
+                submitBtn.html('<i class="fas fa-paper-plane me-1"></i>' + submitText);
+            }
         });
     </script>
 
@@ -200,6 +549,504 @@
                 'If you leave before saving, your changes will be lost.';
             (e || window.event).returnValue = confirmationMessage;
             return confirmationMessage;
+        });
+        
+        // Add keyboard shortcut for save (Ctrl+S / Cmd+S)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                var saveButton = document.querySelector('button[name="form[save]"]');
+                if (saveButton && !saveButton.disabled) {
+                    saveButton.click();
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // Revision history functionality
+        $(function() {
+            var currentRevisions = [];
+            var selectedRevision = null;
+            var compareRevision = null;
+            var currentFiles = {};
+            var dmp = new diff_match_patch();
+
+            // Load revisions when modal is opened
+            $('#revisionHistory').on('show.bs.modal', function() {
+                loadRevisions();
+            });
+
+            function loadRevisions() {
+                $.ajax({
+                    url: '{{ path('team_editor_revisions', {'probId': problem.probid, 'langId': language.langid}) }}',
+                    method: 'GET',
+                    success: function(data) {
+                        currentRevisions = data;
+                        renderRevisionList();
+                    },
+                    error: function() {
+                        $('#revisionList').html('<div class="alert alert-danger">Failed to load revisions</div>');
+                    }
+                });
+            }
+
+            function renderRevisionList() {
+                var html = '';
+                if (currentRevisions.length === 0) {
+                    html = '<div class="alert alert-info">No saves or submissions found</div>';
+                    $('#revisionDiffContainer').html(
+                        '<div class="alert alert-secondary">' +
+                        '<i class="fas fa-info-circle"></i> No saves or submissions to display yet. ' +
+                        'Save or submit your solution to create revision history.' +
+                        '</div>'
+                    );
+                } else {
+                    currentRevisions.forEach(function(revision, index) {
+                        var date = new Date(revision.submittime * 1000);
+                        var dateStr = date.toLocaleString();
+                        
+                        html += '<div class="list-group-item revision-item" data-submitid="' + revision.submitid + '" data-index="' + index + '">';
+                        html += '<div class="d-flex justify-content-between align-items-start">';
+                        html += '<div>';
+                        html += '<div class="fw-bold">' + dateStr + '</div>';
+                        
+                        // Show submission status in small secondary text
+                        if (revision.valid) {
+                            html += '<small class="text-secondary">Submitted</small>';
+                        }
+                        
+                        html += '</div>';
+                        
+                        // Only show result for valid submissions
+                        if (revision.valid && revision.result !== null) {
+                            var resultClass = revision.result ? revision.result.replace(/ /g, '-').toLowerCase() : 'pending';
+                            var resultText = revision.result || 'pending';
+                            html += '<span class="revision-result ' + resultClass + '">' + resultText + '</span>';
+                        }
+                        
+                        html += '</div>';
+                        
+                        if (index === 0) {
+                            html += '<div class="mt-1">';
+                            html += '<small class="text-primary"><i class="fas fa-clock"></i> Most recent</small>';
+                            html += '</div>';
+                        }
+                        
+                        html += '</div>';
+                    });
+                }
+                $('#revisionList').html(html);
+                
+                // Add click handlers
+                $('.revision-item').click(function() {
+                    var submitId = $(this).data('submitid');
+                    var index = $(this).data('index');
+                    
+                    if ($(this).hasClass('active')) {
+                        // If clicking the same revision, deselect it
+                        $(this).removeClass('active');
+                        selectedRevision = null;
+                        $('#loadRevisionButton').hide();
+                        $('#revisionDiffContainer').html('<div class="alert alert-info">Select a revision to view or compare</div>');
+                    } else {
+                        // Select new revision
+                        $('.revision-item').removeClass('active');
+                        $(this).addClass('active');
+                        selectedRevision = currentRevisions[index];
+                        $('#loadRevisionButton').show();
+                        loadRevisionSource(submitId);
+                    }
+                });
+            }
+
+            function loadRevisionSource(submitId) {
+                $('#revisionDiffContainer').html('<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i> Loading source...</div>');
+                
+                $.ajax({
+                    url: '{{ path('team_editor_submission_source', {'submitId': '999999'}) }}'.replace('999999', submitId),
+                    method: 'GET',
+                    success: function(data) {
+                        displayRevisionSource(data.files);
+                    },
+                    error: function() {
+                        $('#revisionDiffContainer').html('<div class="alert alert-danger">Failed to load source code</div>');
+                    }
+                });
+            }
+
+            function displayRevisionSource(files) {
+                var html = '';
+                
+                if (files.length > 1) {
+                    // Multiple files - show tabs
+                    html += '<ul class="nav nav-tabs mb-3">';
+                    files.forEach(function(file, index) {
+                        html += '<li class="nav-item">';
+                        html += '<a class="nav-link' + (index === 0 ? ' active' : '') + '" data-bs-toggle="tab" href="#revision-file-' + index + '">' + file.filename + '</a>';
+                        html += '</li>';
+                    });
+                    html += '</ul>';
+                    
+                    html += '<div class="tab-content">';
+                    files.forEach(function(file, index) {
+                        html += '<div class="tab-pane fade' + (index === 0 ? ' show active' : '') + '" id="revision-file-' + index + '">';
+                        html += '<div class="source-container">';
+                        html += '<div class="source-toolbar">';
+                        html += '<div class="btn-group btn-group-sm" role="group">';
+                        html += '<button class="btn btn-light view-source-btn active" data-rank="' + file.rank + '" title="View source">';
+                        html += '<i class="fas fa-code"></i>';
+                        html += '</button>';
+                        html += '<button class="btn btn-light compare-current-btn" data-rank="' + file.rank + '" title="Compare with current editor">';
+                        html += '<i class="fas fa-code-compare"></i>';
+                        html += '</button>';
+                        
+                        // Add compare with previous button if not the last revision
+                        var selectedIndex = currentRevisions.findIndex(function(r) { return r.submitid === selectedRevision.submitid; });
+                        if (selectedIndex < currentRevisions.length - 1) {
+                            html += '<button class="btn btn-light compare-previous-btn" data-rank="' + file.rank + '" title="Compare with previous revision">';
+                            html += '<i class="fas fa-clock-rotate-left"></i>';
+                            html += '</button>';
+                        }
+                        
+                        html += '</div>';
+                        html += '<span class="toolbar-label ms-3 text-muted">View source</span>';
+                        html += '</div>';
+                        html += '<div class="source-preview" data-rank="' + file.rank + '">';
+                        html += '<pre><code>' + escapeHtml(file.sourcecode) + '</code></pre>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                } else if (files.length === 1) {
+                    // Single file
+                    var file = files[0];
+                    html += '<div class="source-container">';
+                    html += '<div class="source-toolbar">';
+                    html += '<h6 class="mb-0 me-3">' + file.filename + '</h6>';
+                    html += '<div class="btn-group btn-group-sm" role="group">';
+                    html += '<button class="btn btn-light view-source-btn active" data-rank="' + file.rank + '" title="View source">';
+                    html += '<i class="fas fa-code"></i>';
+                    html += '</button>';
+                    html += '<button class="btn btn-light compare-current-btn" data-rank="' + file.rank + '" title="Compare with current editor">';
+                    html += '<i class="fas fa-code-compare"></i>';
+                    html += '</button>';
+                    
+                    // Add compare with previous button if not the last revision
+                    var selectedIndex = currentRevisions.findIndex(function(r) { return r.submitid === selectedRevision.submitid; });
+                    if (selectedIndex < currentRevisions.length - 1) {
+                        html += '<button class="btn btn-light compare-previous-btn" data-rank="' + file.rank + '" title="Compare with previous revision">';
+                        html += '<i class="fas fa-clock-rotate-left"></i>';
+                        html += '</button>';
+                    }
+                    
+                    html += '</div>';
+                    html += '<span class="toolbar-label ms-3 text-muted">View source</span>';
+                    html += '</div>';
+                    html += '<div class="source-preview" data-rank="' + file.rank + '">';
+                    html += '<pre><code>' + escapeHtml(file.sourcecode) + '</code></pre>';
+                    html += '</div>';
+                    html += '</div>';
+                }
+                
+                $('#revisionDiffContainer').html(html);
+                
+                // Store files for later use
+                currentFiles = {};
+                files.forEach(function(file) {
+                    currentFiles[file.rank] = file.sourcecode;
+                });
+                
+                // Add button handlers
+                $('.view-source-btn').click(function() {
+                    var rank = $(this).data('rank');
+                    $('.source-toolbar .btn[data-rank="' + rank + '"]').removeClass('active');
+                    $(this).addClass('active');
+                    $('.toolbar-label').text('View source');
+                    loadRevisionSource(selectedRevision.submitid);
+                });
+                
+                $('.compare-current-btn').click(function() {
+                    var rank = $(this).data('rank');
+                    $('.source-toolbar .btn[data-rank="' + rank + '"]').removeClass('active');
+                    $(this).addClass('active');
+                    $('.toolbar-label').text('Comparing with current editor');
+                    compareWithCurrent(rank);
+                });
+                
+                $('.compare-previous-btn').click(function() {
+                    var rank = $(this).data('rank');
+                    $('.source-toolbar .btn[data-rank="' + rank + '"]').removeClass('active');
+                    $(this).addClass('active');
+                    $('.toolbar-label').text('Comparing with previous revision');
+                    compareWithPrevious(rank);
+                });
+            }
+
+            function compareWithCurrent(rank) {
+                // Get current editor content
+                var editorId = 'editor' + rank;
+                var currentEditor = document.getElementById(editorId);
+                if (!currentEditor || !currentEditor.editor) {
+                    alert('Could not find editor for this file');
+                    return;
+                }
+                
+                var currentSource = currentEditor.editor.getValue();
+                var revisionSource = currentFiles[rank];
+                
+                // Normalize line endings to avoid false differences
+                currentSource = currentSource.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                revisionSource = revisionSource.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                
+                // Check if files are identical
+                if (currentSource === revisionSource) {
+                    var html = '<div class="alert alert-success mb-3">';
+                    html += '<i class="fas fa-check-circle"></i> The current editor content is identical to this submission.';
+                    html += '</div>';
+                    html += '<pre><code>' + escapeHtml(revisionSource) + '</code></pre>';
+                    
+                    $('.source-preview[data-rank="' + rank + '"]').html(html);
+                    return;
+                }
+                
+                // Use diff_match_patch for line-level diff
+                dmp.Diff_EditCost = 4; // Increase edit cost to prefer equal chunks
+                
+                // Create line arrays with indices
+                var oldLines = revisionSource.split('\n');
+                var newLines = currentSource.split('\n');
+                
+                // Create line array to text mappings for diff_match_patch
+                var lineArray1 = [];
+                var lineArray2 = [];
+                var lineHash = {};
+                var lineHashCount = 0;
+                
+                // Build hash of unique lines
+                function getLineHash(line) {
+                    if (!lineHash.hasOwnProperty(line)) {
+                        lineHash[line] = String.fromCharCode(lineHashCount + 0x100);
+                        lineHashCount++;
+                        if (lineHashCount > 0xFFFF - 0x100) {
+                            // Too many unique lines, fall back to simple comparison
+                            lineHashCount = 0;
+                            lineHash = {};
+                        }
+                    }
+                    return lineHash[line];
+                }
+                
+                // Convert lines to chars for diff_match_patch
+                var chars1 = '';
+                var chars2 = '';
+                for (var i = 0; i < oldLines.length; i++) {
+                    var hash = getLineHash(oldLines[i]);
+                    lineArray1.push(hash);
+                    chars1 += hash;
+                }
+                for (var i = 0; i < newLines.length; i++) {
+                    var hash = getLineHash(newLines[i]);
+                    lineArray2.push(hash);
+                    chars2 += hash;
+                }
+                
+                // Perform diff on line hashes
+                var diffs = dmp.diff_main(chars1, chars2, false);
+                dmp.diff_cleanupSemantic(diffs);
+                
+                // Convert back to line-based output
+                var html = '<div class="mb-3">';
+                var selectedDate = new Date(selectedRevision.submittime * 1000).toLocaleString();
+                html += '<h6>Comparing: ' + selectedDate + ' → Current Editor</h6>';
+                html += '<small class="text-muted"><i class="fas fa-minus-square"></i> Removed lines &nbsp;&nbsp; <i class="fas fa-plus-square"></i> Added lines</small>';
+                html += '</div>';
+                html += '<div class="diff-wrapper">';
+                
+                var lineNum1 = 0;
+                var lineNum2 = 0;
+                
+                for (var i = 0; i < diffs.length; i++) {
+                    var op = diffs[i][0];
+                    var chars = diffs[i][1];
+                    
+                    for (var j = 0; j < chars.length; j++) {
+                        if (op === 0) {
+                            // Equal
+                            html += '<div><span class="diff-line-number">' + (lineNum2 + 1) + '</span><span>' + escapeHtml(newLines[lineNum2]) + '</span></div>';
+                            lineNum1++;
+                            lineNum2++;
+                        } else if (op === -1) {
+                            // Delete
+                            html += '<div class="diff-removed"><span class="diff-line-number">-</span><span>' + escapeHtml(oldLines[lineNum1]) + '</span></div>';
+                            lineNum1++;
+                        } else if (op === 1) {
+                            // Insert
+                            html += '<div class="diff-added"><span class="diff-line-number">+</span><span>' + escapeHtml(newLines[lineNum2]) + '</span></div>';
+                            lineNum2++;
+                        }
+                    }
+                }
+                
+                html += '</div>';
+                
+                $('.source-preview[data-rank="' + rank + '"]').html(html);
+            }
+            
+            function compareWithPrevious(rank) {
+                // Find the previous revision
+                var selectedIndex = currentRevisions.findIndex(function(r) { return r.submitid === selectedRevision.submitid; });
+                if (selectedIndex >= currentRevisions.length - 1) {
+                    alert('No previous revision available');
+                    return;
+                }
+                
+                var previousRevision = currentRevisions[selectedIndex + 1];
+                
+                // Load the previous revision's source
+                $.ajax({
+                    url: '{{ path('team_editor_submission_source', {'submitId': '999999'}) }}'.replace('999999', previousRevision.submitid),
+                    method: 'GET',
+                    success: function(data) {
+                        // Find the file with matching rank
+                        var previousFile = data.files.find(function(f) { return f.rank === rank; });
+                        if (!previousFile) {
+                            alert('Could not find matching file in previous revision');
+                            return;
+                        }
+                        
+                        var currentSource = currentFiles[rank];
+                        var previousSource = previousFile.sourcecode;
+                        
+                        // Normalize line endings
+                        currentSource = currentSource.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                        previousSource = previousSource.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                        
+                        // Check if files are identical
+                        if (currentSource === previousSource) {
+                            var html = '<div class="alert alert-success mb-3">';
+                            html += '<i class="fas fa-check-circle"></i> This revision is identical to the previous revision.';
+                            html += '</div>';
+                            html += '<pre><code>' + escapeHtml(currentSource) + '</code></pre>';
+                            
+                            $('.source-preview[data-rank="' + rank + '"]').html(html);
+                            return;
+                        }
+                        
+                        // Create diff
+                        dmp.Diff_EditCost = 4;
+                        var oldLines = previousSource.split('\n');
+                        var newLines = currentSource.split('\n');
+                        
+                        // Same diff logic as compareWithCurrent
+                        var lineHash = {};
+                        var lineHashCount = 0;
+                        
+                        function getLineHash(line) {
+                            if (!lineHash.hasOwnProperty(line)) {
+                                lineHash[line] = String.fromCharCode(lineHashCount + 0x100);
+                                lineHashCount++;
+                                if (lineHashCount > 0xFFFF - 0x100) {
+                                    lineHashCount = 0;
+                                    lineHash = {};
+                                }
+                            }
+                            return lineHash[line];
+                        }
+                        
+                        var chars1 = '';
+                        var chars2 = '';
+                        for (var i = 0; i < oldLines.length; i++) {
+                            var hash = getLineHash(oldLines[i]);
+                            chars1 += hash;
+                        }
+                        for (var i = 0; i < newLines.length; i++) {
+                            var hash = getLineHash(newLines[i]);
+                            chars2 += hash;
+                        }
+                        
+                        var diffs = dmp.diff_main(chars1, chars2, false);
+                        dmp.diff_cleanupSemantic(diffs);
+                        
+                        // Display diff
+                        var html = '<div class="mb-3">';
+                        var previousDate = new Date(previousRevision.submittime * 1000).toLocaleString();
+                        var currentDate = new Date(selectedRevision.submittime * 1000).toLocaleString();
+                        html += '<h6>Comparing: ' + previousDate + ' → ' + currentDate + '</h6>';
+                        html += '<small class="text-muted"><i class="fas fa-minus-square"></i> Removed lines &nbsp;&nbsp; <i class="fas fa-plus-square"></i> Added lines</small>';
+                        html += '</div>';
+                        html += '<div class="diff-wrapper">';
+                        
+                        var lineNum1 = 0;
+                        var lineNum2 = 0;
+                        
+                        for (var i = 0; i < diffs.length; i++) {
+                            var op = diffs[i][0];
+                            var chars = diffs[i][1];
+                            
+                            for (var j = 0; j < chars.length; j++) {
+                                if (op === 0) {
+                                    html += '<div><span class="diff-line-number">' + (lineNum2 + 1) + '</span><span>' + escapeHtml(newLines[lineNum2]) + '</span></div>';
+                                    lineNum1++;
+                                    lineNum2++;
+                                } else if (op === -1) {
+                                    html += '<div class="diff-removed"><span class="diff-line-number">-</span><span>' + escapeHtml(oldLines[lineNum1]) + '</span></div>';
+                                    lineNum1++;
+                                } else if (op === 1) {
+                                    html += '<div class="diff-added"><span class="diff-line-number">+</span><span>' + escapeHtml(newLines[lineNum2]) + '</span></div>';
+                                    lineNum2++;
+                                }
+                            }
+                        }
+                        
+                        html += '</div>';
+                        
+                        $('.source-preview[data-rank="' + rank + '"]').html(html);
+                    },
+                    error: function() {
+                        alert('Failed to load previous revision source code');
+                    }
+                });
+            }
+
+            // Load revision button handler
+            $('#loadRevisionButton').click(function() {
+                if (!selectedRevision || !currentFiles) return;
+                
+                if (confirm('This will replace the current editor content with the selected revision. Are you sure?')) {
+                    // Load each file into its corresponding editor
+                    Object.keys(currentFiles).forEach(function(rank) {
+                        var editorId = 'editor' + rank;
+                        var editor = document.getElementById(editorId);
+                        if (editor && editor.editor) {
+                            editor.editor.setValue(currentFiles[rank]);
+                            editor.editor.clearSelection();
+                            
+                            // Trigger change event on the textarea
+                            var textarea = document.getElementById('form_source' + rank);
+                            if (textarea) {
+                                textarea.value = currentFiles[rank];
+                                textarea.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    });
+                    
+                    $('#revisionHistory').modal('hide');
+                    alert('Revision loaded into editor');
+                }
+            });
+
+            function escapeHtml(text) {
+                var map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
         });
     </script>
 {% endblock %}

@@ -19,6 +19,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -208,7 +209,9 @@ class EditorController extends BaseController
                 $entryPoint = '__auto__';
             }
 
-            $ignoreSubmission = !$form->get('submit')->isClicked();
+            /** @var SubmitButton $submitButton */
+            $submitButton = $form->get('submit');
+            $ignoreSubmission = !$submitButton->isClicked();
 
             $submittedSubmission = $this->submissionService->submitSolution(
                 team: $team,
@@ -241,18 +244,22 @@ class EditorController extends BaseController
             ]);
         }
 
-        return $this->render('team/team_editor.html.twig', array_merge(
-            $this->getStatusData($request, $submission, $contest),
-            [
-                'language' => $language,
-                'problem' => $problem,
-                'submission' => $submission,
-                'files' => $files,
-                'form' => $form->createView(),
-                'selected' => $request->query->get('ranknumber'),
-                'static' => false
-            ]
-        ));
+        $data = [
+            'language' => $language,
+            'problem' => $problem,
+            'submission' => $submission,
+            'files' => $files,
+            'form' => $form->createView(),
+            'selected' => $request->query->get('ranknumber'),
+            'static' => false
+        ];
+        
+        // Only add status data if we have a persisted submission
+        if ($this->em->contains($submission) && $submission->getValid()) {
+            $data = array_merge($this->getStatusData($request, $submission, $contest), $data);
+        }
+        
+        return $this->render('team/team_editor.html.twig', $data);
     }
 
     #[Route('/status/{submitId<\d+>}', name: 'team_editor_status')]
@@ -351,5 +358,89 @@ class EditorController extends BaseController
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    #[Route('/revisions/{probId<\d+>}/{langId}', name: 'team_editor_revisions')]
+    public function revisionsAction(Request $request, int $probId, string $langId): Response
+    {
+        $team = $this->dj->getUser()->getTeam();
+        $contest = $this->dj->getCurrentContest($team->getTeamid());
+
+        /** @var Problem $problem */
+        $problem = $this->em->getRepository(Problem::class)->find($probId);
+        if (!$problem) {
+            throw new NotFoundHttpException(sprintf('Problem with ID %s not found', $probId));
+        }
+
+        /** @var Language $language */
+        $language = $this->em->getRepository(Language::class)->find($langId);
+        if (!$language) {
+            throw new NotFoundHttpException(sprintf('Language with ID %s not found', $langId));
+        }
+
+        // Get all submissions for this problem/language combination
+        $submissions = $this->em->createQueryBuilder()
+            ->from(Submission::class, 's')
+            ->join('s.team', 't')
+            ->join('s.problem', 'p')
+            ->join('s.language', 'l')
+            ->join('s.contest', 'c')
+            ->select('s')
+            ->andWhere('t.teamid = :teamid')
+            ->setParameter('teamid', $team->getTeamid())
+            ->andWhere('p.probid = :probid')
+            ->setParameter('probid', $problem->getProbid())
+            ->andWhere('l.langid = :langid')
+            ->setParameter('langid', $language->getLangid())
+            ->andWhere('c.cid = :cid')
+            ->setParameter('cid', $contest->getCid())
+            ->orderBy('s.submittime', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        $revisions = [];
+        foreach ($submissions as $submission) {
+            $judging = $submission->getJudgings()->first();
+            $revision = [
+                'submitid' => $submission->getSubmitid(),
+                'submittime' => $submission->getSubmittime(),
+                'valid' => $submission->getValid(),
+            ];
+            
+            // Only show result/status for valid (submitted) submissions
+            if ($submission->getValid()) {
+                $revision['result'] = $judging ? $judging->getResult() : 'pending';
+                $revision['judged'] = $judging && $judging->getEndtime() !== null;
+            } else {
+                $revision['result'] = null;
+                $revision['judged'] = false;
+            }
+            
+            $revisions[] = $revision;
+        }
+
+        return $this->json($revisions);
+    }
+
+    #[Route('/submission-source/{submitId<\d+>}', name: 'team_editor_submission_source')]
+    public function submissionSourceAction(Request $request, int $submitId): Response
+    {
+        $team = $this->dj->getUser()->getTeam();
+        $submission = $this->getTeamSubmission($team, $submitId);
+        
+        if (!$submission) {
+            throw new NotFoundHttpException(sprintf('Team submission with ID %s not found', $submitId));
+        }
+
+        $files = [];
+        foreach ($submission->getFiles() as $file) {
+            $files[] = [
+                'filename' => $file->getFilename(),
+                'rank' => $file->getRank(),
+                'sourcecode' => $file->getSourcecode(),
+            ];
+        }
+
+        return $this->json(['files' => $files]);
     }
 }
