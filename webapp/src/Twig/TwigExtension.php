@@ -827,7 +827,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
         $lastErr      += $contextLines;
         $firstErr     = max(0, $firstErr);
         $lastErr      = min(sizeof($diffs) - 1, $lastErr);
-        $result       = "<br/>\n<table class=\"lcsdiff output_text\">\n";
+        $result       = "<br/>\n<div class=\"table-responsive\"><table class=\"lcsdiff output_text\">\n";
         if ($firstErr > 0) {
             $result .= "<tr><td class=\"linenr\">[...]</td><td/></tr>\n";
         }
@@ -837,7 +837,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
         if ($lastErr < sizeof($diffs) - 1) {
             $result .= "<tr><td class=\"linenr\">[...]</td><td/></tr>\n";
         }
-        $result .= "</table>\n";
+        $result .= "</table></div>\n";
 
         return $result;
     }
