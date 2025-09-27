@@ -1188,12 +1188,24 @@ class ContestController extends BaseController
                     $this->em->flush();
                     
                     // Shift all contests with rank < currentRank down by 1
+                    // We need to do this in reverse order to avoid duplicate key violations
+                    $contestsToShift = [];
                     foreach ($contests as $c) {
                         if ($c->getCid() !== $contest->getCid() && $c->getRank() < $currentRank) {
-                            $c->setRank($c->getRank() + 1);
+                            $contestsToShift[] = $c;
                         }
                     }
-                    $this->em->flush();
+                    
+                    // Sort by rank in descending order
+                    usort($contestsToShift, function($a, $b) {
+                        return $b->getRank() - $a->getRank();
+                    });
+                    
+                    // Now shift them down in reverse order
+                    foreach ($contestsToShift as $c) {
+                        $c->setRank($c->getRank() + 1);
+                        $this->em->flush();
+                    }
                     
                     // Finally, set the contest to rank 1
                     $contest->setRank(1);
@@ -1210,13 +1222,25 @@ class ContestController extends BaseController
                     $contest->setRank($numContests + 1);
                     $this->em->flush();
                     
-                    // Shift all contests with rank > currentRank up by 1
+                    // Shift all contests with rank > currentRank up by 1 (decrease their rank number)
+                    // We need to do this in ascending order to avoid duplicate key violations
+                    $contestsToShift = [];
                     foreach ($contests as $c) {
                         if ($c->getCid() !== $contest->getCid() && $c->getRank() > $currentRank) {
-                            $c->setRank($c->getRank() - 1);
+                            $contestsToShift[] = $c;
                         }
                     }
-                    $this->em->flush();
+                    
+                    // Sort by rank in ascending order
+                    usort($contestsToShift, function($a, $b) {
+                        return $a->getRank() - $b->getRank();
+                    });
+                    
+                    // Now shift them up in order
+                    foreach ($contestsToShift as $c) {
+                        $c->setRank($c->getRank() - 1);
+                        $this->em->flush();
+                    }
                     
                     // Finally, set the contest to the last rank
                     $contest->setRank($numContests);
