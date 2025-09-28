@@ -12,6 +12,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ContestProblemType extends AbstractType
@@ -72,6 +74,14 @@ class ContestProblemType extends AbstractType
                 'No' => false,
             ],
         ]);
+
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $problem = $event->getData();
+            $form = $event->getForm();
+
+            dump($problem);
+            dump($form);
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
