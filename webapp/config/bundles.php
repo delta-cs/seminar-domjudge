@@ -19,4 +19,5 @@ return [
     Sentry\SentryBundle\SentryBundle::class => ['prod' => true],
     Nelmio\CorsBundle\NelmioCorsBundle::class => ['all' => true],
     Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
+    Liip\ImagineBundle\LiipImagineBundle::class => ['all' => true],
 ];

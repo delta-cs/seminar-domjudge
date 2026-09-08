@@ -6,7 +6,7 @@
 
 services:
   mariadb:
-    image: docker.io/mariadb
+    image: mysql:8.4.3
     environment:
       - MYSQL_ROOT_PASSWORD=domjudge
       - MYSQL_USER=domjudge
@@ -15,11 +15,13 @@ services:
     ports:
       # Useful to connect a local MySQL client / GUI
       - 127.0.0.1:13306:3306
-    command: --max-connections=1000 --max-allowed-packet=512M --innodb_snapshot_isolation=OFF
+    command: --max-connections=1000 --max-allowed-packet=512M
     volumes:
-      - /var/lib/mysql
+      - database:/var/lib/mysql
+      # If you have a database dump, you can mount it here
+      # - ./database.sql.gz:/docker-entrypoint-initdb.d/database.sql.gz
   domjudge:
-    image: docker.io/domjudge/domjudge-contributor
+    image: deltacs/seminar-domjudge-contributor:9.0.1
     hostname: domjudge-contributor
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup
@@ -34,3 +36,6 @@ services:
     working_dir: ${PWD}
     environment:
       - PROJECT_DIR=${PWD}
+
+volumes:
+  database:

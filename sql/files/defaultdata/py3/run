@@ -23,7 +23,7 @@ if [ -z "$ENTRY_POINT" ]; then
 fi
 
 # Check syntax
-pypy3 -m py_compile "$@"
+python3 -m py_compile "$@"
 EXITCODE=$?
 [ "$EXITCODE" -ne 0 ] && exit $EXITCODE
 rm -f -- *.pyc

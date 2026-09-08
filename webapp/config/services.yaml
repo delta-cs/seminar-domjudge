@@ -13,6 +13,7 @@ parameters:
     removed_intervals: false
     # Minimum password length for users
     min_password_length: 10
+    image_directory: '%kernel.project_dir%/public/media/images'
 
 services:
     # default configuration for services in *this* file
@@ -29,3 +30,15 @@ services:
             - '../src/Entity'
             - '../src/Migrations'
             - '../src/Kernel.php'
+
+    App\EventListener\AddContentSecurityPolicyListener:
+        arguments:
+            $cspConfig:
+                defaultSrc: "'self'"
+                styleSrc: "'self' 'unsafe-inline'"
+                scriptSrc: "'self' 'unsafe-inline' https://*.googletagmanager.com https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com"
+                imgSrc: "'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com data: https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com"
+                connectSrc: "'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com"
+                fontSrc: "'self' https://*.hotjar.com"
+                workerSrc: "'self' blob:"
+                frameAncestors: "'self'"
