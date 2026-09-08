@@ -14,6 +14,14 @@ parameters:
     # Minimum password length for users
     min_password_length: 10
     image_directory: '%kernel.project_dir%/public/media/images'
+    # Request paths that must always carry a cid query parameter; the
+    # ContestIdSubscriber adds the current (or default) contest id when missing.
+    contest_id_urls_prefixes: [
+        '/public/scoreboard',
+        '/public/problems',
+        '/team/scoreboard',
+        '/team/problems',
+    ]
 
 services:
     # default configuration for services in *this* file
@@ -30,6 +38,10 @@ services:
             - '../src/Entity'
             - '../src/Migrations'
             - '../src/Kernel.php'
+
+    App\EventSubscriber\ContestIdSubscriber:
+        arguments:
+            $contestIdURLsPrefixes: '%contest_id_urls_prefixes%'
 
     App\EventListener\AddContentSecurityPolicyListener:
         arguments:
