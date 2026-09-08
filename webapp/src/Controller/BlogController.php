@@ -83,7 +83,7 @@ class BlogController extends BaseController
     #[Route("/{slug}", name: "blog_post")]
     public function viewAction(string $slug): Response
     {
-        /** @var BlogPost $blogPost */
+        /** @var BlogPost|null $blogPost */
         $blogPost = $this->em->getRepository(BlogPost::class)->findOneBy(['slug' => $slug]);
 
         if (!$blogPost || !$blogPost->isPublished()) {

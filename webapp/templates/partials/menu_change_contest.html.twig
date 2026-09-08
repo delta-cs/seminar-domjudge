@@ -2,7 +2,7 @@
     {% set active_contests = contests | filter(c => not c.getState().finalized) %}
     {% set finalized_contests = contests | filter(c => c.getState().finalized) %}
 
-    {% set badge_color = contest.getState().finalized ? "red" : "green" %}
+    {% set badge_color = (contest is not empty and contest.getState().finalized) ? "red" : "green" %}
 
     <a class="nav-link dropdown-toggle"
        href="#" id="navbarDropdownContests" role="button" data-bs-toggle="dropdown"

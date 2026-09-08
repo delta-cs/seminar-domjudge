@@ -66,7 +66,7 @@ class ProblemTestcaseGroupController extends BaseController
     #[Route('/{probId<\d+>}/testcase-groups', name: 'jury_problem_testcase_groups')]
     public function indexAction(Request $request, int $probId): Response
     {
-        /** @var Problem $problem */
+        /** @var Problem|null $problem */
         $problem = $this->em->getRepository(Problem::class)->find($probId);
         if (!$problem) {
             throw new NotFoundHttpException(sprintf('Problem with ID %s not found', $probId));
@@ -131,14 +131,19 @@ class ProblemTestcaseGroupController extends BaseController
             'emptyTestcaseGroups' => $emptyTestcaseGroupsTable,
             'tableFields' => $tableFields,
             'numActions' => $this->isGranted('ROLE_ADMIN') ? 2 : 0,
-            'allowEdit' => $this->isGranted('ROLE_ADMIN') && empty($lockedContest),
+            'allowEdit' => $this->isGranted('ROLE_ADMIN') && empty($lockedContests),
         ];
 
         return $this->render('jury/problem_testcase_groups.html.twig', $data);
     }
 
+    /**
+     * @param iterable<TestcaseGroup>              $testcaseGroups
+     * @param array<string, array<string, mixed>>  $tableFields
+     * @return array<int, array<string, mixed>>
+     */
     private function generateTestcaseGroupsTable(
-        $testcaseGroups,
+        iterable $testcaseGroups,
         array $tableFields,
         bool $allowDeletion,
         bool $problemIsLocked,
@@ -224,7 +229,7 @@ class ProblemTestcaseGroupController extends BaseController
     {
         $editing = $testcaseGroupId !== null;
 
-        /** @var Problem $problem */
+        /** @var Problem|null $problem */
         $problem = $this->em->getRepository(Problem::class)->find($probId);
         if (!$problem) {
             throw new NotFoundHttpException(sprintf('Problem with ID %s not found', $probId));
