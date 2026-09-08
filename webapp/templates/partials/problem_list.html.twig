@@ -28,6 +28,12 @@
             </div>
         {% endif %}
 
+        <div class="d-flex justify-content-center mb-4">
+            <a href="https://github.com/delta-cs/seminar" class="btn btn-primary" target="_blank">
+                <i class="fa-brands fa-github"></i> View study materials and solutions
+            </a>
+        </div>
+
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 problem-list">
             {% for problem in problems %}
                 <div class="col">
@@ -36,6 +42,18 @@
                                     {% set numsamples = 0 %}
                                 {% endif %}
                                 <div class="card">
+                                    {% if teamScoreboard is defined and current_team is not null %}
+                                        {% set matrixItem = teamScoreboard.matrix[current_team.teamid][problem.probid] %}
+                                        {% if matrixItem.isCorrect %}
+                                            <div class="card-header bg-success text-white font-weight-bold">
+                                                Solved
+                                            </div>
+                                        {% else %}
+                                            <div class="card-header">
+                                                &nbsp;
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
                                     <div class="card-body">
                                         <h2 class="card-title">
                                             {{ problem | problemBadge }}
@@ -109,6 +127,14 @@
                                         {% endif %}
 
                                         <div class="text-center">
+                                            {% if problem.problem.problemstatementType is not empty %}
+                                                <a class="btn btn-secondary" role="button"
+                                                   href="{{ path(problem_statement_path, {'probId': problem.probid}) }}">
+                                                    <i class="fas fa-file-{{ problem.problem.problemstatementType }}"></i>
+                                                    Problem
+                                                </a>
+                                            {% endif %}
+
                                             {% if show_submit_button | default(false) %}
                                                 {% if is_granted('ROLE_JURY') or (current_team_contest is not null and current_team_contest.freezeData.started) %}
                                                     <a class="justify-content-center" data-ajax-modal data-ajax-modal-after="initSubmitModal" href="{{ path('team_submit', {problem: problem.probid}) }}">
@@ -169,18 +195,50 @@
                                             {% endif %}
                                         </div>
 
+                                        {% if show_submit_button | default(false) %}
+                                            {% if is_granted('ROLE_JURY') or (current_team_contest is not null and current_team_contest.freezeData.started) %}
+                                                <div class="text-center mt-2">
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fa-solid fa-code"></i> Open in online editor
+                                                        </button>
+                                                        <div class="dropdown-menu">
+                                                            {% for lang in submission_languages %}
+                                                                <a class="dropdown-item"
+                                                                   href="{{ path('team_editor', {probId: problem.probid, langId: lang.langId, cid: current_team_contest.cid}) }}">
+                                                                    {{ lang.name }}
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+
                                         {% if problem.problem.attachments | length > 0 %}
-                                            <hr/>
-                                            <ol class="text-center list-group list-group-flush">
-                                                {% for attachment in problem.problem.attachments %}
-                                                    <li class="list-group-item">
-                                                        <a class="btn btn-outline-secondary" role="button"
-                                                           href="{{ path(problem_attachment_path, {'probId': problem.probid, 'attachmentId': attachment.attachmentid}) }}">
-                                                            <i class="{{ attachment.type | fileTypeIcon }}"></i> {{ attachment.name }}
-                                                        </a>
-                                                    </li>
-                                                {% endfor %}
-                                            </ol>
+                                            <div class="text-center mt-2">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa-solid fa-download"></i> Attachments
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        {% if numsamples > 0 %}
+                                                            <a class="dropdown-item" role="button"
+                                                               href="{{ path(problem_sample_zip_path, {'probId': problem.probid}) }}">
+                                                                <i class="fas fa-file-archive"></i> samples
+                                                            </a>
+                                                            <div class="dropdown-divider"></div>
+                                                        {% endif %}
+
+                                                        {% for attachment in problem.problem.attachments %}
+                                                            <a class="dropdown-item" role="button"
+                                                               href="{{ path(problem_attachment_path, {'probId': problem.probid, 'attachmentId': attachment.attachmentid}) }}">
+                                                                <i class="{{ attachment.type | fileTypeIcon }}"></i> {{ attachment.name }}
+                                                            </a>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         {% endif %}
 
                                     </div>

@@ -3,11 +3,13 @@
 namespace App\Controller\Team;
 
 use App\Controller\BaseController;
+use App\Entity\Clarification;
 use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
 use App\Service\EventLogService;
+use App\Service\ScoreboardService;
 use App\Service\StatisticsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
@@ -33,6 +35,7 @@ class ProblemController extends BaseController
         protected readonly ConfigurationService $config,
         protected readonly StatisticsService $stats,
         protected readonly EventLogService $eventLogService,
+        protected readonly ScoreboardService $scoreboardService,
         EntityManagerInterface $em,
         KernelInterface $kernel,
     ) {
@@ -45,9 +48,19 @@ class ProblemController extends BaseController
     #[Route(path: '/problems', name: 'team_problems')]
     public function problemsAction(): Response
     {
-        $teamId = $this->dj->getUser()->getTeam()->getTeamid();
-        return $this->render('team/problems.html.twig',
-            $this->dj->getTwigDataForProblemsAction($this->stats, $teamId));
+        $team = $this->dj->getUser()->getTeam();
+        $teamId = $team->getTeamid();
+
+        $data = $this->dj->getTwigDataForProblemsAction($this->stats, $teamId);
+        if ($contest = $this->dj->getCurrentContest($team->getTeamid())) {
+            $data['unreadClarifications'] = $team->getUnreadClarifications()->filter(
+                fn(Clarification $c) => $c->getContest()->getCid() === $contest->getCid()
+            );
+
+            $data['teamScoreboard'] = $this->scoreboardService->getTeamScoreboard($contest, $team->getTeamid());
+        }
+
+        return $this->render('team/problems.html.twig', $data);
     }
 
 

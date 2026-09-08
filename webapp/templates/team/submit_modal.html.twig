@@ -16,7 +16,7 @@
                 </div>
             {% elseif not current_team_contest.allowSubmit %}
                 <div class="modal-body">
-                    {% include 'partials/alert.html.twig' with {'type': 'danger', 'message': 'Submissions (temporarily) disabled.'} %}
+                    {% include 'partials/alert.html.twig' with {'type': 'danger', 'message': 'Submissions disabled.\nPlease switch to the active contest using trophy icon in the top navigation.'} %}
                 </div>
             {% else %}
                 {{ form_start(form) }}
@@ -65,6 +65,11 @@
                 if(!fileValidChars) {
                     className = 'bg-danger';
                     message += ', invalid filename';
+                    if(!file.name.match(/^[a-zA-Z0-9]/)) {
+                        message += ', Filename should start with only alphanumeric characters without diacritics or a digit. ';
+                    } else {
+                        message += ', Filename should only contain alphanumeric characters without diacritics, "+" or "-" or "_" or "."';
+                    }
                 }
                 if(file.size == 0) {
                     className = 'bg-warning';

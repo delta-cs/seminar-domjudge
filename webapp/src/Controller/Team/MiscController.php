@@ -12,9 +12,11 @@ use App\Service\DOMJudgeService;
 use App\Service\EventLogService;
 use App\Service\ScoreboardService;
 use App\Service\SubmissionService;
+use App\Utils\Utils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use GuzzleHttp\Psr7\Uri;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -72,6 +74,8 @@ class MiscController extends BaseController
             'maxWidth' => $this->config->get('team_column_width'),
         ];
         if ($contest) {
+            $this->checkForSendingWelcomeMessage($contest->getCid());
+
             $scoreboard = $this->scoreboardService
                 ->getTeamScoreboard($contest, $teamId, false);
             $data = array_merge(
@@ -127,6 +131,9 @@ class MiscController extends BaseController
 
             $data['clarifications']        = $clarifications;
             $data['clarificationRequests'] = $clarificationRequests;
+            $data['unreadClarifications'] = $team->getUnreadClarifications()->filter(
+                fn(Clarification $c) => $c->getContest()->getCid() === $contest->getCid()
+            );
             $data['categories']            = $this->config->get('clar_categories');
             $data['allowDownload']         = (bool)$this->config->get('allow_team_submission_download');
             $data['showTooLateResult']     = $this->config->get('show_too_late_result');
@@ -149,8 +156,13 @@ class MiscController extends BaseController
     #[Route(path: '/change-contest/{contestId<-?\d+>}', name: 'team_change_contest')]
     public function changeContestAction(Request $request, RouterInterface $router, int $contestId): Response
     {
+        if ($contestId != -1) {
+            $this->checkForSendingWelcomeMessage($contestId);
+        }
+
         if ($this->isLocalReferer($router, $request)) {
-            $response = new RedirectResponse($request->headers->get('referer'));
+            $uri = new Uri($request->headers->get('referer'));
+            $response = new RedirectResponse((string)$uri->withQuery(''));
         } else {
             $response = $this->redirectToRoute('team_index');
         }
@@ -210,5 +222,36 @@ class MiscController extends BaseController
             throw new NotFoundHttpException('Contest text not found or not available');
         }
         return $contest->getContestProblemsetStreamedResponse();
+    }
+
+    private function checkForSendingWelcomeMessage(int $contestId)
+    {
+        $team = $this->dj->getUser()->getTeam();
+        $contest = $this->dj->getContest($contestId);
+
+        if ($team->getReceivedClarifications()->exists(
+            fn(int $key, Clarification $c) => $c->getContest()->getCid() === $contestId
+        )) {
+            return;
+        }
+
+        $clarification = new Clarification();
+
+        $clarification->setContest($contest);
+
+        // to be changed
+        $clarification->setRecipient($team);
+        $clarification->setAnswered(true);
+        $clarification->setBody($this->config->get('welcome_message_body'));
+        $clarification->setSubmittime(Utils::now());
+
+        $team->addUnreadClarification($clarification);
+
+        $this->em->persist($clarification);
+        $this->em->flush();
+
+        $clarId = $clarification->getClarId();
+        $this->dj->auditlog('clarification', $clarId, 'added', null, null, $contest->getCid());
+        $this->eventLogService->log('clarification', $clarId, 'create', $contest->getCid());
     }
 }

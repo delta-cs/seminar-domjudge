@@ -7,6 +7,7 @@ use App\DataTransferObject\SubmissionRestriction;
 use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Entity\Judging;
+use App\Entity\Language;
 use App\Entity\Problem;
 use App\Entity\ProblemAttachment;
 use App\Entity\ProblemAttachmentContent;
@@ -14,9 +15,11 @@ use App\Entity\Submission;
 use App\Entity\SubmissionFile;
 use App\Entity\Testcase;
 use App\Entity\TestcaseContent;
+use App\Entity\TestcaseGroup;
 use App\Form\Type\ProblemAttachmentType;
 use App\Form\Type\ProblemType;
 use App\Form\Type\ProblemUploadType;
+use App\Form\Type\TestcaseGroupType;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
 use App\Service\EventLogService;
@@ -465,7 +468,14 @@ class ProblemController extends BaseController
             $name = $file->getClientOriginalName();
             $fileParts = explode('.', $name);
             if (count($fileParts) > 1) {
-                $type = $fileParts[count($fileParts) - 1];
+                $extension = $fileParts[count($fileParts) - 1];
+                /** @var Language|null $language */
+                $language = $problemAttachmentForm->get('language')->getData();
+                if ($language) {
+                    $type = $language->getLangid();
+                } else {
+                    $type = $extension;
+                }
             } else {
                 $type = 'txt';
             }
@@ -589,6 +599,14 @@ class ProblemController extends BaseController
                     $messages[] = sprintf('Updated description of testcase %d ', $rank);
                 }
 
+                $newGroupId = intval($request->request->all('group')[$rank]);
+                $oldGroupId = $testcase->getTestcaseGroup() === null ? -1 : $testcase->getTestcaseGroup()->getTestcasegroupid();
+                if ($oldGroupId !== $newGroupId) {
+                    $newGroup = $newGroupId === -1 ? null : $this->em->getRepository(TestcaseGroup::class)->find($newGroupId);
+                    $testcase->setTestcaseGroup($newGroup);
+                    $messages[] = sprintf('Updated group of testcase %d ', $rank);
+                }
+
                 foreach (['input', 'output', 'image'] as $type) {
                     /** @var UploadedFile $file */
                     if ($file = $request->files->all('update_' . $type)[$rank]) {
@@ -692,10 +710,26 @@ class ProblemController extends BaseController
             if ($inputOrOutputSpecified && $allOk) {
                 $newTestcase        = new Testcase();
                 $newTestcaseContent = new TestcaseContent();
+
+                $testcaseGroupId = intval($request->request->get('add_group'));
+                if ($testcaseGroupId === -1) {
+                    $testcaseGroup = new TestcaseGroup();
+                    $testcaseGroup->setName('default');
+                    $testcaseGroup->setPointsPercentage(1);
+                    $this->em->persist($testcaseGroup);
+                }
+                else {
+                    $testcaseGroup = $this->em->getRepository(TestcaseGroup::class)->find($testcaseGroupId);
+                    if (!$testcaseGroup) {
+                        throw new NotFoundHttpException(sprintf('Testcase group with ID %s not found', $probId));
+                    }
+                }
+
                 $newTestcase
                     ->setContent($newTestcaseContent)
                     ->setRank($maxrank)
                     ->setProblem($problem)
+                    ->setTestcaseGroup($testcaseGroup)
                     ->setDescription($request->request->get('add_desc'))
                     ->setSample($request->request->has('add_sample'));
                 foreach (['input', 'output'] as $type) {
@@ -790,8 +824,18 @@ class ProblemController extends BaseController
                 . join($lockedContests)
                 . ', disallowing editing.');
         }
+
+        $emptyTestcaseGroups = $this->em->createQueryBuilder()
+            ->select('tg')
+            ->from(TestcaseGroup::class, 'tg')
+            ->leftJoin(Testcase::class, 'tc', Join::WITH, 'tc.testcase_group = tg')
+            ->where('tc.testcase_group IS NULL')
+            ->getQuery()
+            ->getResult();
+
         $data = [
             'problem' => $problem,
+            'emptyTestcaseGroups' => $emptyTestcaseGroups,
             'testcases' => $testcases,
             'testcaseData' => $testcaseData,
             'extensionMapping' => Testcase::EXTENSION_MAPPING,
@@ -1091,6 +1135,7 @@ class ProblemController extends BaseController
         }
         $testcase->setDeleted(true);
         $testcase->setProblem(null);
+        $testcase->setTestcaseGroup(null);
         $oldRank = $testcase->getRank();
 
         /** @var Testcase[] $testcases */

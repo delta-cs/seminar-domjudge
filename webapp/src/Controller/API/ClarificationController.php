@@ -8,6 +8,7 @@ use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Entity\Team;
 use App\Utils\Utils;
+use App\Service\DiscordWebhookService;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
@@ -34,6 +35,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[OA\Response(ref: '#/components/responses/NotFound', response: 404)]
 class ClarificationController extends AbstractRestController
 {
+    public function __construct(
+        protected readonly DiscordWebhookService $discordService
+    ) {
+        parent::__construct();
+    }
+
     /**
      * Get all the clarifications for this contest.
      *
@@ -251,6 +258,16 @@ class ClarificationController extends AbstractRestController
 
         $this->dj->auditlog('clarification', $clarification->getClarid(), 'added', null, null, $contestId);
         $this->eventLogService->log('clarification', $clarification->getClarid(), 'create', $contestId);
+
+        // Send Discord notification only if it's from a team (not jury)
+        if ($clarification->getSender() !== null) {
+            try {
+                // Send Discord notification
+                $this->discordService->sendClarificationNotification($newClarification);
+            } catch (\Exception $e) {
+                // pass
+            }
+        }
 
         // Refresh the clarification since the event log service will have unloaded it.
         $clarification = $this->em->getRepository(Clarification::class)->find($clarification->getClarid());

@@ -47,7 +47,7 @@
         {% endif %}
     </div>
 
-    <table class="data-table table table-hover table{% if showExternalResult and showExternalTestcases %}-3{% endif %}-striped table-sm submissions-table table-full-clickable-cell">
+    <table class="data-table table table-hover table{% if showExternalResult and showExternalTestcases %}-3{% endif %}-striped table-sm align-middle submissions-table table-full-clickable-cell">
         <thead class="thead-light">
         <tr>
             {% if showExternalResult and showExternalTestcases %}
@@ -72,6 +72,7 @@
             {% else %}
                 <th scope="col">{%- if rejudging is defined %}new {% endif %}result</th>
             {% endif %}
+            <th scope="col">points</th>
             {% if showExternalResult and not showExternalTestcases %}
                 <th scope="col">external result</th>
             {% endif %}
@@ -158,6 +159,12 @@
                             ⇝
                         {% endif %}
                         {{ submission | printValidJurySubmissionResult }}
+                    </a>
+                </td>
+                <td class="{{ tdExtraClass }}">
+                    <a href="{{ link }}">
+                        {% set lastValidJudging = submission.judgings | filter(judging => judging.valid) | last %}
+                        {{ lastValidJudging.pointsScored }}/{{ submission.contestProblem.points }}
                     </a>
                 </td>
                 {% if showExternalResult and not showExternalTestcases %}
