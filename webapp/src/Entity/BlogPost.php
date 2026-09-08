@@ -13,9 +13,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Table(
     name: 'blog_post',
     options: ['collation' => 'utf8mb4_unicode_ci', 'charset' => 'utf8mb4', 'comment' => 'Public blog posts sent by the jury'],
-    indexes: [new ORM\Index(name: 'slug', columns: ['slug'])],
-    uniqueConstraints: [new ORM\UniqueConstraint(name: 'slug', columns: ['slug'])]
 )]
+#[ORM\UniqueConstraint(name: 'slug', columns: ['slug'])]
 #[UniqueEntity('slug')]
 class BlogPost extends BaseApiEntity
 {
