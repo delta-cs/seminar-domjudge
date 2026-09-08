@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\DataTransferObject\SubmissionRestriction;
+use App\Entity\BlogPost;
 use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Entity\Submission;
@@ -15,8 +16,10 @@ use App\Service\ScoreboardService;
 use App\Service\StatisticsService;
 use App\Service\SubmissionService;
 use App\Twig\TwigExtension;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
+use GuzzleHttp\Psr7\Uri;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,8 +50,29 @@ class PublicController extends BaseController
         parent::__construct($em, $eventLog, $dj, $kernel);
     }
 
-    #[Route(path: '', name: 'public_index')]
-    #[Route(path: '/scoreboard')]
+    #[Route(path: '')]
+    public function homepageAction(): Response {
+        /** @var BlogPost[] $blogPosts */
+        $blogPosts = $this->em->getRepository(BlogPost::class)
+            ->createQueryBuilder('bp')
+            ->where('bp.publishtime <= :now')
+            ->orderBy('bp.publishtime', 'DESC')
+            ->setMaxResults($this->config->get('homepage_blog_post_count'))
+            ->getQuery()
+            ->setParameter('now', new DateTime())
+            ->getResult();
+
+        return $this->render('public/homepage.html.twig', [
+            'blogPosts' => $blogPosts,
+        ]);
+    }
+
+    #[Route(path: '/authors', name: 'public_authors')]
+    public function authorsAction(): Response {
+        return $this->render('public/authors.html.twig');
+    }
+
+    #[Route(path: '/scoreboard', name: 'public_scoreboard')]
     public function scoreboardAction(
         Request $request,
         #[MapQueryParameter(name: 'contest')]
@@ -57,7 +81,7 @@ class PublicController extends BaseController
         ?bool $static = false,
     ): Response {
         $response         = new Response();
-        $refreshUrl       = $this->generateUrl('public_index');
+        $refreshUrl       = $this->generateUrl('public_scoreboard');
         $contest          = $this->dj->getCurrentContest(onlyPublic: true);
         $nonPublicContest = $this->dj->getCurrentContest(onlyPublic: false);
         if (!$contest && $nonPublicContest && $this->em->getRepository(TeamCategory::class)->count(['allow_self_registration' => 1])) {
@@ -162,9 +186,10 @@ class PublicController extends BaseController
     public function changeContestAction(Request $request, RouterInterface $router, int $contestId): Response
     {
         if ($this->isLocalReferer($router, $request)) {
-            $response = new RedirectResponse($request->headers->get('referer'));
+            $uri = new Uri($request->headers->get('referer'));
+            $response = new RedirectResponse((string)$uri->withQuery(''));
         } else {
-            $response = $this->redirectToRoute('public_index');
+            $response = $this->redirectToRoute('public_scoreboard');
         }
         return $this->dj->setCookie('domjudge_cid', (string)$contestId, 0, null, '', false, false,
                                                  $response);

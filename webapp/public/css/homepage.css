@@ -1,0 +1,85 @@
+h3, h4, h5, h6 {
+    text-align: left;
+}
+
+.hp-cover {
+    margin-top: -15px;
+
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("/images/hacker/homepage-cover.webp") no-repeat;
+    background-size: cover;
+    background-position: top;
+
+    color: white;
+}
+
+.hp-logo-bar > .container > img {
+    max-width: 300px;
+}
+
+.hp-cover-headline {
+    max-width: 600px !important;
+    margin: 80px 0;
+
+    font-size: 1.5em;
+    text-shadow: black 0 4px 3px;
+}
+
+.hp-cover-details > .d-flex {
+    gap: 30px !important;
+}
+
+.hp-cover-details-segment {
+    flex-basis: 0;
+    flex-grow: 1;
+}
+
+.hp-cover-details-segment-larger {
+    flex-grow: 2;
+}
+
+.hp-cover-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 15px 0;
+}
+
+.hp-cover-details {
+    padding: 25px 0;
+}
+
+@media (min-width: 992px) {
+    .hp-cover-headline {
+        margin-right: 100px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .hp-cover-headline {
+        margin-right: 200px;
+    }
+}
+
+@media (min-width: 1380px) {
+    .container {
+        max-width: 1320px;
+    }
+}
+
+@media (min-width: 1560px) {
+    .container {
+        max-width: 1500px;
+    }
+
+    .hp-cover-headline {
+        margin-right: 300px;
+    }
+}
+
+@media (min-width: 1740px) {
+    .container {
+        max-width: 1680px;
+    }
+
+    .hp-cover {
+        background-position: top -50px center;
+    }
+}

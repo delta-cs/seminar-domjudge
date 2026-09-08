@@ -1,0 +1,24 @@
+{% extends is_granted('IS_AUTHENTICATED_FULLY') ? "team/base.html.twig" : "public/base.html.twig" %}
+
+{% block extrahead %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset("css/help.css") }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Nápověda</h1>
+        <p>
+            Na této stránce najdete informace o tom, jak se pohybovat na webu a jak soutěžit.
+        </p>
+        <div class="accordion">
+            {% include 'help/partials/visitors.html.twig' %}
+            {% include 'help/partials/registration.html.twig' %}
+            {% include 'help/partials/forgotten_password.html.twig' %}
+            {% include 'help/partials/problemset.html.twig' %}
+            {% include 'help/partials/submissions.html.twig' %}
+            {% include 'help/partials/scoreboard.html.twig' %}
+            {% include 'help/partials/communication.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

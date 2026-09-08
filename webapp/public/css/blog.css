@@ -1,0 +1,20 @@
+.container-image {
+    margin-bottom: 1rem;
+}
+
+.container-image > .image > img {
+    max-width: 100%;
+    height: auto;
+}
+
+.blog-post-list-thumbnail, .blog-post-homepage-thumbnail {
+    width: 100%;
+    aspect-ratio: 3/2;
+    object-fit: contain;
+}
+
+@media (min-width: 768px) {
+    .blog-post-list-thumbnail {
+        width: 360px;
+    }
+}
