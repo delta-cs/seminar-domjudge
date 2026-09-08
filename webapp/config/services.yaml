@@ -21,6 +21,7 @@ parameters:
         '/public/problems',
         '/team/scoreboard',
         '/team/problems',
+        '/team/editor',
     ]
 
 services:

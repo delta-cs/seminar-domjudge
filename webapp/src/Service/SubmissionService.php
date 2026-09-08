@@ -452,7 +452,8 @@ class SubmissionService
         ?string $externalId = null,
         ?float $submitTime = null,
         ?string &$message = null,
-        bool $forceImportInvalid = false
+        bool $forceImportInvalid = false,
+        bool $ignoreSubmission = false
     ): ?Submission {
         if (!$team instanceof Team) {
             $team = $this->em->getRepository(Team::class)->find($team);
@@ -617,6 +618,12 @@ class SubmissionService
             }
             if (!preg_match(self::FILENAME_REGEX, $file->getClientOriginalName())) {
                 $message = sprintf("Illegal filename '%s'.", $file->getClientOriginalName());
+                // Say which part of the name is the problem.
+                if (!preg_match("/^[a-zA-Z0-9]/", $file->getClientOriginalName())) {
+                    $message .= ' Filename should start with only alphanumeric characters without diacritics or a digit. ';
+                } else {
+                    $message .= ' Filename should only contain alphanumeric characters without diacritics, "+" or "-" or "_" or "."';
+                }
                 if ($forceImportInvalid || $source === SubmissionSource::SHADOWING) {
                     $importError = $message;
                 } else {
@@ -701,7 +708,8 @@ class SubmissionService
             ->setEntryPoint($entryPoint)
             ->setExternalid($externalId)
             ->setImportError($importError)
-            ->setSource($source);
+            ->setSource($source)
+            ->setValid(!$ignoreSubmission);
 
         // Add expected results from source. We only do this for jury submissions
         // to prevent accidental auto-verification of team submissions.

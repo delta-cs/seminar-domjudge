@@ -692,4 +692,26 @@ class Problem extends BaseApiEntity implements
         }
         return false;
     }
+
+    /**
+     * The distinct testcase groups used by this problem's testcases.
+     *
+     * @return Collection<int, TestcaseGroup>
+     */
+    public function getTestcaseGroups(): Collection
+    {
+        $testcaseGroups = new ArrayCollection();
+
+        foreach ($this->testcases as $testcase) {
+            $group = $testcase->getTestcaseGroup();
+
+            if ($group === null || $testcaseGroups->contains($group)) {
+                continue;
+            }
+
+            $testcaseGroups->add($group);
+        }
+
+        return $testcaseGroups;
+    }
 }

@@ -11,6 +11,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -109,6 +110,25 @@ class LanguageType extends AbstractExternalIdEntityType
             'query_builder' => fn(EntityRepository $er) => $er
                 ->createQueryBuilder('p')
                 ->orderBy('p.name'),
+        ]);
+        $builder->add('defaultEditorTemplateFilename', TextType::class, [
+            'label' => 'Default editor template filename',
+            'required' => false,
+            'attr' => [
+                'placeholder' => 'e.g., main.java, main.cpp, main.py',
+            ],
+            'help' => 'The default filename that will be used in the editor for this language.',
+        ]);
+        $builder->add('defaultEditorTemplateContent', TextareaType::class, [
+            'label' => 'Default editor template content',
+            'required' => false,
+            'attr' => [
+                'rows' => 15,
+                'placeholder' => 'Enter the default code template for this language...',
+                'class' => 'code-editor',
+                'style' => 'font-family: monospace;',
+            ],
+            'help' => 'The default code template that will appear in the editor when this language is selected.',
         ]);
         $builder->add('save', SubmitType::class);
 

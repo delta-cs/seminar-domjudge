@@ -149,6 +149,14 @@ class Language extends BaseApiEntity implements
     #[Serializer\Exclude]
     private ?string $runnerVersionCommand = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => 'Editor template filename for this language'])]
+    #[Serializer\Groups([ARC::GROUP_NONSTRICT])]
+    private ?string $defaultEditorTemplateFilename = null;
+
+    #[ORM\Column(type: 'text', nullable: true, options: ['comment' => 'Editor template for this language'])]
+    #[Serializer\Groups([ARC::GROUP_NONSTRICT])]
+    private ?string $defaultEditorTemplateContent = null;
+
     /**
      * @var Collection<int, Contest>
      */
@@ -418,6 +426,28 @@ class Language extends BaseApiEntity implements
         return $this->submissions;
     }
 
+    public function getDefaultEditorTemplateFilename(): ?string
+    {
+        return $this->defaultEditorTemplateFilename;
+    }
+
+    public function setDefaultEditorTemplateFilename(?string $defaultEditorTemplateFilename): Language
+    {
+        $this->defaultEditorTemplateFilename = $defaultEditorTemplateFilename;
+        return $this;
+    }
+
+    public function getDefaultEditorTemplateContent(): ?string
+    {
+        return $this->defaultEditorTemplateContent;
+    }
+
+    public function setDefaultEditorTemplateContent(?string $defaultEditorTemplateContent): Language
+    {
+        $this->defaultEditorTemplateContent = $defaultEditorTemplateContent;
+        return $this;
+    }
+
     public function getEditorLanguage(): string
     {
         return match ($this->getLangid()) {
@@ -429,6 +459,7 @@ class Language extends BaseApiEntity implements
             'py2', 'py3' => 'python',
             'rb' => 'ruby',
             'rs' => 'rust',
+            'csharp-dotnet' => 'csharp',
             default => $this->getLangid(),
         };
     }
