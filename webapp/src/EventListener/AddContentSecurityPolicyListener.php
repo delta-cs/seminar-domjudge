@@ -9,6 +9,9 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
 #[AsEventListener]
 class AddContentSecurityPolicyListener
 {
+    /**
+     * @param array<string, string> $cspConfig
+     */
     public function __construct(
         protected readonly ?Profiler $profiler,
         protected readonly array $cspConfig

@@ -18,6 +18,9 @@ class ContestIdSubscriber implements EventSubscriberInterface
     /** @var string[] */
     private array $contestIdURLsPrefixes;
 
+    /**
+     * @param string[] $contestIdURLsPrefixes
+     */
     public function __construct(DOMJudgeService $dj, array $contestIdURLsPrefixes)
     {
         $this->dj = $dj;
@@ -100,7 +103,7 @@ class ContestIdSubscriber implements EventSubscriberInterface
         $event->setResponse($response);
     }
 
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();
 

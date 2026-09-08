@@ -8,7 +8,11 @@ use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Entity\Team;
 use App\Utils\Utils;
+use App\Service\ConfigurationService;
 use App\Service\DiscordWebhookService;
+use App\Service\DOMJudgeService;
+use App\Service\EventLogService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
@@ -36,9 +40,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ClarificationController extends AbstractRestController
 {
     public function __construct(
-        protected readonly DiscordWebhookService $discordService
+        EntityManagerInterface $entityManager,
+        DOMJudgeService $dj,
+        ConfigurationService $config,
+        EventLogService $eventLogService,
+        protected readonly DiscordWebhookService $discordService,
     ) {
-        parent::__construct();
+        parent::__construct($entityManager, $dj, $config, $eventLogService);
     }
 
     /**
@@ -263,7 +271,7 @@ class ClarificationController extends AbstractRestController
         if ($clarification->getSender() !== null) {
             try {
                 // Send Discord notification
-                $this->discordService->sendClarificationNotification($newClarification);
+                $this->discordService->sendClarificationNotification($clarification);
             } catch (\Exception $e) {
                 // pass
             }

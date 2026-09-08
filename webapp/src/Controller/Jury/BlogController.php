@@ -168,7 +168,7 @@ class BlogController extends BaseController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var BlogPost $blogPost */
+            /** @var BlogPost|null $blogPost */
             $blogPost = $form->getData();
 
             $slug = strtolower($this->slugger->slug($blogPost->getTitle())->toString());
@@ -212,7 +212,7 @@ class BlogController extends BaseController
     #[IsGranted('ROLE_ADMIN')]
     public function deleteBlogPostAction(Request $request, int $id): Response
     {
-        /** @var BlogPost $blogPost */
+        /** @var BlogPost|null $blogPost */
         $blogPost = $this->em->getRepository(BlogPost::class)->find($id);
         if (!$blogPost) {
             throw new NotFoundHttpException(sprintf('Blog post with ID %s not found', $id));
@@ -226,7 +226,7 @@ class BlogController extends BaseController
         $fileName = md5(uniqid()) . '.' . $file->guessExtension();
 
         $file->move(
-            join('/', [$this->getParameter('image_directory'), $directory]),
+            join('/', [(string)$this->getParameter('image_directory'), $directory]),
             $fileName
         );
 

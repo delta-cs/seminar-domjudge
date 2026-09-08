@@ -700,6 +700,7 @@ class Problem extends BaseApiEntity implements
      */
     public function getTestcaseGroups(): Collection
     {
+        /** @var Collection<int, TestcaseGroup> $testcaseGroups */
         $testcaseGroups = new ArrayCollection();
 
         foreach ($this->testcases as $testcase) {

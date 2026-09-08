@@ -29,6 +29,9 @@ class TestcaseGroup
     #[ORM\Column(name: "name", type: "string", length: 255, nullable: true, options: ["comment" => "Which part of the problem this group tests.", "default" => null])]
     private string $name;
 
+    /**
+     * @var Collection<int, Testcase>
+     */
     #[ORM\OneToMany(mappedBy: "testcase_group", targetEntity: Testcase::class)]
     #[ORM\OrderBy(["ranknumber" => "ASC"])]
     #[Serializer\Exclude]
@@ -69,11 +72,17 @@ class TestcaseGroup
         return $this->getName();
     }
 
+    /**
+     * @return Collection<int, Testcase>
+     */
     public function getTestcases(): Collection
     {
         return $this->testcases;
     }
 
+    /**
+     * @param Collection<int, Testcase> $testcases
+     */
     public function setTestcases(Collection $testcases): void
     {
         $this->testcases = $testcases;

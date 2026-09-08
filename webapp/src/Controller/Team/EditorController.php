@@ -15,7 +15,6 @@ use App\Service\ConfigurationService;
 use App\Service\ScoreboardService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -33,6 +32,7 @@ use App\Service\DOMJudgeService;
 use App\Service\EventLogService;
 use App\Controller\BaseController;
 use App\Service\SubmissionService;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
@@ -42,7 +42,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 #[Route('/team/editor')]
 #[IsGranted('ROLE_TEAM')]
-#[Security('user.getTeam() !== null')]
+#[IsGranted(new Expression('user.getTeam() !== null'))]
 class EditorController extends BaseController
 {
     public function __construct(
@@ -61,20 +61,20 @@ class EditorController extends BaseController
     #[Route('/{probId<\d+>}/{langId}', name: 'team_editor')]
     public function viewAction(Request $request, int $probId, string $langId): Response
     {
-        /** @var Problem $problem */
+        /** @var Problem|null $problem */
         $problem = $this->em->getRepository(Problem::class)->find($probId);
         if (!$problem) {
             throw new NotFoundHttpException(sprintf('Problem with ID %s not found', $probId));
         }
 
-        /** @var Language $language */
+        /** @var Language|null $language */
         $language = $this->em->getRepository(Language::class)->find($langId);
         if (!$language) {
             throw new NotFoundHttpException(sprintf('Language with ID %s not found', $langId));
         }
 
         try {
-            /** @var Language $language */
+            /** @var Language|null $language */
             $language = $this->em->getRepository(Language::class)->createQueryBuilder('lang')
                 ->andWhere('lang.langid = :langId')
                 ->setParameter('langId', $langId)
@@ -209,7 +209,7 @@ class EditorController extends BaseController
             }
 
             $team = $this->dj->getUser()->getTeam();
-            /** @var Language $language */
+            /** @var Language|null $language */
             $language = $submittedData['language'];
             $entryPoint = $submittedData['entry_point'];
             if ($language->getRequireEntryPoint() && $entryPoint === null) {
@@ -290,6 +290,9 @@ class EditorController extends BaseController
         return $this->render('team/partials/team_editor_status.html.twig', $data);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getStatusData(Request $request, Submission $submission, Contest $contest): array
     {
         return ($this->em->contains($submission) && $submission->getValid()) ? array_merge(
@@ -318,6 +321,9 @@ class EditorController extends BaseController
         ) : [];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getSubmissionsData(Submission $submission): array
     {
         return [
@@ -373,13 +379,13 @@ class EditorController extends BaseController
         $team = $this->dj->getUser()->getTeam();
         $contest = $this->dj->getCurrentContest($team->getTeamid());
 
-        /** @var Problem $problem */
+        /** @var Problem|null $problem */
         $problem = $this->em->getRepository(Problem::class)->find($probId);
         if (!$problem) {
             throw new NotFoundHttpException(sprintf('Problem with ID %s not found', $probId));
         }
 
-        /** @var Language $language */
+        /** @var Language|null $language */
         $language = $this->em->getRepository(Language::class)->find($langId);
         if (!$language) {
             throw new NotFoundHttpException(sprintf('Language with ID %s not found', $langId));

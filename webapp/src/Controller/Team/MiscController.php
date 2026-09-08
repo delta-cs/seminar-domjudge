@@ -224,7 +224,7 @@ class MiscController extends BaseController
         return $contest->getContestProblemsetStreamedResponse();
     }
 
-    private function checkForSendingWelcomeMessage(int $contestId)
+    private function checkForSendingWelcomeMessage(int $contestId): void
     {
         $team = $this->dj->getUser()->getTeam();
         $contest = $this->dj->getContest($contestId);
