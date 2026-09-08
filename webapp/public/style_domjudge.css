@@ -841,6 +841,8 @@ blockquote {
     width: 100%;
     height: 80vh;
     border: 1px solid grey;
+}
+
 .faicon-badge-container {
     position: relative;
     display: inline-block;
