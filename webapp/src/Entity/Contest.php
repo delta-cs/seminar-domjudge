@@ -157,9 +157,11 @@ class Contest extends BaseApiEntity implements
     #[Serializer\Exclude]
     private ?int $b = 0;
 
-    #[ORM\Column(type: 'string', enumType: ScoreboardType::class, options: ['default' => 'pass-fail'])]
+    // The fork scores partial points on every contest by default; see
+    // Version20260908130000. Switch a contest to pass-fail for upstream's behaviour.
+    #[ORM\Column(type: 'string', enumType: ScoreboardType::class, options: ['default' => 'scoring'])]
     #[Serializer\Exclude]
-    private ScoreboardType $scoreboardType = ScoreboardType::PASS_FAIL;
+    private ScoreboardType $scoreboardType = ScoreboardType::SCORING;
 
     #[Serializer\VirtualProperty]
     #[Serializer\SerializedName('scoreboard_type')]
