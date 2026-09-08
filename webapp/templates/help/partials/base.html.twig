@@ -1,0 +1,17 @@
+<div class="card">
+    <h2 class="card-header">
+        <button class="btn btn-link btn-block text-left" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapse{{ id }}" aria-expanded="true" aria-controls="collapse{{ id }}">
+            {% block header %}
+
+            {% endblock %}
+        </button>
+    </h2>
+    <div id="collapse{{ id }}" class="collapse">
+        <div class="card-body">
+            {% block body %}
+
+            {% endblock %}
+        </div>
+    </div>
+</div>

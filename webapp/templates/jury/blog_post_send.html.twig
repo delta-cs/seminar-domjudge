@@ -1,0 +1,137 @@
+{% extends "jury/base.html.twig" %}
+
+{% block title %}{{ action|capitalize }} a blog post - {{ parent() }}{% endblock %}
+
+{% block extrahead %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <style>
+        .ce-block__content,
+        .ce-toolbar__content {
+            max-width: unset;
+        }
+    </style>
+    <div class="container">
+        <h1>{{ action|capitalize }} a blog post</h1>
+
+        {{ form_start(form) }}
+
+        {{ form_row(form.title) }}
+        {{ form_row(form.subtitle) }}
+
+        <div class="d-flex flex-row align-items-end">
+            <div class="flex-grow-1">
+                {{ form_row(form.thumbnail) }}
+            </div>
+            <button type="button"
+                    class="btn btn-outline-secondary mb-3 ms-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#thumbnailInfoModal">
+                <i class="fa-solid fa-circle-info"></i>
+            </button>
+        </div>
+
+        <div class="modal fade" id="thumbnailInfoModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thumbnail behaviour</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Thumbnails always occupy a space with the aspect ratio of 3:2. If you upload an image with
+                            the same ratio, it fills the entire area:</p>
+                        <img class="img-fluid" src="{{ asset('images/help-jury/blog-thumbnail-3-to-2.png') }}"
+                             alt="a 3:2 thumbnail">
+
+                        <p>Thumbnails are always fully visible and centered. If they're wide, white space gets added
+                            above and below:</p>
+                        <img class="img-fluid" src="{{ asset('images/help-jury/blog-thumbnail-wide.png') }}"
+                             alt="a wide thumbnail">
+
+                        <p>If narrow, space is added to the sides:</p>
+                        <img class="img-fluid" src="{{ asset('images/help-jury/blog-thumbnail-narrow.png') }}"
+                             alt="a narrow thumbnail">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{ form_row(form.author) }}
+
+        <label>Text</label>
+        <div class="card mb-3">
+            <div class="card-body">
+                <div id="editorjs">
+
+                </div>
+            </div>
+        </div>
+
+        {{ form_row(form.publishtime) }}
+
+        {{ form_row(form.send) }}
+
+        {{ form_end(form) }}
+    </div>
+
+    {% if data is defined %}
+        {{ data|raw }}
+    {% endif %}
+
+    <script src="{{ asset('js/editorjs/editorjs.js') }}"></script>
+    <script src="{{ asset('js/editorjs/underline.js') }}"></script>
+    <script src="{{ asset('js/editorjs/header.js') }}"></script>
+    <script src="{{ asset('js/editorjs/list.js') }}"></script>
+    <script src="{{ asset('js/editorjs/image.js') }}"></script>
+    <script src="{{ asset('js/editorjs/inline-code.js') }}"></script>
+    <script src="{{ asset('js/editorjs/code.js') }}"></script>
+    <script src="{{ asset('js/editorjs/table.js') }}"></script>
+
+    <script>
+        const form = document.getElementsByName("blog_post")[0];
+        const inputBody = document.getElementById("blog_post_body");
+
+        const data = inputBody.value === "" ? null : JSON.parse(inputBody.value);
+
+        const editor = new EditorJS({
+            tools: {
+                header: {
+                    class: Header,
+                    inlineToolbar: true
+                },
+                list: {
+                    class: List,
+                    inlineToolbar: true
+                },
+                underline: Underline,
+                image: {
+                    class: ImageTool,
+                    config: {
+                        endpoints: {
+                            byFile: '{{ path('jury_blog_image_upload') }}',
+                        }
+                    },
+                    inlineToolbar: true
+                },
+                inlineCode: InlineCode,
+                code: CodeTool,
+                table: Table,
+            },
+            data: data,
+        })
+
+        form.onsubmit = function (event) {
+            event.preventDefault();
+
+            editor.save().then((outputData) => {
+                inputBody.value = JSON.stringify(outputData);
+                form.submit();
+            });
+        }
+    </script>
+{% endblock %}
