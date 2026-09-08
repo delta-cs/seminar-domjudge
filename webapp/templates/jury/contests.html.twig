@@ -14,50 +14,94 @@
 
     <h3>Current contests</h3>
 
-    {% for contest in current_contests %}
-        <div class="row mb-4">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header">
-                        {{ contest.name }} ({{ contest.shortname }} - c{{ contest.cid }})
-                        {% if contest.locked %}
-                            <i class="fas fa-lock"></i>
-                        {% endif %}
-                        <a class="fa-regular fa-folder-open" style="float: right; color: black" href={{ path('jury_contest', {'contestId': contest.cid}) }}></a>
+    {% if current_contests is not empty %}
+        <div class="container-fluid px-0">
+            <div class="row pb-4" id="currentContests">
+                <div class="col-md-4" style="max-height: 480px; overflow-y: scroll">
+                    <div id="currentContests" class="list-group">
+                        {% for contest in current_contests %}
+                            <button id="currentContest{{ contest.cid }}Heading"
+                                    class="list-group-item list-group-item-action py-1"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#currentContest{{ contest.cid }}Collapse"
+                                    aria-expanded="false"
+                                    aria-controls="currentContest{{ contest.cid }}Collapse">
+                                {{ contest.shortname }}
+                            </button>
+                        {% endfor %}
                     </div>
-                    <div class="card-body">
-                        {% if not contest.starttimeEnabled and contest.finalizetime is not empty %}
-                            <div class="alert alert-warning">
-                                <strong>Warning:</strong> start time is undefined, but contest is finalized!
-                            </div>
-                        {% endif %}
-                        <table class="table table-hover">
-                            <tbody>
-                            {% for type, data in contest.dataForJuryInterface %}
-                                <tr>
-                                    <td class="{{ data.class|default('') }}">
-                                        {% if data.icon is defined %}
-                                            <i class="fas fa-{{ data.icon }}"></i>
+                </div>
+                <div class="col-md-8">
+                    {% for contest in current_contests %}
+                        <div class="collapse" id="currentContest{{ contest.cid }}Collapse"
+                             data-bs-parent="#currentContests"
+                             aria-labelledby="currentContest{{ contest.cid }}Heading">
+                            {# TODO: at some point use real Symfony forms here? Is maybe hard because of all the submit buttons... #}
+                            <form action="{{ path('jury_contests') }}" method="post">
+                                <input type="hidden" name="contest" value="{{ contest.cid }}"/>
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center" id="currentContest{{ contest.cid }}">
+                                        <div>
+                                            {{ contest.name }} ({{ contest.shortname }} - c{{ contest.cid }})
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if contest.locked %}
+                                                <i class="fas fa-lock"></i>
+                                            {% endif %}
+                                            <a href="{{ path('jury_contest', {'contestId': contest.cid}) }}"
+                                               class="btn btn-sm btn-secondary" title="View this contest">
+                                                <i class="fa-regular fa-folder-open"></i> Open
+                                            </a>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <a href="{{ path('jury_contest_edit', {'contestId': contest.cid}) }}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if not contest.starttimeEnabled and contest.finalizetime is not empty %}
+                                            <div class="alert alert-warning">
+                                                <strong>Warning:</strong> start time is undefined, but contest is
+                                                finalized!
+                                            </div>
                                         {% endif %}
-                                    </td>
-                                    <td class="{{ data.class|default('') }}"><b>{{ data.label }}:</b></td>
-                                    <td class="{{ data.class|default('') }}">{{ data.time }}</td>
-                                    {% if is_granted('ROLE_ADMIN') %}
-                                        <td>
-                                            {% if data.show_button %}
-                                                {% set button_label =  type ~ " now" %}
-                                                {{ button(path('jury_contest_donow', {'contestId': contest.cid, 'time': type}), button_label, 'primary btn-sm') }}
-                                            {% endif %}
-                                            {% if data.extra_button is defined %}
-                                                {{ button(path('jury_contest_donow', {'contestId': contest.cid, 'time': data.extra_button.type}), data.extra_button.label, 'primary btn-sm') }}
-                                            {% endif %}
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                        <table class="table table-hover">
+                                            <tbody>
+                                            {% for type, data in contest.dataForJuryInterface %}
+                                                <tr>
+                                                    <td class="{{ data.class|default('') }}">
+                                                        {% if data.icon is defined %}
+                                                            <i class="fas fa-{{ data.icon }}"></i>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="{{ data.class|default('') }}">
+                                                        <b>{{ data.label }}:</b>
+                                                    </td>
+                                                    <td class="{{ data.class|default('') }}">{{ data.time }}</td>
+                                                    {% if is_granted('ROLE_ADMIN') %}
+                                                        <td>
+                                                            {% if data.show_button %}
+                                                                <input type="submit" class="btn btn-primary btn-sm"
+                                                                       name="donow[{{ type }}]" value="{{ type }} now"/>
+                                                            {% endif %}
+                                                            {% if data.extra_button is defined %}
+                                                                <input type="submit" class="btn btn-primary btn-sm"
+                                                                       name="donow[{{ data.extra_button.type }}]"
+                                                                       value="{{ data.extra_button.label }}"/>
+                                                            {% endif %}
+                                                        </td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -76,7 +120,7 @@
                 {{ button(path('jury_contest_donow', {'contestId': upcoming_contest.cid, 'time': 'activate'}), 'Activate now', 'primary') }}
             </div>
         {% endif %}
-    {% endfor %}
+    {% endif %}
 
     <h3>All available contests</h3>
 

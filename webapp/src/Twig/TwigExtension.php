@@ -123,6 +123,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('entityIdBadge', $this->entityIdBadge(...), ['is_safe' => ['html']]),
             new TwigFilter('medalType', $this->awards->medalType(...)),
             new TwigFilter('numTableActions', $this->numTableActions(...)),
+            new TwigFilter('printPartialPointsScoringMode', $this->printPartialPointsScoringMode(...)),
             new TwigFilter('extensionToMime', $this->extensionToMime(...)),
         ];
     }
@@ -304,6 +305,18 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             default:
                 return "Unknown mode $val";
         }
+    }
+
+    /**
+     * Renders the per-problem partial scoring override: null means "inherit the
+     * contest-wide setting".
+     */
+    public static function printPartialPointsScoringMode(?bool $val): string
+    {
+        if ($val === null) {
+            return '-';
+        }
+        return $val ? 'Yes' : 'No';
     }
 
     public static function printYesNo(bool $val): string

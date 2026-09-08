@@ -36,6 +36,7 @@
                     <th>upload new</th>
                 {% endif %}
                 <th>description / image</th>
+                <th>group</th>
             </tr>
             </thead>
             <tbody>
@@ -89,6 +90,30 @@
                             <textarea class="d-none form-control testcase-description-field" name="description[{{ testcase.rank }}]">{{ testcase.description(true) }}</textarea>
                             <button type="button" class="float-end testcase-edit-description btn btn-secondary btn-sm">Edit</button>
                         {% endif %}
+                    </td>
+                    <td rowspan="2">
+                        <select name="group[{{ testcase.rank }}]" class="form-control">
+                            {% if problem.testcaseGroups|length > 0 %}
+                                <optgroup label="problem groups">
+                                    {% for group in problem.testcaseGroups %}
+                                        <option value="{{ group.testcaseGroupid }}"
+                                                {% if testcase.testcaseGroup is not null and testcase.testcaseGroup.testcasegroupid == group.testcasegroupid %}selected{% endif %}>
+                                            {{ group.name }}
+                                        </option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endif %}
+                            {% if emptyTestcaseGroups|length > 0 %}
+                                <optgroup label="empty groups">
+                                    {% for group in emptyTestcaseGroups %}
+                                        <option value="{{ group.testcaseGroupid }}"
+                                                {% if testcase.testcaseGroup is not null and testcase.testcaseGroup.testcasegroupid == group.testcasegroupid %}selected{% endif %}>
+                                            {{ group.name }}
+                                        </option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endif %}
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -176,6 +201,35 @@
             <label class="col-sm-2 col-form-label" for="add_image">Image</label>
             <div class="col-sm-4">
                 <input type="file" class="form-control" accept="image/*" name="add_image" id="add_image">
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <label class="col-sm-2 col-form-label" for="add_group">Group</label>
+            <div class="col-sm-4">
+                <select class="form-control" name="add_group" id="add_group">
+                    {% if problem.testcaseGroups|length + emptyTestcaseGroups|length < 1 %}
+                        <option value="-1">create default</option>
+                    {% endif %}
+                    {% if problem.testcaseGroups|length > 0 %}
+                        <optgroup label="problem groups">
+                            {% for group in problem.testcaseGroups %}
+                                <option value="{{ group.testcaseGroupid }}">
+                                {{ group.name }}
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endif %}
+                    {% if emptyTestcaseGroups|length > 0 %}
+                        <optgroup label="empty groups">
+                            {% for group in emptyTestcaseGroups %}
+                                <option value="{{ group.testcaseGroupid }}">
+                                    {{ group.name }}
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endif %}
+                </select>
             </div>
         </div>
 

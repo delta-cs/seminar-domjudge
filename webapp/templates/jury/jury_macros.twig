@@ -85,8 +85,8 @@
 {% endmacro %}
 
 {% macro table(data, fields, options) %}
-    <div class="table-wrapper">
-        <table style="width:auto" class="data-table table table-sm table-striped
+    <div class="container-fluid px-0 table-responsive table-wrapper">
+        <table style="width:100%" class="data-table table table-sm table-striped
                 {% if options.full_clickable is defined and options.full_clickable %}table-full-clickable-cell{% endif %}">
             <thead class="">
             <tr>

@@ -7,7 +7,7 @@ use App\Entity\Team;
 
 class TeamScore
 {
-    public int $numPoints = 0;
+    public float $numPoints = 0;
 
     public int $rank = 0;
     public int $totalTime;

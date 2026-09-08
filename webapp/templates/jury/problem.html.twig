@@ -41,6 +41,21 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>Testcase groups</th>
+                    <td>
+                        {% if problem.testcasegroups is empty %}
+                            <em>no testcase groups</em>
+                        {% else %}
+                            {{ problem.testcasegroups.count }}
+                        {% endif %}
+                        <a href="{{ path('jury_problem_testcase_groups', {'probId': problem.probid}) }}">details
+                            {%- if is_granted('ROLE_ADMIN') and not lockedProblem -%}
+                                / edit
+                            {% endif %}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
                     <th>Timelimit</th>
                     <td>{{ problem.timelimit }} sec</td>
                 </tr>
@@ -154,7 +169,7 @@
         <div class="row">
             <div class="col-md-6">
                 <table
-                    class="data-table table table-hover table-striped table-sm">
+                    class="data-table table table-hover table-striped table-sm align-middle">
                     <thead class="thead-light">
                     <tr>
                         <th>CID</th>
@@ -214,6 +229,7 @@
                 <thead class="thead-light">
                 <tr>
                     <th>Name</th>
+                    <th>Type</th>
                     <th>Mime type</th>
                     <th></th>
                 </tr>
@@ -229,8 +245,9 @@
                     {% for attachment in problem.attachments %}
                         <tr>
                             <td>{{ attachment.name }}</td>
+                            <td>{{ attachment.type }}</td>
                             <td>{{ attachment.mimeType }}</td>
-                            <td>
+                            <td style="white-space: nowrap;">
                                 <a href="{{ path('jury_attachment_fetch', {'attachmentId': attachment.attachmentid}) }}"
                                    class="btn btn-sm btn-primary">
                                     <i class="fas fa-download"></i>
@@ -254,6 +271,10 @@
                             {{ form_widget(problemAttachmentForm.content) }}
                         </td>
                         <td>
+                            {{ form_errors(problemAttachmentForm.language) }}
+                            {{ form_widget(problemAttachmentForm.language) }}
+                        </td>
+                        <td class="align-middle text-center">
                             {{ form_widget(problemAttachmentForm.add) }}
                         </td>
                     </tr>

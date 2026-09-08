@@ -968,8 +968,13 @@ function initializeKeyboardShortcuts() {
         if (e.altKey || e.ctrlKey || e.metaKey) {
             return;
         }
-        // Check if the user is not typing in an input field.
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        // Check the user is not typing in an input field or in the Editor.js blog editor.
+        if (
+            e.target.tagName === 'INPUT' ||
+            e.target.tagName === 'TEXTAREA' ||
+            e.target.classList.contains('codex-editor') ||
+            e.target.closest('.codex-editor')
+        ) {
             return;
         }
         var key = e.key.toLowerCase();

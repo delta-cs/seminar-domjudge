@@ -67,6 +67,7 @@ class SingleTeamScoreboard extends Scoreboard
                 penaltyTime: $penalty,
                 runtime: $scoreRow->getRuntime($this->restricted),
                 numSubmissionsInFreeze: $scoreRow->getPending(false),
+                points: rtrim(rtrim(sprintf('%.3F', $scoreRow->getPoints($this->restricted)), '0'), '.') ?: '0',
             );
         }
 

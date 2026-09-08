@@ -8,7 +8,7 @@
     </h2>
 {% else %}
 
-    <div id="teamscoresummary">
+    <div class="table-responsive" id="teamscoresummary">
         {% set displayRank = not contest.freezeData.showFrozen %}
         {% include 'partials/scoreboard_table.html.twig' with {displayRank: displayRank, jury: false, public: false} %}
     </div>
@@ -16,20 +16,21 @@
     <div class="mt-4" data-flash-messages>
         {% include 'partials/messages.html.twig' %}
         {% if not contest.allowSubmit %}
-            {% include 'partials/alert.html.twig' with {'type': 'danger', 'message': 'Submissions (temporarily) disabled.'} %}
+            {% include 'partials/alert.html.twig' with {'type': 'danger', 'message': 'Submissions disabled.\nPlease switch to the active contest using trophy icon in the top navigation.'} %}
         {% endif %}
     </div>
 
     <div class="row">
-        <div class="col">
+        <div class="col-md-6">
             <h1 class="teamoverview">Submissions</h1>
-
-            {% include 'team/partials/submission_list.html.twig' %}
+            <div class="table-responsive">
+                {% include 'team/partials/submission_list.html.twig' %}
+            </div>
         </div>
-        <div class="col">
-            <h1 class="teamoverview">Clarifications</h1>
+        <div class="col-md-6">
+            <h1 class="teamoverview">Messages</h1>
             {% if clarifications is empty %}
-                <p class="nodata">No clarifications.</p>
+                <p class="nodata">No messages.</p>
             {% else %}
                 {% include 'team/partials/clarification_list.html.twig' with {clarifications: clarifications} %}
             {% endif %}
@@ -42,9 +43,27 @@
             {% endif %}
 
             <div class="m-1">
-                <a href="{{ path('team_clarification_add') }}" class="btn btn-secondary btn-sm" data-ajax-modal data-ajax-modal-after="initModalClarificationPreviewAdd">
-                    Request clarification
+                <hr>
+
+                <p>
+                    Tato sekce slouží ke komunikaci - vizte sekci Komunikace v
+                    <a href="{{ path('help') }}">nápovědě</a>.
+                </p>
+
+                <p class="mb-2">
+                    V případě komplikací, nejasností nebo dotazů nás můžete kontaktovat pomocí tlačítka níže.
+                </p>
+
+                <a href="{{ path('team_clarification_add') }}" class="btn btn-primary" data-ajax-modal data-ajax-modal-after="initModalClarificationPreviewAdd">
+                    <i class="fa-solid fa-hand"></i> Request clarification
                 </a>
+
+                {% if discord_invite_url is not empty %}
+                    <p class="mt-3">
+                        Případně můžete zavítat na náš <a target="_blank" href="{{ discord_invite_url }}">Discord</a>
+                        a položit dotaz tam.
+                    </p>
+                {% endif %}
             </div>
         </div>
     </div>

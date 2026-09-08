@@ -1,6 +1,8 @@
-<nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+<nav class="navbar navbar-expand-xl bg-body-tertiary fixed-top">
   <div class="container-fluid">
-    <a class="navbar-brand hidden-sm-down" href="{{ path('public_index') }}">DOMjudge</a>
+    <a class="navbar-brand hidden-sm-down" href="{{ path('public_index') }}">
+        {{ website_title }}
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuDefault"
             aria-controls="menuDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -11,19 +13,51 @@
     <div class="collapse navbar-collapse" id="menuDefault">
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
-                <a class="nav-link{% if current_route in ['public_index', 'public_team'] %} active{% endif %}"
-                    href="{{ path('public_index') }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
+                <a class="nav-link{% if current_route in ['blog_list'] %} active{% endif %}"
+                    href="{{ path('blog_list') }}">
+                    <i class="fa-regular fa-newspaper"></i> News
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{% if current_route in ['public_scoreboard', 'public_team'] %} active{% endif %}"
+                    href="{{ path('public_scoreboard', {'cid': current_public_contest.cid}) }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
             </li>
             <li class="nav-item">
                 {% if is_granted('ROLE_JURY') or (current_public_contest is not null and current_public_contest.freezeData.started) %}
                     <a class="nav-link{% if current_route == 'public_problems' %} active{% endif %}"
-                        href="{{ path('public_problems') }}">
+                        href="{{ path('public_problems', {'cid': current_public_contest.cid}) }}">
                         <i class="fas fa-book-open"></i> Problemset
                     </a>
                 {% else %}
                     <a class="nav-link disabled"><i class="fas fa-book-open"></i> Problemset</a>
                 {% endif %}
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   target="_blank"
+                   href="https://github.com/delta-cs/seminar">
+                    <i class="fa-solid fa-graduation-cap"></i> Study
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   target="_blank"
+                   href="https://github.com/delta-cs/seminar-archive">
+                    <i class="fa-solid fa-box-archive"></i> Archive
+                </a>
+            </li>
+
+            {% if discord_invite_url is not empty %}
+                <li class="nav-item">
+                    <a class="nav-link"
+                       target="_blank"
+                       href="{{ discord_invite_url }}">
+                        <i class="fa-brands fa-discord"></i>
+                    </a>
+                </li>
+            {% endif %}
 
             {% if is_granted('ROLE_TEAM') %}
                 <li class="nav-item">
@@ -40,7 +74,18 @@
             {% endif %}
         </ul>
 
-        {% include 'partials/menu_login_logout_button.html.twig' %}
+        {% include 'partials/menu_help_button.html.twig' %}
+
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAuth" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAuth">
+                    {% include 'partials/menu_login_logout_button.html.twig' %}
+                </div>
+            </li>
+        </ul>
 
         <ul class="navbar-nav">
             {% if current_public_contests | length > 1 %}
@@ -49,7 +94,8 @@
         </ul>
 
         {% include 'partials/menu_countdown.html.twig' with {contest: current_public_contest} %}
+
+        {% include 'partials/menu_theme_switcher.html.twig' %}
     </div>
   </div>
 </nav>
-{% include 'partials/scoreboard_progress_bar.html.twig' with {margin: -9, contest: current_public_contest} %}

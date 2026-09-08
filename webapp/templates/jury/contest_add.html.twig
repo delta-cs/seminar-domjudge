@@ -7,6 +7,7 @@
     {{ parent() }}
     {{ macros.select2_extrahead() }}
     {{ macros.coloris_extrahead() }}
+    <link rel="stylesheet" href="{{ asset('css/date-time-picker.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -16,5 +17,6 @@
     {% include 'jury/partials/contest_form.html.twig' %}
 
     {{ macros.collection_scripts() }}
+    <script src="{{ asset('js/date-time-picker.js') }}"></script>
 
 {% endblock %}

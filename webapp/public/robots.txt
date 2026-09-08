@@ -2,4 +2,7 @@
 # www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
 
 User-agent: *
-Disallow:
+Disallow: /public/*/attachment/*
+Disallow: /public/team/*
+Disallow: /public/problems/*/text
+Disallow: /public/*/samples.zip

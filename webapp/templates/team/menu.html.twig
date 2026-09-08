@@ -1,6 +1,8 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-xl navbar-dark bg-dark fixed-top">
   <div class="container-fluid">
-    <a class="navbar-brand hidden-sm-down" href="{{ path('team_index') }}">DOMjudge</a>
+    <a class="navbar-brand hidden-sm-down" href="{{ path('team_index') }}">
+        {{ website_title }}
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuDefault"
             aria-controls="menuDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -12,17 +14,13 @@
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
                 <a class="nav-link{% if current_route in ['team_index', 'team_clarification', 'team_clarification_add', 'team_submission'] %} active{% endif %}"
-                    href="{{ path('team_index') }}"><i class="fas fa-home"></i> Home</a>
+                    href="{{ path('team_index') }}"><i class="fas fa-home"></i> Team</a>
             </li>
             <li class="nav-item">
-                {% if current_team_contest is not null and (is_granted('ROLE_JURY') or current_team_contest.freezeData.started) %}
-                    <a class="nav-link{% if current_route == 'team_problems' %} active{% endif %}"
-                        href="{{ path('team_problems') }}">
-                        <i class="fas fa-book-open"></i> Problemset
-                    </a>
-                {% else %}
-                    <a class="nav-link disabled"><i class="fas fa-book-open"></i> Problemset</a>
-                {% endif %}
+                <a class="nav-link{% if current_route in ['blog_list'] %} active{% endif %}"
+                   href="{{ path('blog_list') }}">
+                    <i class="fa-regular fa-newspaper"></i> News
+                </a>
             </li>
             {% if show_languages_to_teams %}
                 <li class="nav-item">
@@ -39,13 +37,49 @@
             {% if enable_ranking %}
                 <li class="nav-item">
                     <a class="nav-link{% if current_route in ['team_scoreboard', 'team_team'] %} active{% endif %}"
-                        href="{{ path('team_scoreboard') }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
+                        href="{{ path('team_scoreboard', {'cid': current_team_contest.cid}) }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
                 </li>
             {% endif %}
+            <li class="nav-item">
+                {% if current_team_contest is not null and (is_granted('ROLE_JURY') or current_team_contest.freezeData.started) %}
+                    <a class="nav-link{% if current_route == 'team_problems' %} active{% endif %}"
+                       href="{{ path('team_problems', {'cid': current_team_contest.cid}) }}">
+                        <i class="fas fa-book-open"></i> Problemset
+                    </a>
+                {% else %}
+                    <a class="nav-link disabled"><i class="fas fa-book-open"></i> Problemset</a>
+                {% endif %}
+            </li>
             {% if doc_links is not empty %}
                 <li class="nav-item">
                     <a class="nav-link{% if current_route in ['team_docs'] %} active{% endif %}"
                         href="{{ path('team_docs') }}"><i class="fas fa-file-alt"></i> Docs</a>
+                </li>
+            {% endif %}
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   target="_blank"
+                   href="https://github.com/delta-cs/seminar">
+                    <i class="fa-solid fa-graduation-cap"></i> Study
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   target="_blank"
+                   href="https://github.com/delta-cs/seminar-archive">
+                    <i class="fa-solid fa-box-archive"></i> Archive
+                </a>
+            </li>
+
+            {% if discord_invite_url is not empty %}
+                <li class="nav-item">
+                    <a class="nav-link"
+                       target="_blank"
+                       href="{{ discord_invite_url }}">
+                        <i class="fa-brands fa-discord"></i>
+                    </a>
                 </li>
             {% endif %}
 
@@ -56,36 +90,75 @@
             {% endif %}
         </ul>
 
-        <div class="ml-auto me-3">
-            <a class="nav-link d-none" id="notify_enable">
-                <span class="btn btn-warning btn-sm">
-                    <i class="fas fa-bell fa-fw"></i> Enable Notifications
-                </span>
-            </a>
-            <a class="nav-link d-none" id="notify_disable">
-                <span class="btn btn-secondary btn-sm">
-                    <i class="fas fa-bell-slash fa-fw"></i> Disable Notifications
-                </span>
-            </a>
-
+        <div class="mb-2 mb-xl-0">
+            {% include 'partials/menu_help_button.html.twig' %}
         </div>
-        <div class="ml-auto me-3">
+
+        {% if unreadClarifications is defined and unreadClarifications|length > 0 %}
+            <div class="dropdown mb-2 mb-xl-0 me-3">
+                <button type="button"
+                        class="btn btn-outline-warning btn-sm dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <i class="fas fa-bell fa-fw"></i>
+                </button>
+                <div class="dropdown-menu overflow-auto" style="max-height: 30rem">
+                    {% for clarification in unreadClarifications %}
+                        <div style="width: 18rem">
+                            <a class="dropdown-item py-2"
+                               href="{{ path('team_clarification', {clarId: clarification.clarid}) }}">
+                                <p class="mb-1 text-right"><span
+                                        class="text-muted">{{ clarification.submittime|round|date('d. m. H:i') }}</span>
+                                </p>
+                                <p class="card-text text-wrap">{{ clarification.summary }}</p>
+                            </a>
+                            <hr class="m-0">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+{#        <div class="me-3">#}
+{#            <a class="nav-link d-none" id="notify_enable">#}
+{#                <span class="btn btn-warning btn-sm">#}
+{#                    <i class="fas fa-bell fa-fw"></i> Enable Notifications#}
+{#                </span>#}
+{#            </a>#}
+{#            <a class="nav-link d-none" id="notify_disable">#}
+{#                <span class="btn btn-secondary btn-sm">#}
+{#                    <i class="fas fa-bell-slash fa-fw"></i> Disable Notifications#}
+{#                </span>#}
+{#            </a>#}
+{#        </div>#}
+
+        <div class="me-2">
             {% if is_granted('ROLE_JURY') or (current_team_contest is not null and current_team_contest.freezeData.started) %}
-                <a class="nav-link" data-ajax-modal data-ajax-modal-after="initSubmitModal" href="{{ path('team_submit') }}">
-                    <span class="btn btn-success btn-sm">
+                <a class="nav-link" data-ajax-modal data-ajax-modal-after="initSubmitModal"
+                   href="{{ path('team_submit') }}">
+                    <span class="btn btn-success btn-sm mb-2 mb-xl-0">
                         <i class="fas fa-cloud-upload-alt"></i> Submit
                     </span>
                 </a>
             {% else %}
                 <a class="nav-link">
-                    <span class="btn btn-success btn-sm disabled">
+                    <span class="btn btn-success btn-sm me-3 mb-2 mb-xl-0 disabled">
                         <i class="fas fa-cloud-upload-alt"></i> Submit
                     </span>
                 </a>
             {% endif %}
         </div>
 
-        {% include 'partials/menu_login_logout_button.html.twig' with {confirmLogout: true} %}
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAuth" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    {% include 'partials/menu_login_logout_button.html.twig' with {confirmLogout: true} %}
+                </div>
+            </li>
+        </ul>
 
         <ul class="navbar-nav">
             {% if current_team_contests | length > 1 %}
@@ -94,6 +167,8 @@
         </ul>
 
         {% include 'partials/menu_countdown.html.twig' with {contest: current_team_contest} %}
+
+        {% include 'partials/menu_theme_switcher.html.twig' %}
     </div>
   </div>
 </nav>

@@ -159,12 +159,18 @@ div.submission-summary > span {
 .importexport h2 {
     margin-top: 1rem;
 }
+
 .importexport div.tile {
     background-color: aliceblue;
     padding: 1rem;
     margin: .5rem;
     height: 95%;
 }
+
+[data-bs-theme="dark"] .importexport div.tile {
+    background-color: var(--bs-secondary-bg);
+}
+
 .importexport div.tile h3 {
     font-size: 22px;
 }
@@ -247,4 +253,10 @@ table.table-full-clickable-cell tr .table-button-head-right-right{
 
 .timebutton {
     min-width: 9em;
+}
+
+#currentContests .collapsing {
+    -webkit-transition: none;
+    transition: none;
+    display: none;
 }
