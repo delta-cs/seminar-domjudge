@@ -920,6 +920,17 @@ class Contest extends BaseApiEntity implements
         return $this;
     }
 
+    /**
+     * ranknumber is NOT NULL with no database default, so a Contest built
+     * directly -- as upstream's tests do -- has no rank until something
+     * assigns one. The property is typed and uninitialised until then, which
+     * getRank() cannot report without erroring.
+     */
+    public function hasRank(): bool
+    {
+        return isset($this->ranknumber);
+    }
+
     public function setRank(int $rank): Contest
     {
         $this->ranknumber = $rank;
