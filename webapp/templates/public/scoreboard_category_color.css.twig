@@ -3,7 +3,7 @@
     {% set colorClass = color | replace({"#": "_"}) %}
 
     .cl{{ colorClass }} {
-        background-color: {{ color }};
+        border-left: 5px solid {{ color }};
     }
 
     {% set cMin = color|hexColorToRGBA(0) %}
