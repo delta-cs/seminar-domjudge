@@ -288,6 +288,8 @@
                         {% endif %}
                     {% elseif showPending and matrixItem.numSubmissionsPending > 0 %}
                         {% set scoreCssClass = 'score_pending' %}
+                    {% elseif scoringScoreboard and matrixItem.points > 0 %}
+                        {% set scoreCssClass = 'score_partial' %}
                     {% elseif matrixItem.numSubmissions > 0 %}
                         {% set scoreCssClass = 'score_incorrect' %}
                     {% endif %}
@@ -345,7 +347,7 @@
                                 {% endif %}
                                 >
                                     {% if scoringScoreboard %}
-                                        {% if matrixItem.isCorrect %}{{ matrixItem.points }}{% else %}&nbsp;{% endif %}
+                                        {% if matrixItem.isCorrect or matrixItem.points > 0 %}{{ matrixItem.points }}{% else %}&nbsp;{% endif %}
                                     {% else %}
                                         {% if matrixItem.isCorrect %}{{ time }}{% else %}&nbsp;{% endif %}
                                     {% endif %}
