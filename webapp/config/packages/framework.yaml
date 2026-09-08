@@ -17,6 +17,8 @@ framework:
         cookie_secure: auto
         cookie_samesite: lax
         storage_factory_id: session.storage.factory.native
+        cookie_lifetime: 7776000  # 90 days (3 months) in seconds
+        gc_maxlifetime: 7776000  # 90 days (3 months) in seconds
 
     php_errors:
         log: true

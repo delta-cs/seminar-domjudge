@@ -9,15 +9,69 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
 #[AsEventListener]
 class AddContentSecurityPolicyListener
 {
-    public function __construct(protected readonly ?Profiler $profiler) {}
+    public function __construct(
+        protected readonly ?Profiler $profiler,
+        protected readonly array $cspConfig
+    ) {}
 
     public function __invoke(ResponseEvent $event): void
     {
+        $response = $event->getResponse();
+
+        $csp = implode('; ', [
+            $this->getDefaultSrcCsp(),
+            $this->getStyleSrcCsp(),
+            $this->getScriptSrcCsp(),
+            $this->getImageSrcCsp(),
+            $this->getConnectSrcCsp(),
+            $this->getFontSrcScp(),
+            $this->getWorkerSrcCsp(),
+            $this->getFrameAncestorsCsp()
+        ]);
+
+        $response->headers->set('Content-Security-Policy', $csp);
+    }
+
+    private function getDefaultSrcCsp(): string
+    {
+        return "default-src " . $this->cspConfig['defaultSrc'];
+    }
+
+    private function getStyleSrcCsp(): string
+    {
+        return "style-src " . $this->cspConfig['styleSrc'];
+    }
+
+    private function getScriptSrcCsp(): string
+    {
         // Set the correct CSP based on whether the profiler is enabled, since
         // the profiler requires 'unsafe-eval' for script-src 'self'.
-        $response = $event->getResponse();
-        $cspExtra = $this->profiler ? "'unsafe-eval'" : "";
-        $csp = "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' $cspExtra; img-src 'self' data:; worker-src 'self' blob:";
-        $response->headers->set('Content-Security-Policy', $csp);
+        $unsafeEvalCsp = $this->profiler ? " 'unsafe-eval'" : "";
+        return "script-src " . $this->cspConfig['scriptSrc'] . $unsafeEvalCsp;
+    }
+
+    private function getImageSrcCsp(): string
+    {
+        return "img-src " . $this->cspConfig['imgSrc'];
+    }
+
+    private function getConnectSrcCsp(): string
+    {
+        return "connect-src " . $this->cspConfig['connectSrc'];
+    }
+
+    private function getFontSrcScp(): string
+    {
+        return "font-src " . $this->cspConfig['fontSrc'];
+    }
+
+    private function getWorkerSrcCsp(): string
+    {
+        return "worker-src " . $this->cspConfig['workerSrc'];
+    }
+
+    private function getFrameAncestorsCsp(): string
+    {
+        return "frame-ancestors " . $this->cspConfig['frameAncestors'];
     }
 }
