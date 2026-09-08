@@ -891,6 +891,9 @@ $(function() {
             readOnly: %s,
             theme: getCurrentEditorTheme(),
         });
+        // Expose the instance on the element so page scripts can read and replace
+        // the content (the team editor relies on this).
+        element.editor = editor;
         %s
         %s
     });
