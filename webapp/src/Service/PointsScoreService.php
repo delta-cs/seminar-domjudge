@@ -52,7 +52,7 @@ class PointsScoreService
 
         $lazyEval = $this->config->get('lazy_eval_results');
         $problemLazy = $judging->getSubmission()->getContestProblem()->getLazyEvalResults();
-        if (isset($problemLazy)) {
+        if ($problemLazy !== DOMJudgeService::EVAL_DEFAULT) {
             $lazyEval = $problemLazy;
         }
 
@@ -70,6 +70,10 @@ class PointsScoreService
 
         foreach ($judgingRuns as $judgingRun) {
             $group = $judgingRun->getTestcase()->getTestcaseGroup();
+            if ($group === null) {
+                // Testcases predating the groups feature score nothing rather than crashing.
+                continue;
+            }
             if (!isset($groupRuns[$group->getTestcasegroupid()])) {
                 $groupRuns[$group->getTestcasegroupid()] = [$judgingRun];
             } else {
