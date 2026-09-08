@@ -139,6 +139,8 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
         // These variables mostly exist for the header template.
         $currentContest = $this->dj->getCurrentContest();
         return [
+            'website_title'                 => $this->config->get('website_title'),
+            'current_team'                  => $team,
             'current_contest_id'            => $this->dj->getCurrentContestCookie(),
             'current_contest'               => $currentContest,
             'current_contests'              => $this->dj->getCurrentContests(),
@@ -163,6 +165,14 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             'doc_links'                     => $this->dj->getDocLinks(),
             'allow_registration'            => $selfRegistrationCategoriesCount !== 0,
             'enable_ranking'                => $this->config->get('enable_ranking'),
+            'show_points_on_scoreboard'     => $this->config->get('show_points_on_scoreboard'),
+            'google_analytics_tracking_id'  =>
+                $this->tokenStorage->getToken() && $this->authorizationChecker->isGranted('ROLE_ADMIN') ?
+                    '' : $this->config->get('google_analytics_tracking_id'),
+            'hotjar_tracking_id'            =>
+                $this->tokenStorage->getToken() && $this->authorizationChecker->isGranted('ROLE_ADMIN') ?
+                    '' : $this->config->get('hotjar_tracking_id'),
+            'discord_invite_url'            => $this->config->get('discord_invite_url'),
             'editor_themes'                 => [
                 'vs'                        => ['name' => 'Visual Studio (light)'],
                 'vs-dark'                   => ['name' => 'Visual Studio (dark)'],
