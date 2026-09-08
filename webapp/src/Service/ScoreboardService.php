@@ -295,17 +295,23 @@ class ScoreboardService
             // correct one, and those submissions are skipped from here on.
             if ($isScoringContest && $judging instanceof Judging) {
                 $scored = $judging->getPointsScored();
-                if ($scored > $pointsJury) {
-                    $pointsJury = $scored;
-                    $timeJury = $contest->getContestTime(
-                        max((float)$submission->getSubmittime(), $contestStartTime)
-                    );
+                $pointsJury = max($pointsJury, $scored);
+                if (!$submission->isAfterFreeze()) {
+                    $pointsPubl = max($pointsPubl, $scored);
                 }
-                if (!$submission->isAfterFreeze() && $scored > $pointsPubl) {
-                    $pointsPubl = $scored;
-                    $timePubl = $contest->getContestTime(
+                // The time is that of the *last* submission matching the best
+                // score, and a team that never scored keeps the time of its last
+                // submission -- 0 matches the initial best of 0. That is what
+                // 8.3.2 did and what the published scoreboards were built from,
+                // so the comparison stays == against the running best.
+                if ($scored == $pointsJury) {
+                    $submitTime = $contest->getContestTime(
                         max((float)$submission->getSubmittime(), $contestStartTime)
                     );
+                    $timeJury = $submitTime;
+                    if (!$submission->isAfterFreeze()) {
+                        $timePubl = $submitTime;
+                    }
                 }
             }
 
@@ -583,7 +589,12 @@ class ScoreboardService
         foreach ($variants as $variant => $isRestricted) {
             $scoreKey[$variant] = $isScoringContest
                 ? self::getScoringScoreKey(
-                    $scoredPoints[$variant],
+                    // Rank on the same rounded total that gets stored in
+                    // rankcache and shown on the scoreboard. Ranking on the exact
+                    // sum instead puts a team displaying 6 points below another
+                    // displaying 6 with a worse time, which reads as a broken
+                    // scoreboard, and it is not how 8.3.2 ordered teams.
+                    (string)(int)round((float)$scoredPoints[$variant]),
                     $totalTime[$variant],
                     $timeOfLastCorrect[$variant]
                 )
