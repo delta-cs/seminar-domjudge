@@ -36,8 +36,12 @@
             {% endif %}
             {% if enable_ranking %}
                 <li class="nav-item">
-                    <a class="nav-link{% if current_route in ['team_scoreboard', 'team_team'] %} active{% endif %}"
-                        href="{{ path('team_scoreboard', {'cid': current_team_contest.cid}) }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
+                    {% if current_team_contest is not null %}
+                        <a class="nav-link{% if current_route in ['team_scoreboard', 'team_team'] %} active{% endif %}"
+                            href="{{ path('team_scoreboard', {'cid': current_team_contest.cid}) }}"><i class="fas fa-list-ol"></i> Scoreboard</a>
+                    {% else %}
+                        <a class="nav-link disabled"><i class="fas fa-list-ol"></i> Scoreboard</a>
+                    {% endif %}
                 </li>
             {% endif %}
             <li class="nav-item">
