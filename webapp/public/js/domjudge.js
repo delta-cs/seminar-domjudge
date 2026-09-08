@@ -74,6 +74,14 @@ function disableKeys()
 function getEditorThemes()
 {
     const element = document.querySelector('[data-editor-themes]');
+    if (element === null) {
+        // Only the jury menu renders the theme picker, but the team editor uses Monaco
+        // too. Without this the editor dies on a null dataset and never mounts.
+        return {
+            'vs': {'name': 'Visual Studio (light)'},
+            'vs-dark': {'name': 'Visual Studio (dark)'},
+        };
+    }
     return JSON.parse(element.dataset.editorThemes);
 }
 
@@ -81,6 +89,11 @@ function getCurrentEditorTheme()
 {
     const theme = localStorage.getItem('domjudge_editor_theme');
     if (theme === null) {
+        // With no picker to choose from, follow the page's own light/dark setting.
+        if (document.querySelector('[data-editor-themes]') === null
+            && document.documentElement.getAttribute('data-bs-theme') === 'dark') {
+            return 'vs-dark';
+        }
         return Object.keys(getEditorThemes())[0];
     }
     return theme;

@@ -4,6 +4,15 @@
 
 {% block extrahead %}
     {{ parent() }}
+    {# Upstream only loads Monaco from jury/base.html.twig, since stock DOMjudge has no
+       team-side editor. This page needs the AMD loader too, or codeEditor()'s
+       require([...]) call fails with "require is not defined". #}
+    <script src="{{ asset('js/monaco/vs/loader.js') }}"></script>
+    <script>
+        {# Symfony appends a version query to asset URLs; the AMD loader needs it removed. #}
+        require.config({ paths: { vs: '{{ asset('js/monaco/vs') }}'.replace(/\?.*/, '') } });
+        window.editorThemeFolder = '{{ asset('js/monaco/themes') }}'.replace(/\?.*/, '');
+    </script>
     <style>
         .data-table td a, .data-table td a:hover {
             display: block;
