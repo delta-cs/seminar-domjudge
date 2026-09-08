@@ -628,9 +628,9 @@
 
     {% if showTeamSubmissions or jury %}
         {% if scoreboard.getRuntimeAsScoreTiebreaker() %}
-            {% set cellColors = {first: 'Solved, fastest', correct: 'Solved', incorrect: 'Tried, incorrect', pending: 'Tried, pending', neutral: 'Untried'} %}
+            {% set cellColors = {first: 'Solved, fastest', correct: 'Solved', partial: 'Partially solved', incorrect: 'Tried, incorrect', pending: 'Tried, pending', neutral: 'Untried'} %}
         {% else %}
-            {% set cellColors = {first: 'Solved first', correct: 'Solved', incorrect: 'Tried, incorrect', pending: 'Tried, pending', neutral: 'Untried'} %}
+            {% set cellColors = {first: 'Solved first', correct: 'Solved', partial: 'Partially solved', incorrect: 'Tried, incorrect', pending: 'Tried, pending', neutral: 'Untried'} %}
         {% endif %}
         <table id="cell_legend" class="d-none d-md-table scoreboard scorelegend {% if jury %}scoreboard_jury{% endif %}">
             <thead>
@@ -640,7 +640,7 @@
             </thead>
             <tbody>
             {% for color, description in cellColors %}
-                {% if color != 'pending' or showPending %}
+                {% if (color != 'pending' or showPending) and (color != 'partial' or scoringScoreboard) %}
                     {% if color == 'first' %}
                         {% set color = "correct score_first" %}
                     {% endif %}

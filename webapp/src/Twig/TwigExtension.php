@@ -1272,6 +1272,13 @@ EOF;
         if (!$matrixItem->isCorrect) {
             if ($matrixItem->numSubmissionsPending > 0) {
                 $ret = '<span><span class="mobile-pending">' . $ret . '</span></span>';
+            } elseif ((float)$matrixItem->points > 0) {
+                // A partially scored problem is neither solved nor a plain miss:
+                // striking it through would hide the points the team did earn.
+                $ret = '<span><span class="mobile-partial">' . $ret
+                    . '<span class="mobile-partial-points">'
+                    . htmlspecialchars($matrixItem->points, ENT_QUOTES)
+                    . '</span></span></span>';
             } elseif ($matrixItem->numSubmissions > 0) {
                 $ret = '<span><span class="strike-diagonal">' . $ret . '</span></span>';
             }
