@@ -10,8 +10,10 @@ use App\Entity\Team;
 use App\Form\Type\TeamClarificationType;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
+use App\Service\DiscordWebhookService;
 use App\Service\EventLogService;
 use App\Utils\Utils;
+use Throwable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\Expr\Join;
@@ -39,6 +41,7 @@ class ClarificationController extends BaseController
         protected readonly ConfigurationService $config,
         EntityManagerInterface $em,
         protected readonly EventLogService $eventLogService,
+        protected readonly DiscordWebhookService $discordService,
         protected readonly FormFactoryInterface $formFactory,
         KernelInterface $kernel,
     ) {
@@ -171,8 +174,15 @@ class ClarificationController extends BaseController
         }
         $this->em->flush();
 
+        // Unread messages for the team menu badge, limited to the current contest.
+        $currentTeamContest = $this->dj->getCurrentContest($team->getTeamid());
+
         $data = [
             'clarification' => $clarification,
+            'unreadClarifications' => $currentTeamContest === null ? [] :
+                $team->getUnreadClarifications()->filter(
+                    fn (Clarification $c) => $c->getContest()->getCid() === $currentTeamContest->getCid()
+                ),
             'team' => $team,
             'categories' => $categories,
             'form' => $form->createView(),
@@ -258,6 +268,13 @@ class ClarificationController extends BaseController
         $this->dj->auditlog('clarification', $newClarification->getClarid(), 'added', null, null,
             $contest->getCid());
         $this->eventLogService->log('clarification', $newClarification->getClarid(), 'create', $contest->getCid());
+
+        try {
+            $this->discordService->sendClarificationNotification($newClarification);
+        } catch (Throwable $e) {
+            // A failing notification must never block sending the clarification;
+            // DiscordWebhookService logs the underlying error itself.
+        }
 
         $this->addFlash('success', 'Clarification sent to the jury');
     }
