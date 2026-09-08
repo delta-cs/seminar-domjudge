@@ -338,6 +338,16 @@ html[data-bs-theme="dark"] .scoreheader th {
 .score_correct.score_first { background: #1daa1d; }
 .score_incorrect           { background: #e87272; }
 .score_partial             { background: #e8c072; }
+
+.mobile-partial { position: relative; }
+.mobile-partial-points {
+    display: block;
+    font-size: x-small;
+    line-height: 1;
+    color: #a5750d;
+    font-weight: bold;
+}
+[data-bs-theme="dark"] .mobile-partial-points { color: #e8c072; }
 .score_pending             { background: #6666ff; }
 
 [data-bs-theme="dark"] .score_correct { background: #1daa1d; }
