@@ -1,7 +1,7 @@
 :root {
     /** Specify the BG color in one place. **/
-    --background-color: white;
-    --text-color: black;
+    /*--background-color: white;*/
+    /*--text-color: black;*/
 }
 
 /** WCAG fixes start **/
@@ -17,10 +17,9 @@
 /** WCAG fixes end **/
 
 body {
-    color: var(--text-color);
-    background-color: var(--background-color);
+    /*color: var(--text-color);*/
+    /*background-color: var(--background-color);*/
     font-family: Roboto, sans-serif;
-    padding-bottom: 4em;
     padding-top: 4.5rem;
 }
 
@@ -93,6 +92,12 @@ a {
     white-space: pre;
 }
 
+[data-bs-theme="dark"] .output_text {
+    border-top: 1px dotted var(--bs-dark);
+    border-bottom: 1px dotted var(--bs-dark);
+    background-color: var(--bs-secondary-bg);
+}
+
 .clarificationform pre {
     border-top: 1px dotted #c0c0c0;
     border-bottom: 1px dotted #c0c0c0;
@@ -108,6 +113,11 @@ kbd {
     color: black;
 }
 
+[data-bs-theme="dark"] kbd {
+    background-color: var(--bs-secondary-bg);
+    color: white;
+}
+
 .teamid { font-family: monospace; }
 .filename, .hostname { font-family: monospace; }
 
@@ -117,6 +127,8 @@ kbd {
 }
 
 a.collapse-link { color: black; text-decoration: none; }
+
+[data-bs-theme="dark"] a.collapse-link { color: white }
 
 table.lcsdiff {
     border-spacing: 0;
@@ -129,6 +141,10 @@ table.lcsdiff td.linenr {
     padding-right: 7px;
 }
 
+[data-bs-theme="dark"] table.lcsdiff td.linenr {
+    background-color: var(--bs-gray-700);
+}
+
 ins {
     background: #dfd;
     text-decoration: none;
@@ -136,6 +152,15 @@ ins {
 del {
     background: #fdd;
     text-decoration: none;
+}
+
+[data-bs-theme="dark"] ins {
+    color: white;
+    background-color: #037703;
+}
+[data-bs-theme="dark"] del {
+    color: white;
+    background-color: #b81b1b;
 }
 
 
@@ -155,6 +180,12 @@ del {
     border-right: 1px solid #dee2e6;
     border-left: 1px solid #dee2e6;
     padding: 0.5rem;
+}
+
+[data-bs-theme="dark"] .source-tab {
+    border-bottom: 1px solid var(--bs-body-bg);
+    border-right: 1px solid var(--bs-body-bg);
+    border-left: 1px solid var(--bs-body-bg);
 }
 
 #lastmod {
@@ -210,6 +241,11 @@ del {
     min-width: 4.2em;
     border-right: none;
 }
+
+html[data-bs-theme="dark"] .scoreboard a {
+    color: var(--bs-light);
+}
+
 .scoreboard a {
     display: block;
     padding: 2px 1px 2px 1px;
@@ -252,6 +288,11 @@ del {
     width: 1.33rem;
     border-radius: 0.1875rem;
 }
+
+html[data-bs-theme="dark"] .univ {
+    color: var(--bs-gray-400);
+}
+
 .univ {
     font-size: 80%;
     font-weight: normal;
@@ -269,12 +310,17 @@ img.affiliation-logo {
     border-bottom: 2px solid black;
     white-space: nowrap;
 }
+
+html[data-bs-theme="dark"] .scoreheader th {
+    background: var(--bs-dark);
+}
+
 .scoreheader th {
     text-align: center;
     box-shadow: -1px 0 0 0 silver inset,
                 0 2px 0 0 black;
     border: none;
-    background: var(--background-color);
+    background: var(--bs-light);
     position: sticky;
     top: 0;
     z-index: 1;
@@ -283,7 +329,7 @@ img.affiliation-logo {
 .problempoints {
     font-size: smaller;
     font-weight: normal;
-    color: #303030;
+    /*color: #303030;*/
     padding-left: 3pt;
     padding-right: 3pt;
 }
@@ -294,6 +340,9 @@ img.affiliation-logo {
 .score_partial             { background: #e8c072; }
 .score_pending             { background: #6666ff; }
 
+[data-bs-theme="dark"] .score_correct { background: #1daa1d; }
+[data-bs-theme="dark"] .score_first   { background: #0b610b !important; }
+
 .gold-medal   { color: #eec710 }
 .silver-medal { color: #aaa }
 .bronze-medal { color: #c08e55 }
@@ -301,7 +350,7 @@ img.affiliation-logo {
 #scoresolv,#scoretotal,#scoresolvmobile,#scoretotalmobile { width: 2.5em; }
 .scorenc,.scorett,.scorepl { text-align: center; width: 2ex; }
 .scorenc { font-weight: bold; }
-td.scorenc { border-color: silver; border-right: 0; }
+td.scorenc { border-color: silver; }
 
 .scoreprob { width: 3.0em; vertical-align: middle; }
 .scoreaffil { text-align: center; }
@@ -380,15 +429,30 @@ table.rejudgetable td {
 table.rejudgetable td,th {
     padding: .5rem;
 }
+
 table.rejudgetable td.changed {
     background-color: #fdd;
     font-weight: bold;
 }
+
+[data-bs-theme="dark"] table.rejudgetable td.changed {
+    background-color: var(--bs-danger);
+}
+
 table.rejudgetable td.identical {
     background-color: #dfd;
 }
+
+[data-bs-theme="dark"] table.rejudgetable td.identical {
+    color: var(--bs-dark);
+}
+
 table.rejudgetable td.zero {
     background-color: #f0f8ff;
+}
+
+[data-bs-theme="dark"] table.rejudgetable td.zero {
+    background-color: var(--bs-secondary-bg);
 }
 
 tr.ignore td, td.ignore, span.ignore {
@@ -456,6 +520,10 @@ tr.ignore td, td.ignore, span.ignore {
     color: silver;
     margin-top: .2ex;
     font-weight: normal;
+}
+
+html[data-bs-theme="dark"] .teamoverview {
+    background-color: var(--bs-dark);
 }
 
 .teamoverview {
@@ -646,6 +714,8 @@ tr.ignore td, td.ignore, span.ignore {
     --badge-padding-x: 0.5em;
     font-size: 1em;
     min-width: 2em;
+    white-space: normal;
+    text-wrap: nowrap;
 }
 
 h5 .problem-badge {
@@ -667,7 +737,7 @@ blockquote {
 }
 
 .category-best {
-    margin-right: 2em;
+    /*margin-right: 2em;*/
     font-weight: normal;
 }
 
@@ -680,6 +750,10 @@ blockquote {
     border-radius: 4px;
     font-style: italic;
     font-size: smaller;
+}
+
+[data-bs-theme="dark"] .rendered-preview-badge {
+    background-color: var(--bs-gray-dark);
 }
 
 .right {
@@ -757,4 +831,119 @@ blockquote {
     width: 100%;
     height: 80vh;
     border: 1px solid grey;
+.faicon-badge-container {
+    position: relative;
+    display: inline-block;
+}
+
+.faicon-badge-dot-red {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background-color: #e43636;
+    border-radius: 50%;
+}
+
+.faicon-badge-dot-green {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background-color: #28a745;
+    border-radius: 50%;
+}
+
+.faicon-dot-red {
+    color: #e43636;
+}
+.faicon-dot-green {
+    color: #28a745;
+}
+
+/* xs to (not including) md */
+@media (max-width: 768px) {
+    nav.navbar {
+        max-height: 100vh;
+        overflow-y: scroll;
+    }
+}
+
+/* Editor.js Bootstrap Dark Mode */
+[data-bs-theme="dark"] .ce-toolbar__plus,
+[data-bs-theme="dark"] .ce-toolbar__settings-btn,
+[data-bs-theme="dark"] .ce-popover-item__title,
+[data-bs-theme="dark"] .ce-popover-item__icon {
+  color: white;
+}
+
+[data-bs-theme="dark"] .cdx-search-field.ce-popover__search {
+  background-color: #1e293b4d;
+  border-color: white;
+}
+
+[data-bs-theme="dark"] .cdx-search-field__input {
+  color: white;
+}
+
+[data-bs-theme="dark"] .cdx-block,
+[data-bs-theme="dark"] .ce-block {
+  color: white;
+}
+
+[data-bs-theme="dark"] .ce-inline-toolbar,
+[data-bs-theme="dark"] .ce-conversion-tool__icon,
+[data-bs-theme="dark"] .ce-popover-item__icon,
+[data-bs-theme="dark"] .tc-popover__item-icon {
+  color: white;
+  background-color: var(--bs-body-bg);
+}
+
+[data-bs-theme="dark"] .ce-popover,
+[data-bs-theme="dark"] .ce-conversion-toolbar,
+[data-bs-theme="dark"] .ce-inline-toolbar,
+[data-bs-theme="dark"] .tc-popover {
+  background-color: var(--bs-body-bg);
+}
+
+[data-bs-theme="dark"] .ce-inline-tool:hover,
+[data-bs-theme="dark"] .ce-inline-toolbar__dropdown:hover,
+[data-bs-theme="dark"] .ce-toolbar__plus:hover,
+[data-bs-theme="dark"] .ce-toolbar__settings-btn:hover,
+[data-bs-theme="dark"] .ce-conversion-tool:hover,
+[data-bs-theme="dark"] .ce-popover-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="dark"] *::selection,
+[data-bs-theme="dark"] .ce-block.ce-block--selected .ce-block__content {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="dark"] .ce-popover__items {
+  scrollbar-color: white var(--bs-body-bg);
+}
+/* table class wrapper */
+[data-bs-theme="dark"] .tc-wrap,
+[data-bs-theme="dark"] .tc-wrap * {
+  --color-border: white;
+  --color-text-secondary: white;
+  --color-background: rgba(255, 255, 255, 0.2);
+  --toggler-dots-color: rgba(255, 255, 255, 0.2);
+  --toggler-dots-color-hovered: white;
+}
+
+@media (max-width: 650px) {
+  [data-bs-theme="dark"] .ce-toolbar__settings-btn,
+  [data-bs-theme="dark"] .ce-toolbar__plus {
+    background-color: var(--bs-body-bg);
+    border-color: white;
+  }
+}
+
+/* Dark mode DomJudge logo */
+[data-bs-theme="dark"] img[src^="/images/DOMjudgelogo.svg"] {
+  filter: brightness(1.2) invert(0.7) contrast(1.1);
 }

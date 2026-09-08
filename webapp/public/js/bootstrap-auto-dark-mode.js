@@ -16,10 +16,14 @@ window.updateTheme = function(theme) {
     localStorage.setItem("theme", theme);
     document.querySelector("html").setAttribute("data-bs-theme", theme);
 
-    editors = document.querySelectorAll(".editor");
-    for (let i = 0; i < editors.length; i++) {
-        let editor = editors[i].editor;
-        editor.setTheme(theme === "dark" ? "ace/theme/tomorrow_night" : "ace/theme/eclipse");
+    // Monaco replaced ACE in DOMjudge 9.0: themes are global, not per instance, and
+    // an editor instance has no setTheme() at all. Only follow the page theme where
+    // the user has not chosen an editor theme themselves - the jury pages have their
+    // own picker ([data-editor-themes]) and a stored preference to respect.
+    if (typeof window.monaco !== "undefined"
+        && document.querySelector("[data-editor-themes]") === null
+        && localStorage.getItem("domjudge_editor_theme") === null) {
+        window.monaco.editor.setTheme(theme === "dark" ? "vs-dark" : "vs");
     }
 }
 
