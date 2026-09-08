@@ -74,6 +74,19 @@ class Judging extends BaseApiEntity
     #[Serializer\Exclude]
     private ?string $result = null;
 
+    #[ORM\Column(
+        name: 'points_scored',
+        type: 'float',
+        nullable: false,
+        options: [
+            'comment' => 'Points scored in this judging',
+            'default' => 0,
+            'unsigned' => true
+        ]
+    )]
+    #[Serializer\Exclude]
+    private float $points_scored = 0;
+
     #[ORM\Column(options: ['comment' => 'Result verified by jury member?', 'default' => 0])]
     #[Serializer\Exclude]
     private bool $verified = false;
@@ -289,6 +302,17 @@ class Judging extends BaseApiEntity
     public function getResult(): ?string
     {
         return $this->result;
+    }
+
+    public function getPointsScored(): float
+    {
+        return $this->points_scored;
+    }
+
+    public function setPointsScored(float $points_scored): Judging
+    {
+        $this->points_scored = $points_scored;
+        return $this;
     }
 
     public function setVerified(bool $verified): Judging

@@ -343,7 +343,7 @@ class Contest extends BaseApiEntity implements
 
     #[ORM\Column(
         type: 'integer',
-        name: '`ranknumber`',
+        name: 'ranknumber',
         options: [
             'comment' => 'Determines order of the contests',
             'unsigned' => true

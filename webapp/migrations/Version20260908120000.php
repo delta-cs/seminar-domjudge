@@ -14,17 +14,21 @@ final class Version20260908120000 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Align blog_post with its entity mapping after the 9.0.1 rebase';
+        return 'Align blog_post and contest.ranknumber with their entity mappings after the 9.0.1 rebase';
     }
 
     public function up(Schema $schema): void
     {
         $this->addSql("ALTER TABLE blog_post CHANGE blogpostid blogpostid INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Blog post ID'");
+        // contest.ranknumber is UNIQUE, so a column default is a trap: two inserts
+        // without an explicit rank would collide. Every code path sets it explicitly.
+        $this->addSql("ALTER TABLE contest CHANGE ranknumber ranknumber INT UNSIGNED NOT NULL COMMENT 'Determines order of the contests'");
     }
 
     public function down(Schema $schema): void
     {
         $this->addSql("ALTER TABLE blog_post CHANGE blogpostid blogpostid INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Unique ID'");
+        $this->addSql("ALTER TABLE contest CHANGE ranknumber ranknumber INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Determines order of the contests'");
     }
 
     public function isTransactional(): bool

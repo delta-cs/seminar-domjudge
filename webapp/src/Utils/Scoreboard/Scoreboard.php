@@ -163,12 +163,20 @@ class Scoreboard
             );
 
             $contestProblem = $scoreCell->getContest()->getContestProblem($scoreCell->getProblem());
-            // TODO: For actual scoring problems, we need to calculate the score here and
-            // output it with the correct precision. For now, this is always an integer.
-            $points = strval(
-                $isCorrect ?
-                $contestProblem->getPoints() : 0
-            );
+            if ($this->isScoring()) {
+                // Scoring contests carry the points earned per problem, which may be
+                // partial; trim the trailing zeros so whole numbers still read as such.
+                $scored = $scoreCell->getPoints($this->restricted);
+                $points = rtrim(rtrim(sprintf('%.3F', $scored), '0'), '.');
+                if ($points === '' || $points === '-0') {
+                    $points = '0';
+                }
+            } else {
+                $points = strval(
+                    $isCorrect ?
+                    $contestProblem->getPoints() : 0
+                );
+            }
 
             $this->matrix[$teamId][$probId] = new ScoreboardMatrixItem(
                 isCorrect: $isCorrect,

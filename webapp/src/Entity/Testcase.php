@@ -116,6 +116,11 @@ class Testcase
     #[Serializer\Exclude]
     private ?Problem $problem = null;
 
+    #[ORM\ManyToOne(targetEntity: TestcaseGroup::class, inversedBy: 'testcases')]
+    #[ORM\JoinColumn(name: 'testcasegroupid', referencedColumnName: 'testcasegroupid')]
+    #[Serializer\Exclude]
+    private ?TestcaseGroup $testcase_group = null;
+
     public function __construct()
     {
         $this->judging_runs  = new ArrayCollection();
@@ -313,5 +318,16 @@ class Testcase
         }
 
         return sprintf('p%d.t%d', $this->getProblem()->getProbid(), $this->getRank());
+    }
+
+    public function getTestcaseGroup(): ?TestcaseGroup
+    {
+        return $this->testcase_group;
+    }
+
+    public function setTestcaseGroup(?TestcaseGroup $testcase_group): Testcase
+    {
+        $this->testcase_group = $testcase_group;
+        return $this;
     }
 }
