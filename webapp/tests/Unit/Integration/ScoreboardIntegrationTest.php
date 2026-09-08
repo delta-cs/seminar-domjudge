@@ -9,6 +9,7 @@ use App\Entity\Judging;
 use App\Entity\Language;
 use App\Entity\Problem;
 use App\Entity\Rejudging;
+use App\Entity\ScoreboardType;
 use App\Entity\Submission;
 use App\Entity\Team;
 use App\Entity\TeamCategory;
@@ -90,6 +91,9 @@ class ScoreboardIntegrationTest extends KernelTestCase
         // scoreboard. These get deleted again in tearDown().
         $this->contest = new Contest();
         $this->contest
+            // This covers upstream's pass-fail ranking. The fork defaults new
+            // contests to scoring, so pin the type rather than inherit it.
+            ->setScoreboardType(ScoreboardType::PASS_FAIL)
             ->setExternalid(self::CONTEST_NAME)
             ->setName(self::CONTEST_NAME)
             ->setShortname(self::CONTEST_NAME)
