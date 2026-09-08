@@ -465,11 +465,13 @@ class ScoreboardService
             throw new Exception('ScoreboardService::calculateScoreRow failed to release lock');
         }
 
-        // If we found a new correct result, update the rank cache too. In a scoring
-        // contest partial points count as well, so a team can move up the ranking
-        // without ever having a correct submission.
-        if ($updateRankCache &&
-            ($correctJury || $correctPubl || ($isScoringContest && ($pointsJury > 0 || $pointsPubl > 0)))) {
+        // If we found a new correct result, update the rank cache too. A scoring
+        // contest always has to update it: partial points let a team move up
+        // without ever being correct, and because the solve time follows the last
+        // submission matching the best score, even a submission scoring nothing
+        // changes the team's total time. Gating on a score here leaves the rank
+        // cache disagreeing with the score cache until the next refresh.
+        if ($updateRankCache && ($correctJury || $correctPubl || $isScoringContest)) {
             $this->updateRankCache($contest, $team);
         }
     }
