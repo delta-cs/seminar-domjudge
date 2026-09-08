@@ -288,6 +288,27 @@ class ScoreboardService
                 }
             }
 
+            // STEP 1.b:
+            // Keep the best-scoring submission, and the time it was submitted.
+            // This has to run before the early continues below: a team can
+            // improve its score with a submission made after an already
+            // correct one, and those submissions are skipped from here on.
+            if ($isScoringContest && $judging instanceof Judging) {
+                $scored = $judging->getPointsScored();
+                if ($scored > $pointsJury) {
+                    $pointsJury = $scored;
+                    $timeJury = $contest->getContestTime(
+                        max((float)$submission->getSubmittime(), $contestStartTime)
+                    );
+                }
+                if (!$submission->isAfterFreeze() && $scored > $pointsPubl) {
+                    $pointsPubl = $scored;
+                    $timePubl = $contest->getContestTime(
+                        max((float)$submission->getSubmittime(), $contestStartTime)
+                    );
+                }
+            }
+
             // If there is a public and correct submission, we can stop counting
             // submissions or looking for a correct one (skip steps 2,3)
             if ($correctPubl) {
@@ -313,23 +334,6 @@ class ScoreboardService
             // We need to count the submission always, except when we don't want
             // to count compiler penalties and the judging is a compiler error.
             $countSubmission = $compilePenalty || $judging->getResult() != Judging::RESULT_COMPILER_ERROR;
-
-            if ($isScoringContest && $judging instanceof Judging) {
-                // Keep the best-scoring submission, and the time it was submitted.
-                $scored = $judging->getPointsScored();
-                if ($scored > $pointsJury) {
-                    $pointsJury = $scored;
-                    $timeJury = $contest->getContestTime(
-                        max((float)$submission->getSubmittime(), $contestStartTime)
-                    );
-                }
-                if (!$submission->isAfterFreeze() && $scored > $pointsPubl) {
-                    $pointsPubl = $scored;
-                    $timePubl = $contest->getContestTime(
-                        max((float)$submission->getSubmittime(), $contestStartTime)
-                    );
-                }
-            }
 
             if (!$correctJury && $countSubmission) {
                 // For the jury: only consider it as a submission if we don't
@@ -594,10 +598,10 @@ class ScoreboardService
         $params = [
             'cid' => $contest->getCid(),
             'teamid' => $team->getTeamid(),
-            'pointsRestricted' => $isScoringContest ? (int)$scoredPoints['restricted'] : $numPoints['restricted'],
+            'pointsRestricted' => $isScoringContest ? (int)round((float)$scoredPoints['restricted']) : $numPoints['restricted'],
             'totalTimeRestricted' => $totalTime['restricted'],
             'totalRuntimeRestricted' => $totalRuntime['restricted'],
-            'pointsPublic' => $isScoringContest ? (int)$scoredPoints['public'] : $numPoints['public'],
+            'pointsPublic' => $isScoringContest ? (int)round((float)$scoredPoints['public']) : $numPoints['public'],
             'totalTimePublic' => $totalTime['public'],
             'totalRuntimePublic' => $totalRuntime['public'],
             'sortKeyRestricted' => $scoreKey['restricted'],
