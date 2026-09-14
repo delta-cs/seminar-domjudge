@@ -13,6 +13,15 @@ use Generator;
 
 class ProblemControllerTest extends BaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // The fork pins the contest in the URL for /team/problems and
+        // /public/problems, redirecting when no cid is given. These tests assert
+        // on page content rather than status codes, so just follow the redirect.
+        $this->client->followRedirects();
+    }
+
     protected array $roles = ['team'];
 
     /**
@@ -133,8 +142,10 @@ class ProblemControllerTest extends BaseTestCase
             $cardBodies->eq(2)->filter('.list-group .list-group-item')->count());
 
         // Check the link to download all samples.
-        $link = $cardBodies->eq(1)->filter('a')->eq(2);
-        self::assertSame('samples', $link->text(null, true));
+        // The fork adds further links to the problem card, so pick this one out
+        // by its text rather than by its position among them.
+        $link = $cardBodies->eq(1)->filterXPath('.//a[normalize-space(.)="samples"]');
+        self::assertCount(1, $link);
         self::assertSame(sprintf('/team/%d/samples.zip',
             $problem->getProbid()),
             $link->attr('href'));

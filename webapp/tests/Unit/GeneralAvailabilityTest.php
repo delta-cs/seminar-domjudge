@@ -20,7 +20,8 @@ class GeneralAvailabilityTest extends BaseTestCase
 
     public function urlProvider(): Generator
     {
-        yield ['/public/problems', 200];
+        // The fork pins the contest in the URL and redirects when no cid is given.
+        yield ['/public/problems', 302];
         yield ['/public', 200];
         yield ['/login', 200];
 
@@ -32,7 +33,9 @@ class GeneralAvailabilityTest extends BaseTestCase
         // and cannot easily be tested here since phpunit doesn't provide a
         // fully featured server environment.
 
-        yield ['/', 302];
+        // The fork serves its own landing page at the root, where upstream
+        // redirects to the public scoreboard.
+        yield ['/', 200];
         yield ['/team', 302];
         yield ['/jury', 302];
         yield ['/logout', 302];
