@@ -164,7 +164,14 @@
                 <td class="{{ tdExtraClass }}">
                     <a href="{{ link }}">
                         {% set lastValidJudging = submission.judgings | filter(judging => judging.valid) | last %}
-                        {{ lastValidJudging.pointsScored }}/{{ submission.contestProblem.points }}
+                        {#- A submission still waiting to be judged has no valid
+                            judging, and Twig's `last` yields false for an empty
+                            sequence, so guard before reading the score. -#}
+                        {% if lastValidJudging %}
+                            {{ lastValidJudging.pointsScored }}/{{ submission.contestProblem.points }}
+                        {% else %}
+                            &ndash;/{{ submission.contestProblem.points }}
+                        {% endif %}
                     </a>
                 </td>
                 {% if showExternalResult and not showExternalTestcases %}
