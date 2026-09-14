@@ -23,8 +23,10 @@ class RegisterControllerTest extends BaseTestCase
     {
         $this->loadFixture(EnableSelfregisterFixture::class);
 
+        // The fork's own landing page at /public carries the registration
+        // button, labelled in Czech, so match the link target not the wording.
         $this->verifyPageResponse('GET', '/public', 200);
-        self::assertSelectorExists('a.btn:contains("Register")');
+        self::assertSelectorExists('a.btn[href="/register"]');
 
         $this->verifyPageResponse('GET', '/register', 200);
         self::assertSelectorExists('a:contains("Login")');

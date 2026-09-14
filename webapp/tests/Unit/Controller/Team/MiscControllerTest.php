@@ -52,7 +52,8 @@ class MiscControllerTest extends BaseTestCase
 
         $h1s = $this->getCurrentCrawler()->filter('h1')->extract(['_text']);
         self::assertEquals('Submissions', $h1s[0]);
-        self::assertEquals('Clarifications', $h1s[1]);
+        // The fork titles this section "Messages" on the team overview.
+        self::assertEquals('Messages', $h1s[1]);
         self::assertEquals('Clarification Requests', $h1s[2]);
     }
 

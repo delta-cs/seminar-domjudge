@@ -6,6 +6,7 @@ use App\DataFixtures\Test\TeamWithExternalIdEqualsOneFixture;
 use App\DataFixtures\Test\TeamWithExternalIdEqualsTwoFixture;
 use App\DataTransferObject\ResultRow;
 use App\Entity\Contest;
+use App\Entity\ScoreboardType;
 use App\Entity\ContestProblem;
 use App\Entity\Language;
 use App\Entity\Problem;
@@ -1239,6 +1240,10 @@ EOF;
         $medalData = json_decode(file_get_contents(__DIR__ . '/../Fixtures/' . $dataSet . '/sample-medals.json'), true);
 
         $contest = (new Contest())
+            // This reproduces ICPC World Finals results, which are pass-fail.
+            // The fork defaults new contests to scoring, where totals come from
+            // each judging's recorded points -- none of which this fixture sets.
+            ->setScoreboardType(ScoreboardType::PASS_FAIL)
             ->setName('ICPC World Finals 47')
             ->setShortname('wf47')
             ->setStarttimeString($startTime->format(DateTimeInterface::ATOM))

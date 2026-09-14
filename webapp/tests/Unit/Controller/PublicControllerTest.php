@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Controller;
 
+use App\DataFixtures\Test\EnableForkRegistrationOptionsFixture;
 use App\DataFixtures\Test\EnableSelfregisterFixture;
 use App\DataFixtures\Test\EnableSelfregisterSecondCategoryFixture;
 use App\DataFixtures\Test\SampleSubmissionsInBucketsFixture;
@@ -21,13 +22,16 @@ class PublicControllerTest extends BaseTestCase
     protected static string $urlUsers        = '/jury/users';
     protected static string $urlTeams        = '/jury/teams';
     protected static string $urlAffil        = '/jury/affiliations';
-    protected static array  $requiredFields  = ['teamName','affiliationName','affiliationShortName','existingAffiliation'];
+    // The fork submits affiliationShortName as a hidden field defaulting to a
+    // generated UUID, so unlike upstream it can neither be left blank by the
+    // user nor collide with an existing one. It is therefore neither required
+    // nor a duplicate candidate here.
+    protected static array  $requiredFields  = ['teamName','affiliationName','existingAffiliation'];
     protected static array  $formFields      = ['username','name','email','teamName','affiliation','affiliationName',
                                                 'affiliationShortName','affiliationCountry','existingAffiliation'];
     protected static array  $duplicateFields = ['username'=>['input'=>'selfregister','error'=>'The username \'"selfregistered"\' is already in use.'],
                                                 'teamName'=>['input'=>'Example teamname','error'=>'This team name is already in use.'],
-                                                'affiliationName'=>['input'=>'Utrecht University','error'=>'This affiliation name is already in use.'],
-                                                'affiliationShortName'=>['input'=>'UU','error'=>'This affiliation shortname is already in use.']];
+                                                'affiliationName'=>['input'=>'Utrecht University','error'=>'This affiliation name is already in use.']];
 
     public function testScoreboardNoContests(): void
     {
@@ -38,24 +42,30 @@ class PublicControllerTest extends BaseTestCase
         $contest->setDeactivatetimeString((new \DateTime())->sub(new \DateInterval('PT1H'))->format(DateTimeInterface::ISO8601));
         $em->flush();
 
-        $this->verifyPageResponse('GET', '/public', 200);
+        // The fork serves its own landing page at /public and keeps the
+        // scoreboard at /public/scoreboard, where upstream has it at /public.
+        $this->verifyPageResponse('GET', '/public/scoreboard', 200);
         self::assertSelectorExists('p.nodata:contains("No active contest")');
     }
 
     public function testScoreboardWarningMessage(): void
     {
-        $this->verifyPageResponse('GET', '/public', 200);
-        self::assertSelectorNotExists('div.alert-danger');
-
-        $msg = 'This is a test contest';
-
         $em = static::getContainer()->get(EntityManagerInterface::class);
         /** @var Contest $contest */
         $contest = $em->getRepository(Contest::class)->findOneBy(['externalid' => 'demo']);
+
+        // The fork keeps the scoreboard at /public/scoreboard rather than
+        // /public, and pins the contest in the URL, redirecting without a cid.
+        $scoreboardUrl = '/public/scoreboard?cid=' . $contest->getCid();
+
+        $this->verifyPageResponse('GET', $scoreboardUrl, 200);
+        self::assertSelectorNotExists('div.alert-danger');
+
+        $msg = 'This is a test contest';
         $contest->setWarningMessage($msg);
         $em->flush();
 
-        $this->verifyPageResponse('GET', '/public', 200);
+        $this->verifyPageResponse('GET', $scoreboardUrl, 200);
         self::assertSelectorTextContains('div.alert-danger', $msg);
     }
 
@@ -71,7 +81,10 @@ class PublicControllerTest extends BaseTestCase
         string $category = "",
         string $secondPassword = "same"
     ): array {
-        $this->loadFixtures($fixtures);
+        // Upstream's registration form offers the custom team name and the full
+        // set of affiliation choices unconditionally; the fork hides them behind
+        // config options that default to off, so enable them for these tests.
+        $this->loadFixtures(array_merge([EnableForkRegistrationOptionsFixture::class], $fixtures));
         $this->logOut();
         $this->verifyPageResponse('GET', static::$urlRegister, 200);
         self::assertSelectorExists('h1:contains("Register Account")');
@@ -309,8 +322,9 @@ class PublicControllerTest extends BaseTestCase
         }
         $em->flush();
 
-        // Get the problems page
-        $this->verifyPageResponse('GET', '/public/problems', 200);
+        // Get the problems page. The fork pins the contest in the URL and
+        // redirects when no cid is given, so ask for it directly.
+        $this->verifyPageResponse('GET', '/public/problems?cid=' . $demoContest->getCid(), 200);
 
         $boxes            = $this->client->getCrawler()->filter('.problem-stats-item');
         $correctClasses   = array_map(fn(int $n) => 'problem-stats-item correct-' . $n, range(1, 9));

@@ -4,6 +4,7 @@ namespace App\Tests\Unit\Controller\API;
 
 use App\DataFixtures\Test\SampleSubmissionsThreeTriesCorrectFixture;
 use App\Entity\Contest;
+use App\Entity\ScoreboardType;
 use App\Service\ScoreboardService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -35,6 +36,13 @@ class AwardsControllerTest extends BaseTestCase
         $manager = static::getContainer()->get(EntityManagerInterface::class);
         /** @var Contest $contest */
         $contest = $manager->getRepository(Contest::class)->findOneBy(['shortname' => 'demo']);
+        // These awards are upstream's ICPC medals and winner, which come from
+        // solved counts. The fork defaults contests to scoring, where totals are
+        // built from each judging's recorded points and the sample submissions
+        // carry none, leaving every team on zero and no winner to award.
+        $contest->setScoreboardType(ScoreboardType::PASS_FAIL);
+        $manager->flush();
+
         /** @var ScoreboardService $scoreboardService */
         $scoreboardService = static::getContainer()->get(ScoreboardService::class);
         $scoreboardService->refreshCache($contest);

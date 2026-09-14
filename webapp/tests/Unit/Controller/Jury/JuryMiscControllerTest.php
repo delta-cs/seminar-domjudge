@@ -81,9 +81,14 @@ class JuryMiscControllerTest extends BaseTestCase
         $response = $this->client->getResponse();
         self::assertEquals('200', $response->getStatusCode());
         self::assertSelectorExists('body:contains("scoreboard")');
-        foreach (['/public','/jury/scoreboard'] as $url) {
+        // The fork serves its own landing page at /public and keeps the public
+        // scoreboard at /public/scoreboard, where upstream has it at /public.
+        // It also pins the contest in the URL, redirecting when no cid is given.
+        $cid = $contest->getCid();
+        foreach (['/public/scoreboard', '/jury/scoreboard'] as $url) {
+            $url .= '?cid=' . $cid;
             $this->verifyPageResponse('GET', $url, 200);
-            if (in_array($contestStage, $nonActiveStages) || (!$public && $url==='/public')) {
+            if (in_array($contestStage, $nonActiveStages) || (!$public && str_starts_with($url, '/public/scoreboard'))) {
                 $elements = ["No active contest"];
             } elseif ($contestStage === 'preStart') {
                 $elements = ["scheduled to start on",'Demo contest','Utrecht University'];
@@ -112,9 +117,9 @@ class JuryMiscControllerTest extends BaseTestCase
         }
         foreach (range(1, 3) as $id) {
             $statusCode = in_array($contestStage, ['preActivation','preStart','postDeactivate']) || !$public ? 404 : 200;
-            $this->verifyPageResponse('HEAD', '/public/problems/'.$id.'/statement', $statusCode);
+            $this->verifyPageResponse('HEAD', '/public/problems/'.$id.'/statement?cid='.$cid, $statusCode);
         }
-        $this->verifyPageResponse('GET', '/public/problems', 200);
+        $this->verifyPageResponse('GET', '/public/problems?cid='.$cid, 200);
         if (in_array($contestStage, ['preStart', ...$nonActiveStages]) || !$public) {
             self::assertSelectorExists('body:contains("No problem texts available at this point.")');
         } else {
