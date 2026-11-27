@@ -740,30 +740,87 @@ class ScoreboardService
             return;
         }
 
-        $first = true;
+        $problemIds = array_map(fn(Problem $problem) => $problem->getProbid(), $problems);
+        $teamIds = array_map(fn(Team $team) => $team->getTeamid(), $teams);
+        $connection = $this->em->getConnection();
+        $idParams = ['cid' => $contest->getCid(), 'teamIds' => $teamIds, 'problemIds' => $problemIds];
+        $idTypes  = ['teamIds' => ArrayParameterType::INTEGER, 'problemIds' => ArrayParameterType::INTEGER];
+        // The submissions calculateScoreRow() considers for a cell.
+        $counted = 's.cid = :cid AND s.valid = 1
+            AND s.submittime < (SELECT c.endtime FROM contest c WHERE c.cid = :cid)';
+
+        // Most cells have no submission at all: in a contest open to every team,
+        // nearly every team/problem pair is empty. Computing each of those one by
+        // one made a refresh take minutes, only to write a row of zeros, so write
+        // those rows in one statement. Its NOT EXISTS keeps it from overwriting a
+        // cell that receives a submission while the refresh runs. Teams without a
+        // category get no cells, as calculateScoreRow() skips them.
+        $connection->executeStatement(
+            "REPLACE INTO scorecache (cid, teamid, probid,
+                submissions_restricted, pending_restricted, solvetime_restricted, runtime_restricted,
+                is_correct_restricted, submissions_public, pending_public, solvetime_public, runtime_public,
+                is_correct_public, is_first_to_solve, points_restricted, points_public)
+            SELECT :cid, t.teamid, p.probid, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            FROM team t JOIN problem p ON p.probid IN (:problemIds)
+            WHERE t.teamid IN (:teamIds) AND t.categoryid IS NOT NULL
+              AND NOT EXISTS (SELECT 1 FROM submission s
+                              WHERE $counted AND s.teamid = t.teamid AND s.probid = p.probid)",
+            $idParams, $idTypes);
+
+        // The cells that do have submissions are computed as before.
+        $activeCells = [];
+        foreach ($connection->fetchAllAssociative(
+            "SELECT DISTINCT s.teamid, s.probid FROM submission s
+            WHERE $counted AND s.teamid IN (:teamIds) AND s.probid IN (:problemIds)",
+            $idParams, $idTypes) as $row) {
+            $activeCells[(int)$row['teamid']][(int)$row['probid']] = true;
+        }
+
         $log = '';
-
-        // for each team, fetch the status of each problem.
-        foreach ($teams as $index => $team) {
-            if (!$first) {
-                $log .= ', ';
+        $done = 0;
+        foreach ($teams as $team) {
+            if (!isset($activeCells[$team->getTeamid()])) {
+                continue;
             }
-            $first = false;
-            $log .= sprintf('t%d', $team->getTeamid());
-            $progress = (int)round($index / count($teams) * 100);
-            $progressReporter($progress, $log);
+            $log .= ($log === '' ? '' : ', ') . sprintf('t%d', $team->getTeamid());
+            $progressReporter((int)round($done++ / max(1, count($activeCells)) * 100), $log);
 
-            // for each problem fetch the result
             foreach ($problems as $problem) {
-                $this->calculateScoreRow($contest, $team, $problem, false);
+                if (isset($activeCells[$team->getTeamid()][$problem->getProbid()])) {
+                    $this->calculateScoreRow($contest, $team, $problem, false);
+                }
             }
-
             $this->updateRankCache($contest, $team);
         }
 
+        // A team without submissions ranks on nothing but its time penalty: write
+        // the row updateRankCache() would compute, again guarded against a
+        // submission arriving meanwhile.
+        $isScoringContest = $contest->getScoreboardType() === ScoreboardType::SCORING;
+        $idleByPenalty = [];
+        foreach ($teams as $team) {
+            if (!isset($activeCells[$team->getTeamid()])) {
+                $idleByPenalty[$team->getPenalty()][] = $team->getTeamid();
+            }
+        }
+        foreach ($idleByPenalty as $penalty => $idleTeamIds) {
+            $sortKey = $isScoringContest
+                ? self::getScoringScoreKey('0', $penalty, 0)
+                : self::getICPCScoreKey(0, $penalty, 0);
+            $connection->executeStatement(
+                "REPLACE INTO rankcache (cid, teamid,
+                    points_restricted, totaltime_restricted, totalruntime_restricted,
+                    points_public, totaltime_public, totalruntime_public, sort_key_restricted, sort_key_public)
+                SELECT :cid, t.teamid, 0, :penalty, 0, 0, :penalty, 0, :sortKey, :sortKey
+                FROM team t
+                WHERE t.teamid IN (:teamIds)
+                  AND NOT EXISTS (SELECT 1 FROM submission s
+                                  WHERE $counted AND s.teamid = t.teamid AND s.probid IN (:problemIds))",
+                ['penalty' => $penalty, 'sortKey' => $sortKey, 'teamIds' => $idleTeamIds] + $idParams,
+                $idTypes);
+        }
+
         // Drop all teams and problems that do not exist in the contest.
-        $problemIds = array_map(fn(Problem $problem) => $problem->getProbid(), $problems);
-        $teamIds = array_map(fn(Team $team) => $team->getTeamid(), $teams);
 
         $params = [
             'cid' => $contest->getCid(),
