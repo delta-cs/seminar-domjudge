@@ -359,6 +359,8 @@ class ProblemController extends BaseController
             }
         }
 
+        $testcasePaths = [];
+        $exportedTestcases = [];
         foreach ([true, false] as $isSample) {
             /** @var Testcase[] $testcases */
             $testcases = $this->em->createQueryBuilder()
@@ -372,7 +374,12 @@ class ProblemController extends BaseController
                 ->orderBy('t.ranknumber')
                 ->getQuery()
                 ->getResult();
-            $this->addTestcasesToZip($testcases, $zip, $isSample);
+            $testcasePaths += $this->addTestcasesToZip($testcases, $zip, $isSample);
+            $exportedTestcases = array_merge($exportedTestcases, $testcases);
+        }
+        $groupsYaml = $this->buildTestcaseGroupsYaml($exportedTestcases, $testcasePaths);
+        if ($groupsYaml !== null) {
+            $zip->addFromString(ImportProblemService::TESTCASE_GROUPS_FILE, $groupsYaml);
         }
 
         /** @var Submission[] $solutions */
@@ -1178,8 +1185,44 @@ class ProblemController extends BaseController
      *
      * Assumes testcases are in order of their rank.
      */
-    private function addTestcasesToZip(array $testcases, ZipArchive $zip, bool $isSample): void
+    /**
+     * The testcase group manifest for an export, or null when no testcase is in a group.
+     *
+     * @param Testcase[] $testcases in rank order, samples first
+     * @param array<int, string> $paths testcase ID => path below data/ without extension
+     */
+    private function buildTestcaseGroupsYaml(array $testcases, array $paths): ?string
     {
+        $groups = [];
+        foreach ($testcases as $testcase) {
+            $group = $testcase->getTestcaseGroup();
+            if ($group === null) {
+                continue;
+            }
+            $id = $group->getTestcasegroupid();
+            $groups[$id] ??= [
+                'name' => $group->getName(),
+                'points_percentage' => $group->getPointsPercentage(),
+                'testcases' => [],
+            ];
+            $groups[$id]['testcases'][] = $paths[$testcase->getTestcaseid()];
+        }
+        if (empty($groups)) {
+            return null;
+        }
+        return "# Testcase groups exported by DOMjudge on " . date('c') . "\n"
+            . "# points_percentage is the share of the problem's points (0-1) a team earns\n"
+            . "# when every testcase of the group passes.\n"
+            . Yaml::dump(['groups' => array_values($groups)], 3, 2);
+    }
+
+    /**
+     * @param Testcase[] $testcases
+     * @return array<int, string> testcase ID => path below data/ without extension
+     */
+    private function addTestcasesToZip(array $testcases, ZipArchive $zip, bool $isSample): array
+    {
+        $paths = [];
 
         // Verify whether order of original filenames matches order of testcases by rank.
         // If so, prefer their original name, otherwise replace the name with the rank to ensure same order.
@@ -1202,6 +1245,7 @@ class ProblemController extends BaseController
             } else {
                 $filenamePrefix = sprintf($formatString, $isSample ? 'sample' : 'secret', $rankInGroup);
             }
+            $paths[$testcase->getTestcaseid()] = substr($filenamePrefix, strlen('data/'));
             $zip->addFromString($filenamePrefix . '.in', $testcase->getContent()->getInput());
             $zip->addFromString($filenamePrefix . '.ans', $testcase->getContent()->getOutput());
 
@@ -1218,6 +1262,8 @@ class ProblemController extends BaseController
                                     $testcase->getContent()->getImage());
             }
         }
+
+        return $paths;
     }
 
     #[Route(path: '/{probId<\d+>}/request-remaining', name: 'jury_problem_request_remaining')]

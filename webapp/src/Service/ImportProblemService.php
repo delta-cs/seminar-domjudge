@@ -15,6 +15,7 @@ use App\Entity\SubmissionSource;
 use App\Entity\Team;
 use App\Entity\Testcase;
 use App\Entity\TestcaseContent;
+use App\Entity\TestcaseGroup;
 use App\Utils\Utils;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,13 @@ use ZipArchive;
 
 class ImportProblemService
 {
+    /**
+     * Fork extension to the problem package: testcase groups with their share of the
+     * problem's points. Testcases stay where they are and are listed by their path below
+     * data/ without extension, because groups span data/sample and data/secret.
+     */
+    final public const TESTCASE_GROUPS_FILE = 'data/testcase_groups.yaml';
+
     public function __construct(
         protected readonly EntityManagerInterface $em,
         protected readonly LoggerInterface $logger,
@@ -329,6 +337,10 @@ class ImportProblemService
         /** @var Testcase[] $testcases */
         $testcases     = [];
         $testcaseNames = [];
+        // Testcases by their path below data/ without extension (e.g. 'secret/03'),
+        // which is how the testcase group manifest refers to them.
+        /** @var array<string, Testcase> $testcasesByPath */
+        $testcasesByPath = [];
 
         $startRank = 1;
         // We temporarily assign ranks starting from the current max rank + 1 when updating a problem.
@@ -430,6 +442,7 @@ class ImportProblemService
                     $rank++;
                     $actualRank++;
                     $testcases[] = $testcase;
+                    $testcasesByPath[$type . '/' . $dataFile] = $testcase;
                     continue;
                 }
 
@@ -462,6 +475,7 @@ class ImportProblemService
                 $numCases++;
 
                 $testcases[] = $testcase;
+                $testcasesByPath[$type . '/' . $dataFile] = $testcase;
                 $testcaseNames[] = $dataFile;
             }
             if ($numCases > 0) {
@@ -594,6 +608,8 @@ class ImportProblemService
             $messages['info'][] = sprintf("Removed %d attachments(s): {%s}",
                 count($removedAttachments), join(',', $removedAttachments));
         }
+
+        $this->importTestcaseGroups($zip, $testcasesByPath, $messages);
 
         $this->em->wrapInTransaction(function () use ($testcases, $startRank) {
             $this->em->flush();
@@ -1095,5 +1111,116 @@ class ImportProblemService
         }
 
         return true;
+    }
+
+    /**
+     * Apply the testcase group manifest, if the archive has one.
+     *
+     * Without a manifest the testcases keep whatever groups they already had. With one,
+     * the manifest is authoritative: every testcase gets the group that lists it, or none.
+     *
+     * @param array<string, Testcase> $testcasesByPath
+     * @param array<string, string[]> $messages
+     */
+    private function importTestcaseGroups(ZipArchive $zip, array $testcasesByPath, array &$messages): void
+    {
+        $content = $zip->getFromName(self::TESTCASE_GROUPS_FILE);
+        if ($content === false) {
+            return;
+        }
+
+        $file = self::TESTCASE_GROUPS_FILE;
+        try {
+            $data = Yaml::parse($content);
+        } catch (Exception $e) {
+            $messages['warning'][] = sprintf("Ignoring '%s', it is not valid YAML: %s", $file, $e->getMessage());
+            return;
+        }
+        if (!is_array($data) || !isset($data['groups']) || !is_array($data['groups'])) {
+            $messages['warning'][] = sprintf("Ignoring '%s', it has no 'groups' list.", $file);
+            return;
+        }
+
+        // Validate everything before changing anything.
+        $parsed = [];
+        $total  = 0.0;
+        foreach (array_values($data['groups']) as $i => $group) {
+            $label = sprintf("group %d in '%s'", $i + 1, $file);
+            if (!is_array($group)) {
+                $messages['warning'][] = sprintf('Ignoring testcase groups: %s is not a mapping.', $label);
+                return;
+            }
+            $percentage = $group['points_percentage'] ?? null;
+            if (!is_int($percentage) && !is_float($percentage) || $percentage < 0 || $percentage > 1) {
+                $messages['warning'][] = sprintf(
+                    "Ignoring testcase groups: %s needs 'points_percentage' between 0 and 1.", $label);
+                return;
+            }
+            $paths = $group['testcases'] ?? [];
+            if (!is_array($paths)) {
+                $messages['warning'][] = sprintf("Ignoring testcase groups: 'testcases' of %s is not a list.", $label);
+                return;
+            }
+            $name = isset($group['name']) && is_scalar($group['name']) && (string)$group['name'] !== ''
+                ? (string)$group['name'] : sprintf('group %d', $i + 1);
+            $parsed[] = [$name, (float)$percentage, array_map('strval', $paths)];
+            $total += (float)$percentage;
+        }
+
+        $oldGroups = [];
+        foreach ($testcasesByPath as $testcase) {
+            if ($group = $testcase->getTestcaseGroup()) {
+                $oldGroups[spl_object_id($group)] = $group;
+            }
+            $testcase->setTestcaseGroup(null);
+        }
+
+        $assigned = [];
+        foreach ($parsed as [$name, $percentage, $paths]) {
+            $group = new TestcaseGroup();
+            $group->setName($name);
+            $group->setPointsPercentage($percentage);
+            $this->em->persist($group);
+            foreach ($paths as $path) {
+                if (!isset($testcasesByPath[$path])) {
+                    $messages['warning'][] = sprintf(
+                        "Testcase group '%s' lists '%s', which is not a testcase in this archive.", $name, $path);
+                } elseif (isset($assigned[$path])) {
+                    $messages['warning'][] = sprintf(
+                        "Testcase '%s' is listed in group '%s' and in group '%s'; keeping '%s'.",
+                        $path, $assigned[$path], $name, $assigned[$path]);
+                } else {
+                    $testcasesByPath[$path]->setTestcaseGroup($group);
+                    $assigned[$path] = $name;
+                }
+            }
+        }
+
+        $ungrouped = array_diff(array_keys($testcasesByPath), array_keys($assigned));
+        if (!empty($ungrouped)) {
+            $messages['warning'][] = sprintf(
+                'Testcase(s) in no group, they earn no partial points: {%s}', join(',', $ungrouped));
+        }
+        if (abs($total - 1.0) > 0.001) {
+            $messages['warning'][] = sprintf(
+                'Testcase group points add up to %s%% of the problem, not 100%%.', round($total * 100, 2));
+        }
+        $messages['info'][] = sprintf('Imported %d testcase group(s).', count($parsed));
+
+        // Drop the groups this import replaced, unless a testcase outside this archive
+        // (for example a deleted one that old judging runs still show) still uses them.
+        $this->em->flush();
+        foreach ($oldGroups as $group) {
+            $stillUsed = (int)$this->em->createQueryBuilder()
+                ->from(Testcase::class, 't')
+                ->select('COUNT(t.testcaseid)')
+                ->andWhere('t.testcase_group = :group')
+                ->setParameter('group', $group)
+                ->getQuery()
+                ->getSingleScalarResult();
+            if ($stillUsed === 0) {
+                $this->em->remove($group);
+            }
+        }
     }
 }
