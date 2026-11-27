@@ -526,8 +526,10 @@ class ScoreboardService
             throw new Exception('ScoreboardService::calculateScoreRow failed to release lock');
         }
 
-        // If we found a new correct result, update the rank cache too.
-        if ($updateRankCache && ($correctJury || $correctPubl)) {
+        // Update the rank cache for every judged submission, not only correct ones:
+        // with partial points scoring a wrong submission can still earn points, and
+        // its submission time moves the team's total time.
+        if ($updateRankCache) {
             $this->updateRankCache($contest, $team);
         }
     }
