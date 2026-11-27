@@ -18,7 +18,7 @@
         <div class="container-fluid px-0">
             <div class="row pb-4" id="currentContests">
                 <div class="col-md-4" style="max-height: 480px; overflow-y: scroll">
-                    <div id="currentContests" class="list-group">
+                    <div id="currentContestsList" class="list-group">
                         {% for contest in current_contests %}
                             <button id="currentContest{{ contest.cid }}Heading"
                                     class="list-group-item list-group-item-action py-1"
