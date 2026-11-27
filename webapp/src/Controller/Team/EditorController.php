@@ -93,6 +93,10 @@ class EditorController extends BaseController
 
         $team = $this->dj->getUser()->getTeam();
         $contest = $this->dj->getCurrentContest($team->getTeamid());
+        if ($contest === null) {
+            $this->addFlash('warning', 'There is no active contest to open the editor in.');
+            return $this->redirectToRoute('team_index');
+        }
 
         if (!$contest->getProblems()
             ->filter(fn(ContestProblem $p) => $p->getAllowSubmit())
@@ -280,6 +284,9 @@ class EditorController extends BaseController
 
         $team = $this->dj->getUser()->getTeam();
         $contest = $this->dj->getCurrentContest($team->getTeamid());
+        if ($contest === null) {
+            throw new NotFoundHttpException('No active contest');
+        }
 
         $data = $this->getStatusData($request, $submission, $contest);
 
@@ -379,6 +386,9 @@ class EditorController extends BaseController
     {
         $team = $this->dj->getUser()->getTeam();
         $contest = $this->dj->getCurrentContest($team->getTeamid());
+        if ($contest === null) {
+            throw new NotFoundHttpException('No active contest');
+        }
 
         /** @var Problem|null $problem */
         $problem = $this->em->getRepository(Problem::class)->find($probId);

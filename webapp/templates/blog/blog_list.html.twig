@@ -1,4 +1,4 @@
-{% extends is_granted('IS_AUTHENTICATED_FULLY') ? "team/base.html.twig" : "public/base.html.twig" %}
+{% extends is_granted('ROLE_TEAM') ? "team/base.html.twig" : "public/base.html.twig" %}
 
 {% block extrahead %}
     {{ parent() }}

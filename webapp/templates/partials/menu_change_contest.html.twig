@@ -5,7 +5,7 @@
     {% set badge_color = (contest is not empty and contest.getState().finalized) ? "red" : "green" %}
 
     <a class="nav-link dropdown-toggle"
-       href="#" id="navbarDropdownContests" role="button" data-bs-toggle="dropdown"
+       href="#" id="navbarDropdownContests" role="button" aria-label="Soutěž" title="Soutěž" data-bs-toggle="dropdown"
        aria-haspopup="true" aria-expanded="false">
         <div class="faicon-badge-container">
             <i class="fas fa-trophy"></i>
