@@ -1041,8 +1041,11 @@ class JudgehostController extends AbstractFOSRestController
 
             $judging->setResult($result);
 
+            $pointsChanged = false;
             if ($lazyEval === DOMJudgeService::EVAL_FULL) {
+                $oldPoints = $judging->getPointsScored();
                 $judging->setPointsScored($this->pointsScoreService->getScoredPoints($judging, $runs));
+                $pointsChanged = $oldPoints != $judging->getPointsScored();
             }
 
             $hasNullResults = false;
@@ -1137,6 +1140,15 @@ class JudgehostController extends AbstractFOSRestController
                 }
 
                 $this->dj->auditlog('judging', $judging->getJudgingid(), 'judged', $result, $hostname);
+            } elseif ($pointsChanged) {
+                // With full evaluation the verdict is known on the first failing run,
+                // but later runs still add partial points. The score row was computed
+                // when the verdict appeared, so recompute it whenever the points move;
+                // otherwise the scoreboard keeps the points of that first moment.
+                $submission = $judging->getSubmission();
+                $this->scoreboardService->calculateScoreRow(
+                    $submission->getContest(), $submission->getTeam(), $submission->getProblem()
+                );
             }
 
             // Send an event for an endtime (and max runtime update).
