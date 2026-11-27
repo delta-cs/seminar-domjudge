@@ -95,6 +95,7 @@ class EditorController extends BaseController
         $contest = $this->dj->getCurrentContest($team->getTeamid());
 
         if (!$contest->getProblems()
+            ->filter(fn(ContestProblem $p) => $p->getAllowSubmit())
             ->map(fn(ContestProblem $p) => $p->getProbid())
             ->contains($problem->getProbid())
         ) {
