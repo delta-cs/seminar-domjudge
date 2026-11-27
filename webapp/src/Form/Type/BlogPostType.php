@@ -38,7 +38,8 @@ class BlogPostType extends AbstractType
             'mapped' => false,
             'required' => $options['thumbnail_required']]);
         $builder->add('body', HiddenType::class);
-        $builder->add('publishtime', DateTimeType::class, ['label' => 'Publish time']);
+        // 'choice' is what this field has always rendered; Symfony 7 changes the default.
+        $builder->add('publishtime', DateTimeType::class, ['label' => 'Publish time', 'widget' => 'choice']);
 
         $builder->add('send', SubmitType::class);
     }
