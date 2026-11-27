@@ -208,7 +208,7 @@
             type: string
             default_value: ""
             public: false
-            description: Discord webhook URL for sending incomming clarification notifications. Leave empty to disable Discord notifications.
+            description: Discord webhook URL for sending incoming clarification notifications. Leave empty to disable Discord notifications.
 -   category: Display
     description: Options related to the DOMjudge user interface.
     items:

@@ -14,8 +14,8 @@ function finish() {
     trace_on
     set +e
     cp /proc/cmdline "$ARTIFACTS/cmdline"
-    cp /__w/domjudge/domjudge/chroot/domjudge/etc/apt/sources.list "$ARTIFACTS/sources.list"
-    cp /__w/domjudge/domjudge/chroot/domjudge/debootstrap/debootstrap.log "$ARTIFACTS/debootstrap.log"
+    cp ${GITHUB_WORKSPACE}/chroot/domjudge/etc/apt/sources.list "$ARTIFACTS/sources.list"
+    cp ${GITHUB_WORKSPACE}/chroot/domjudge/debootstrap/debootstrap.log "$ARTIFACTS/debootstrap.log"
 }
 
 FAILED=0

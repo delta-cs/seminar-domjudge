@@ -4,7 +4,7 @@ load 'assert'
 
 CHROOT="/chroot/domjudge"
 if [ -n "${GITHUB_REPOSITORY+x}" ]; then
-    CHROOT="/__w/domjudge/domjudge${CHROOT}"
+    CHROOT="${GITHUB_WORKSPACE}${CHROOT}"
 fi
 # Cleanup old dir
 rm -rf $CHROOT

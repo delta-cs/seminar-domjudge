@@ -7,6 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # ubuntu-latest now ships PHP 8.5, under which the locked PHPStan (2.1.17)
+      # misreads attribute flags and reports every repeated attribute as "not
+      # repeatable" (191 false errors). Pin the newest PHP the unit tests cover.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: gd, intl, mysqli, pcntl, zip
+          tools: composer
       - name: Setup composer dependencies
         run: .github/jobs/composer_setup.sh
       - name: Show the phpstan version
@@ -20,6 +28,7 @@ jobs:
       # Run the test again for GHA annotations
       - uses: php-actions/phpstan@v3.0.2
         with:
+          php_version: '8.4'
           configuration: webapp/phpstan.dist.neon
           php_extensions: gd intl mysqli pcntl zip
           autoload_file: webapp/vendor/autoload.php

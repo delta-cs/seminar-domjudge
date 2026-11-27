@@ -13,3 +13,4 @@ objext
 probleme
 testin
 ro
+doubleclick
