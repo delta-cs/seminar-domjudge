@@ -3,6 +3,10 @@ liip_imagine:
     # valid drivers options include "gd" or "gmagick" or "imagick"
     driver: "gd"
 
+    # The legacy Twig integration is deprecated since 2.7.
+    twig:
+        mode: lazy
+
     resolvers:
         default:
             web_path: ~
