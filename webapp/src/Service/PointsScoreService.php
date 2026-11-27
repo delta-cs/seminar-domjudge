@@ -70,6 +70,10 @@ class PointsScoreService
 
         foreach ($judgingRuns as $judgingRun) {
             $group = $judgingRun->getTestcase()->getTestcaseGroup();
+            if ($group === null) {
+                // Testcases outside any group cannot earn partial points.
+                continue;
+            }
             if (!isset($groupRuns[$group->getTestcasegroupid()])) {
                 $groupRuns[$group->getTestcasegroupid()] = [$judgingRun];
             } else {
