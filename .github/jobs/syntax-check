@@ -26,6 +26,7 @@ fi
 
 find . \( \
        -path ./webapp/vendor     -prune \
+	-o -path ./webapp/packages   -prune \
 	-o -path ./webapp/var        -prune \
 	-o -path ./output            -prune \
 	-o -path ./.git              -prune \

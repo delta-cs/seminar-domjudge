@@ -21,12 +21,13 @@ class ControllerRolesTraversalTest extends BaseTestCase
      * '/download';
      * 'javascript';
      * '.zip';
+     * 'mailto:'                //       Contact addresses, not pages
      * ''                       //       Empty URL
      * '#'                      //       Links to local page
      * '/logout'                //       Application links
      * '/login'
      **/
-    protected static array $substrings = ['http','activate','deactivate','/jury/change-contest/','/statement','/input','/output','/export','/download','javascript','.zip'];
+    protected static array $substrings = ['http','mailto:','activate','deactivate','/jury/change-contest/','/statement','/input','/output','/export','/download','javascript','.zip'];
     protected static array $fullstrings = ['','#','/logout','/login'];
     protected static array $riskyURLs = ['nonExistent','2nd'];
 
@@ -86,6 +87,34 @@ class ControllerRolesTraversalTest extends BaseTestCase
     }
 
     /**
+     * Redirects the fork makes on purpose:
+     * - ContestIdSubscriber sends pages that show contest data to the same path with
+     *   the contest pinned as ?cid=;
+     * - the public start page is the homepage at / instead of /public, and it sends
+     *   a logged-in user on to their own area (/team, /jury);
+     * - the team editor sends a team back to a team page when the problem has no
+     *   editor template for the language.
+     */
+    protected function isForkRedirect(string $url, ?string $location): bool
+    {
+        if ($location === null) {
+            return false;
+        }
+        $path = parse_url($location, PHP_URL_PATH) ?: '/';
+        parse_str((string)parse_url($location, PHP_URL_QUERY), $query);
+        if ($path === parse_url($url, PHP_URL_PATH) && isset($query['cid'])) {
+            return true;
+        }
+        if ($path === '/') {
+            return true;
+        }
+        if ($url === '/' && ($path === '/team' || $path === '/jury')) {
+            return true;
+        }
+        return str_starts_with($url, '/team/editor/') && str_starts_with($path, '/team');
+    }
+
+    /**
      * Crawl the webpage assume this is allowed and return all other links on the page.
      * @return string[] Found links on crawled URL
      */
@@ -103,12 +132,18 @@ class ControllerRolesTraversalTest extends BaseTestCase
                 self::assertTrue(str_contains($response->headers->get('location'), '/jury/external-contest/manage'));
             } elseif (str_contains($url, '/jury/shadow-differences')) {
                 self::assertTrue(str_contains($response->headers->get('location'), '/jury'));
+            } elseif ($this->isForkRedirect($url, $response->headers->get('location'))) {
+                // A redirect the fork makes on purpose, see isForkRedirect().
             } else {
-                self::assertTrue(str_contains($response->headers->get('location'), '/public'));
+                self::assertTrue(
+                    str_contains($response->headers->get('location'), '/public'),
+                    sprintf('Unexpected redirect from %s to %s', $url, $response->headers->get('location'))
+                );
             }
         } else {
             // The public URL can always be accessed but is not linked for every role.
-            if (str_contains($url, '/public')) {
+            // The fork adds two more public sections: the blog and the help pages.
+            if (str_contains($url, '/public') || str_starts_with($url, '/blog') || str_starts_with($url, '/help')) {
                 $statusCode = 200;
             }
             self::assertEquals($statusCode, $response->getStatusCode(), 'Unexpected response code for ' . $url);
@@ -225,7 +260,14 @@ class ControllerRolesTraversalTest extends BaseTestCase
         self::assertNotEquals(500, $response->getStatusCode(), sprintf('Failed at %s', $url));
         if ($dropdown && !str_contains($url, '/public')) {
             try {
-                self::assertSelectorExists('a#navbarDropdownContests:contains("no contest")', "Failed at: " . $url);
+                // The fork's contest menu shows only an icon, not the contest name, so
+                // check that no contest is selected the other way round: the menu offers
+                // the "no contest" option only while a contest is selected.
+                self::assertSelectorExists('a#navbarDropdownContests', "Failed at: " . $url);
+                self::assertSelectorNotExists(
+                    '[aria-labelledby="navbarDropdown"] a.dropdown-item:contains("no contest")',
+                    "Failed at: " . $url
+                );
             } catch (\Exception $e) {
                 if (getenv('CI')) { // We're running in GHA.
                     $ciArtifacts = getenv('ARTIFACTS');
