@@ -108,7 +108,7 @@ class ControllerRolesTraversalTest extends BaseTestCase
         if ($path === '/') {
             return true;
         }
-        if ($url === '/' && ($path === '/team' || $path === '/jury')) {
+        if (parse_url($url, PHP_URL_PATH) === '/' && ($path === '/team' || $path === '/jury')) {
             return true;
         }
         return str_starts_with($url, '/team/editor/') && str_starts_with($path, '/team');
