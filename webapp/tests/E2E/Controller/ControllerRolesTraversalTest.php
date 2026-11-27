@@ -91,7 +91,7 @@ class ControllerRolesTraversalTest extends BaseTestCase
      * - ContestIdSubscriber sends pages that show contest data to the same path with
      *   the contest pinned as ?cid=;
      * - the public start page is the homepage at / instead of /public, and it sends
-     *   a logged-in user on to their own area (/team, /jury);
+     *   a logged-in user on to their own area (/team, /jury, /jury/balloons);
      * - the team editor sends a team back to a team page when the problem has no
      *   editor template for the language.
      */
@@ -108,7 +108,8 @@ class ControllerRolesTraversalTest extends BaseTestCase
         if ($path === '/') {
             return true;
         }
-        if (parse_url($url, PHP_URL_PATH) === '/' && ($path === '/team' || $path === '/jury')) {
+        if (parse_url($url, PHP_URL_PATH) === '/'
+            && (str_starts_with($path, '/team') || str_starts_with($path, '/jury'))) {
             return true;
         }
         return str_starts_with($url, '/team/editor/') && str_starts_with($path, '/team');
