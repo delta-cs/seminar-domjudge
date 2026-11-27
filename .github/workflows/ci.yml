@@ -1,10 +1,16 @@
 name: CI
 on:
   merge_group:
+  # This fork merges straight into its version branches (e.g. 9.0.2), so also
+  # check what lands there, not only pull requests.
+  push:
+    branches:
+      - '[0-9]+.[0-9]+.[0-9]+'
   pull_request:
     branches:
       - main
       - '[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
