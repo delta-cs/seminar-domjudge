@@ -417,6 +417,10 @@ class SubmissionController extends BaseController
         $testcaseGroupsRuns = [];
         foreach ($runs as $run) {
             $group = $run->getTestcaseGroup();
+            // Testcase groups are optional; ungrouped runs have no group summary.
+            if ($group === null) {
+                continue;
+            }
             if (!isset($testcaseGroupsRuns[$group->getTestcasegroupid()])) {
                 $testcaseGroupsRuns[$group->getTestcasegroupid()] = [$group, [$run]];
             } else {
