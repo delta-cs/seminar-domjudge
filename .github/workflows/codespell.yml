@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - '[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 name: Spell Check
  
