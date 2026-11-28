@@ -10,7 +10,7 @@ jobs:
       image: domjudge/gitlabci:24.04
       options: --privileged --cgroupns=host --init
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: info
         run: cat /proc/cmdline && echo && cat /proc/mounts && echo && ls -al /sys/fs/cgroup && echo && uname -a && echo && stat -fc %T /sys/fs/cgroup && echo && cat /proc/self/cgroup
       - name: Create the configure file

@@ -13,14 +13,14 @@ jobs:
     container:
       image: domjudge/gitlabci:24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run the syntax checks
         run: .github/jobs/syntax.sh
 
   detect-dump:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Search for leftover dump( statements"
         run: .github/jobs/detect_dump.sh
 
@@ -29,7 +29,7 @@ jobs:
     container:
       image: pipelinecomponents/php-linter:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Detect PHP linting issues
         run: >
           parallel-lint --colors
@@ -49,7 +49,7 @@ jobs:
       matrix:
         PHPVERSION: ["8.1", "8.2", "8.3", "8.4"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Detect compatibility with supported PHP version
         run: >
           /vendor/bin/phpcs -s -p --colors
@@ -67,7 +67,7 @@ jobs:
   pycodestyle:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Download pycodestyle python file
         run: >
           curl -L -o /tmp/pycodestyle.py 'https://github.com/PyCQA/pycodestyle/raw/refs/tags/2.12.1/pycodestyle.py'
@@ -82,6 +82,6 @@ jobs:
   pyright:
     runs-on: ubuntu-latest
     steps:
-    - uses: jakebailey/pyright-action@v2
+    - uses: jakebailey/pyright-action@v3
       with:
         version: 1.1.311

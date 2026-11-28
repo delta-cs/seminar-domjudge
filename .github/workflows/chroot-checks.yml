@@ -13,13 +13,13 @@ jobs:
         arch: [amd64, default]
     steps:
       - name: Checkout current code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install DOMjudge
         run: |
           .github/jobs/chroot_checks.sh ${{ matrix.arch }}
       - name: Upload all logs/artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.arch }}-logs
           path: |

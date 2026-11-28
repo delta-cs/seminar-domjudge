@@ -20,7 +20,7 @@ jobs:
           MYSQL_PASSWORD: domjudge
         options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: info
         run: |
           cat /proc/cmdline && echo &&
@@ -79,7 +79,7 @@ jobs:
         run: mysqldump -uroot -proot --quick --max_allowed_packet=1024M domjudge > /tmp/db.sql
       - name: Upload database dump for debugging
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DB-dump
           path: /tmp/db.sql
@@ -87,12 +87,15 @@ jobs:
         run: docker logs "${{ job.services.sqlserver.id }}"
       - name: Collect docker logs on failure
         if: ${{ !cancelled() }}
-        uses: jwalton/gh-docker-logs@v1
-        with:
-          dest: '/tmp/docker-logs'
+        run: |
+          mkdir -p /tmp/docker-logs
+          command -v docker >/dev/null || exit 0
+          for c in $(docker ps -aq); do
+            docker logs "$c" > "/tmp/docker-logs/$(docker inspect --format '{{.Name}}' "$c" | tr -d /).log" 2>&1 || true
+          done
       - name: Upload all logs/artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Logs
           path: |
