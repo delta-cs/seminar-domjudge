@@ -45,14 +45,14 @@ jobs:
             test: w3cval
             db: install
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install DOMjudge
         run: .github/jobs/baseinstall.sh ${{ matrix.role }}
       - name: Run webstandard tests (W3C, WCAG)
         run: .github/jobs/webstandard.sh ${{ matrix.test }} ${{ matrix.role }}
       - name: Upload all logs/artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.role }}-${{ matrix.test }}-${{ matrix.db }}-logs
           path: |

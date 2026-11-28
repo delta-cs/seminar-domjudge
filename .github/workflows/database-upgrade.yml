@@ -19,7 +19,7 @@ jobs:
           MYSQL_PASSWORD: domjudge
         options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Import Database
         run: mysql -hsqlserver -uroot -proot < .github/jobs/data/dj733.sql
       - name: Upgrade DOMjudge

@@ -7,7 +7,7 @@ jobs:
   check-static-codecov:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Download latest codecov upload script
         run: |
           exit=1
@@ -46,7 +46,7 @@ jobs:
         PHPVERSION: [8.1, 8.4]
         TEST: [Unit, E2E]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: info
         run: |
           cat /proc/cmdline && echo &&
@@ -75,12 +75,15 @@ jobs:
         run: docker logs "${{ job.services.sqlserver.id }}"
       - name: Collect docker logs on failure
         if: ${{ !cancelled() }}
-        uses: jwalton/gh-docker-logs@v1
-        with:
-          dest: '/tmp/docker-logs'
+        run: |
+          mkdir -p /tmp/docker-logs
+          command -v docker >/dev/null || exit 0
+          for c in $(docker ps -aq); do
+            docker logs "$c" > "/tmp/docker-logs/$(docker inspect --format '{{.Name}}' "$c" | tr -d /).log" 2>&1 || true
+          done
       - name: Upload all logs/artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Logs-${{ matrix.PHPVERSION }}-${{ matrix.TEST }}
           path: |
@@ -94,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Event File
           path: ${{ github.event_path }}

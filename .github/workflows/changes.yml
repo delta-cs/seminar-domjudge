@@ -45,8 +45,8 @@ jobs:
       # request it lists the changed files through the API; in the merge
       # queue it diffs the group's base and head, fetching the base commit
       # itself, so a shallow checkout is enough.
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: .github/paths-filters.yml
