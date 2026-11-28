@@ -7,13 +7,13 @@
     <table class="data-table table table-striped table-hover table-sm align-middle" style="width:100%;">
         <thead class="thead-light">
         <tr>
-            <th scope="col">time</th>
-            <th scope="col">from</th>
-            <th scope="col">to</th>
+            <th scope="col">{{ 'time' | trans }}</th>
+            <th scope="col">{{ 'from' | trans }}</th>
+            <th scope="col">{{ 'to' | trans }}</th>
             {% if includeSubject %}
-                <th scope="col">subject</th>
+                <th scope="col">{{ 'subject' | trans }}</th>
             {% endif %}
-            <th scope="col">text</th>
+            <th scope="col">{{ 'text' | trans }}</th>
             <th scope="col"></th>
         </tr>
         </thead>
@@ -28,14 +28,14 @@
                     </a>
                 </td>
                 {%- if clarification.sender is null %}
-                    {%- set sender = 'Jury' %}
+                    {%- set sender = 'Jury' | trans %}
                     {%- if clarification.recipient is null %}
-                        {%- set recipient = 'All' %}
+                        {%- set recipient = 'All' | trans %}
                     {%- else %}
                         {%- set recipient = clarification.recipient.effectiveName %}
                     {%- endif %}
                 {%- else %}
-                    {%- set recipient = 'Jury' %}
+                    {%- set recipient = 'Jury' | trans %}
                     {%- set sender = clarification.sender.effectiveName %}
                 {%- endif %}
 
@@ -53,11 +53,11 @@
                     <td>
                         <a data-ajax-modal data-ajax-modal-after="markSeen" href="{{ link }}">
                             {%- if clarification.problem -%}
-                                problem {{ clarification.contestProblem | problemBadge -}}
+                                {{ 'problem' | trans }} {{ clarification.contestProblem | problemBadge -}}
                             {%- elseif clarification.category -%}
-                                {{- categories[clarification.category]|default('general') -}}
+                                {{- (categories[clarification.category] ?? 'general') | trans -}}
                             {%- else -%}
-                                general
+                                {{ 'general' | trans }}
                             {%- endif -%}
                         </a>
                     </td>

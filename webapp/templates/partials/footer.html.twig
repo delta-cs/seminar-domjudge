@@ -1,8 +1,7 @@
 <footer class="mt-auto w-100 px-3">
     <hr>
     <p>
-        <a href="{{ path('public_authors') }}">Kdo za Pardubickým hackerem stojí?</a>
-        Komunita studentů, absolventů a učitelů <span class="d-inline-block">DELTA - Střední</span> škola informatiky a
-        ekonomie, Pardubice. Projekt vznikl za podpory <span class="d-inline-block">MŠMT ČR a NPI ČR</span>.
+        <a href="{{ path('public_authors') }}">{{ 'Who is behind Pardubický Hacker?' | trans }}</a>
+        {{ 'A community of students, graduates and teachers of <span class="d-inline-block">DELTA - Secondary</span> School of Computer Science and Economics, Pardubice. The project was supported by <span class="d-inline-block">the Czech Ministry of Education (MŠMT) and NPI ČR</span>.' | trans | raw }}
     </p>
 </footer>

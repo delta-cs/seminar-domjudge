@@ -1,16 +1,16 @@
 {% extends 'team/base.html.twig' %}
 
-{% block title %}Submit - {{ parent() }}{% endblock %}
+{% block title %}{{ 'Submit' | trans }} - {{ parent() }}{% endblock %}
 
 {% block content %}
     <div class="container submitform pt-5">
         {% if current_team_contest is not empty and not current_team_contest.allowSubmit %}
             {% include 'partials/alert.html.twig' with {'type': 'danger', 'message': 'Submissions disabled.\nPlease switch to the active contest using trophy icon in the top navigation.'} %}
         {% else %}
-            <h1 class="text-center">Submit {% if problem is not null %}problem {{ problem.name }}{% endif %}</h1>
+            <h1 class="text-center">{% if problem is not null %}{{ 'Submit problem %name%' | trans({'%name%': problem.name}) }}{% else %}{{ 'Submit' | trans }}{% endif %}</h1>
             {% if current_team_contest is empty or (not is_granted('ROLE_JURY') and not current_team_contest.freezeData.started) %}
                 <div class="container submitform">
-                    <div class="alert alert-danger" role="alert">Contest has not yet started - cannot submit.</div>
+                    <div class="alert alert-danger" role="alert">{{ 'Contest has not yet started - cannot submit.' | trans }}</div>
                 </div>
             {% else %}
 
@@ -20,7 +20,7 @@
                 {{ form_row(form.language) }}
                 {{ form_row(form.entry_point) }}
                 <div class="mb-3">
-                    <button type="submit" class="btn-success btn"><i class="fas fa-cloud-upload-alt"></i> Submit
+                    <button type="submit" class="btn-success btn"><i class="fas fa-cloud-upload-alt"></i> {{ 'Submit' | trans }}
                     </button>
                 </div>
                 {{ form_end(form) }}

@@ -18,7 +18,7 @@
                 {% for language in submission_languages %}
                 {% if language.requireEntryPoint %}
             case '{{ language.langid }}':
-                return '{{ language.entryPointDescription | default('Entry point') }}';
+                return '{{ language.entryPointDescription | default('Entry point' | trans) | e('js') }}';
                 {% endif %}
                 {% endfor %}
             default:

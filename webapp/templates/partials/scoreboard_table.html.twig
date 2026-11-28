@@ -87,14 +87,14 @@
     <thead>
     <tr class="scoreheader" data-static="{{ static }}">
         {% if enable_ranking %}
-            <th title="rank" scope="col" {% if medalsEnabled %}colspan="2"{% endif %}>rank</th>
+            <th title="{{ 'rank' | trans }}" scope="col" {% if medalsEnabled %}colspan="2"{% endif %}>{{ 'rank' | trans }}</th>
         {% endif %}
-        <th title="team name" scope="col" colspan="{{ teamColspan }}">team</th>
+        <th title="{{ 'team name' | trans }}" scope="col" colspan="{{ teamColspan }}">{{ 'team' | trans }}</th>
         {% if enable_ranking %}
             {% if scoringScoreboard %}
-                <th title="points" colspan="1" scope="col">score</th>
+                <th title="{{ 'points' | trans }}" colspan="1" scope="col">{{ 'score' | trans }}</th>
             {% else %}
-                <th title="# solved / penalty time" colspan="2" scope="col">score</th>
+                <th title="{{ '# solved / penalty time' | trans }}" colspan="2" scope="col">{{ 'score' | trans }}</th>
             {% endif %}
         {% endif %}
         {% if showTeamSubmissions or jury %}
@@ -115,7 +115,7 @@
                     {% endif %}
                 {% endif %}
                 <th
-                    title="problem {{ problem.problem.name }}"
+                    title="{{ 'problem %name%' | trans({'%name%': problem.problem.name}) }}"
                     scope="col"
                     data-problem-external-id="{{ problem.externalid }}"
                     data-problem-name="{{ problem.problem.name | escape('html_attr') }}"
@@ -126,7 +126,7 @@
                         {% if showPoints and not scoringScoreboard %}
                             <br/>
                             <span class='problempoints'>
-                                [{% if problem.points == 1 %}1 point{% else %}{{ problem.points }} points{% endif %}]
+                                [{{ '%count% point|%count% points' | trans({'%count%': problem.points}) }}]
                             </span>
                         {% endif %}
                     </a>
@@ -352,7 +352,7 @@
                                 <div
                                     class="{{ scoreCssClass }}"
                                 {% if scoringScoreboard %}
-                                    title="{% if matrixItem.isCorrect %}{{ time }} mins{% endif %}"
+                                    title="{% if matrixItem.isCorrect %}{{ '%count% mins' | trans({'%count%': time}) }}{% endif %}"
                                 {% endif %}
                                 >
                                     {% if scoringScoreboard %}
@@ -361,11 +361,8 @@
                                         {% if matrixItem.isCorrect %}{{ time }}{% else %}&nbsp;{% endif %}
                                     {% endif %}
                                     <span>
-                                        {% if numSubmissions is same as(1) %}
-                                            1 try
-                                        {% else %}
-                                            {{ numSubmissions }} tries
-                                        {% endif %}
+                                        {# numSubmissions can read "2 + 1" with pending ones; the plural follows the total. #}
+                                        {{ '%tries% try|%tries% tries' | trans({'%count%': matrixItem.numSubmissions + (showPending ? matrixItem.numSubmissionsPending : 0), '%tries%': numSubmissions}) }}
                                     </span>
                                 </div>
                             </a>
@@ -417,11 +414,11 @@
 
     <tr class="scoreheader" data-static="{{ static }}" style="font-size: 75%;">
         {% if enable_ranking %}
-            <th title="rank" scope="col">rank</th>
+            <th title="{{ 'rank' | trans }}" scope="col">{{ 'rank' | trans }}</th>
         {% endif %}
-        <th title="team name" scope="col" colspan="{{ teamColspan }}">team</th>
+        <th title="{{ 'team name' | trans }}" scope="col" colspan="{{ teamColspan }}">{{ 'team' | trans }}</th>
         {% if enable_ranking %}
-            <th title="# solved / penalty time" colspan="1" scope="col">score</th>
+            <th title="{{ '# solved / penalty time' | trans }}" colspan="1" scope="col">{{ 'score' | trans }}</th>
         {% endif %}
     </tr>
     </thead>
@@ -608,7 +605,7 @@
                     {% if jury %}
                         {% set link = path('jury_team_categories') %}
                     {% endif %}
-                    <a {% if link %}href="{{ link }}"{% endif %}>Categories</a>
+                    <a {% if link %}href="{{ link }}"{% endif %}>{{ 'Categories' | trans }}</a>
                 </th>
             </tr>
             </thead>
@@ -637,7 +634,7 @@
         <table id="cell_legend" class="d-none d-md-table scoreboard scorelegend {% if jury %}scoreboard_jury{% endif %}">
             <thead>
             <tr>
-                <th scope="col">Cell colours</th>
+                <th scope="col">{{ 'Cell colours' | trans }}</th>
             </tr>
             </thead>
             <tbody>
@@ -647,7 +644,7 @@
                         {% set color = "correct score_first" %}
                     {% endif %}
                     <tr class="score_{{ color }}">
-                        <td>{{ description }}</td>
+                        <td>{{ description | trans }}</td>
                     </tr>
                 {% endif %}
             {% endfor %}

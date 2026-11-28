@@ -1,6 +1,6 @@
 {% if team is empty %}
     <div class="alert alert-danger mt-4">
-        No team found by this id.
+        {{ 'No team found by this id.' | trans }}
     </div>
 {% else %}
 
@@ -8,22 +8,22 @@
         <div class="col-lg-{{ size | default(4) }}">
             <table class="table table-sm table-striped">
                 <tr>
-                    <th>Name</th>
+                    <th>{{ 'Name' | trans }}</th>
                     <td>{{ team.effectiveName }}</td>
                 </tr>
                 <tr>
-                    <th>Category</th>
+                    <th>{{ 'Category' | trans }}</th>
                     <td>{{ team.category.name }}</td>
                 </tr>
                 {% if team.publicdescription is not empty %}
                     <tr>
-                        <th>Description</th>
+                        <th>{{ 'Description' | trans }}</th>
                         <td>{{ team.publicdescription | nl2br }}</td>
                     </tr>
                 {% endif %}
                 {% if showAffiliations and team.affiliation is not empty %}
                     <tr>
-                        <th>Affiliation</th>
+                        <th>{{ 'Affiliation' | trans }}</th>
                         <td>
                         {% set affiliationId = team.affiliation.externalid %}
                         {% set affiliationLogo = affiliationId | assetPath('affiliation') %}
@@ -35,7 +35,7 @@
                     </tr>
                     {% if showFlags and team.affiliation.country is not empty %}
                         <tr>
-                            <th>Country</th>
+                            <th>{{ 'Country' | trans }}</th>
                             <td>
                                 {{ team.affiliation.country | countryFlag(true) }}
                             </td>
@@ -44,7 +44,7 @@
                 {% endif %}
                 {% if team.location is not empty %}
                     <tr>
-                        <th>Location</th>
+                        <th>{{ 'Location' | trans }}</th>
                         <td>{{ team.location }}</td>
                     </tr>
                 {% endif %}
@@ -54,8 +54,8 @@
     {% set teamImage = teamId | assetPath('team') %}
     {% if teamImage %}
         <div class="col-lg-{{ size | default(4) }}">
-        <img loading="lazy" class="teampicture" src="{{ asset(teamImage) }}" alt="Picture of team {{ team.effectiveName }}"
-             title="Picture of team {{ team.effectiveName }}">
+        <img loading="lazy" class="teampicture" src="{{ asset(teamImage) }}" alt="{{ 'Picture of team %team%' | trans({'%team%': team.effectiveName}) }}"
+             title="{{ 'Picture of team %team%' | trans({'%team%': team.effectiveName}) }}">
         </div>
     {% endif %}
     </div>

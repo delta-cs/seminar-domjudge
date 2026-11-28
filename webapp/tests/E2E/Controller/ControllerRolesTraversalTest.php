@@ -27,7 +27,7 @@ class ControllerRolesTraversalTest extends BaseTestCase
      * '/logout'                //       Application links
      * '/login'
      **/
-    protected static array $substrings = ['http','mailto:','activate','deactivate','/jury/change-contest/','/statement','/input','/output','/export','/download','javascript','.zip'];
+    protected static array $substrings = ['http','mailto:','activate','deactivate','/jury/change-contest/','/change-language/','/statement','/input','/output','/export','/download','javascript','.zip'];
     protected static array $fullstrings = ['','#','/logout','/login'];
     protected static array $riskyURLs = ['nonExistent','2nd'];
 

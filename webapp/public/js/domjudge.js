@@ -220,7 +220,8 @@ function updateClock()
     var curtime = Math.round((new Date().getTime() - clientOffset) / 1000);
 
     var fmt = "";
-    if ( timeleftelt.innerHTML=='start delayed' || timeleft.innerHTML == 'no contest' ) { // FIXME
+    var texts = window.domjudgeTranslations || {};
+    if ( timeleftelt.dataset.fixed !== undefined ) {
         var left = 0;
         var what = timeleftelt.innerHTML;
     } else if (curtime >= starttime && curtime < endtime ) {
@@ -228,10 +229,10 @@ function updateClock()
         var what = "";
     } else if (curtime >= activatetime && curtime < starttime ) {
         var left = starttime - curtime;
-        var what = "time to start: ";
+        var what = texts.timeToStart || "time to start: ";
     } else {
         var left = 0;
-        var what = "contest over";
+        var what = texts.contestOver || "contest over";
     }
 
     if ( left ) {
@@ -571,7 +572,7 @@ function clarificationAppendAnswer() {
 }
 
 function confirmLogout() {
-    return confirm("Really log out?");
+    return confirm((window.domjudgeTranslations || {}).confirmLogout || "Really log out?");
 }
 
 function processAjaxResponse(jqXHR, data) {
@@ -911,7 +912,9 @@ function pinScoreheader()
     }
 }
 
-function humanReadableTimeDiff(seconds) {
+// units: optional names for the units, e.g. translated (#149); English by default.
+function humanReadableTimeDiff(seconds, units) {
+    units = units || {};
     var intervals = [
         ['years', 365 * 24 * 60 * 60],
         ['months', 30 * 24 * 60 * 60],
@@ -921,10 +924,10 @@ function humanReadableTimeDiff(seconds) {
     ];
     for (let [name, length] of intervals) {
         if (seconds / length >= 2) {
-            return Math.floor(seconds/length) + ' ' + name;
+            return Math.floor(seconds/length) + ' ' + (units[name] || name);
         }
     }
-    return Math.floor(seconds) + ' seconds';
+    return Math.floor(seconds) + ' ' + (units.seconds || 'seconds');
 }
 
 function humanReadableBytes(bytes) {

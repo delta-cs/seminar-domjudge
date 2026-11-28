@@ -1,12 +1,12 @@
 {% extends "public/base.html.twig" %}
 
 {% block title %}
-    {% if team is not empty %}Submissions for team {{ team.effectiveName }} on problem {{ problem.problem.name }} - {% endif %}{{ parent() }}
+    {% if team is not empty %}{{ 'Submissions for team %team% on problem %problem%' | trans({'%team%': team.effectiveName, '%problem%': problem.problem.name}) }} - {% endif %}{{ parent() }}
 {% endblock %}
 
 {% block content %}
     <h1 class="mt-3">
-        Submissions for team {{ team.effectiveName }} on problem {{ problem | problemBadge }} {{ problem.problem.name }}
+        {{ 'Submissions for team %team% on problem %problem%' | trans({'%team%': team.effectiveName | e, '%problem%': (problem | problemBadge) ~ ' ' ~ (problem.problem.name | e)}) | raw }}
     </h1>
 
     <div
@@ -14,7 +14,7 @@
         data-problem-id="{{ problem.externalId }}"
         data-submissions-url="{{ path('public_submissions_data_cell', {teamId: team.externalid, problemId: problem.externalId}) }}">
         <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
+            <span class="sr-only">{{ 'Loading...' | trans }}</span>
         </div>
         {% include 'public/partials/submission_list_template.html.twig' %}
     </div>

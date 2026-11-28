@@ -58,6 +58,10 @@ class User extends BaseApiEntity implements
     #[ORM\Column(options: ['comment' => 'Name'])]
     private string $name = '';
 
+    #[ORM\Column(length: 5, nullable: true, options: ['comment' => 'Interface language chosen by the user, null for the default'])]
+    #[Serializer\Exclude]
+    private ?string $locale = null;
+
     #[ORM\Column(nullable: true, options: ['comment' => 'Email address'])]
     #[Assert\Email]
     #[OA\Property(nullable: true)]
@@ -210,6 +214,17 @@ class User extends BaseApiEntity implements
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function setLocale(?string $locale): User
+    {
+        $this->locale = $locale;
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
     }
 
     public function getShortDescription(): string

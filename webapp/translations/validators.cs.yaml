@@ -1,0 +1,11 @@
+# Czech for the form errors teams and visitors can see (#149). Symfony ships Czech for its own
+# constraint messages; these are the ones DOMjudge writes itself.
+'%entry_point% required, but not specified': '%entry_point%: tento údaj je povinný.'
+'The password fields must match.': 'Hesla se musí shodovat.'
+'This team name is already in use.': 'Tento název týmu už někdo používá.'
+'This affiliation name is already in use.': 'Škola s tímto názvem už existuje.'
+'This affiliation shortname is already in use.': 'Škola s touto zkratkou už existuje.'
+"The username '{{ value }}' is already in use.": "Uživatelské jméno {{ value }} už někdo používá."
+'Only alphanumeric characters and _-@. are allowed': 'Povolena jsou jen písmena bez diakritiky, číslice a znaky _-@.'
+'Only letters, numbers, dashes and underscores are allowed.': 'Povolena jsou jen písmena, číslice, pomlčky a podtržítka.'
+'You must select somewhere to send the clarification to.': 'Vyberte, komu má dotaz přijít.'

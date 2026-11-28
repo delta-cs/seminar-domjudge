@@ -1,6 +1,6 @@
 {% extends "public/base.html.twig" %}
 
-{% block title %}Scoreboard {{ contest.shortname | default('') }} - {{ parent() }}{% endblock %}
+{% block title %}{{ 'Scoreboard' | trans }} {{ contest.shortname | default('') }} - {{ parent() }}{% endblock %}
 {% block content %}
     {% include 'partials/scoreboard_progress_bar.html.twig' with {margin: -9, contest: current_public_contest} %}
 

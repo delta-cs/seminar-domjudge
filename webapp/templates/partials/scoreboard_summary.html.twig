@@ -14,12 +14,12 @@
             {% if public %}
                 {% set summaryColspan = summaryColspan + 1 %}
             {% endif %}
-            <td class="scoresummary" title="Summary" colspan="{{ summaryColspan }}">Summary</td>
+            <td class="scoresummary" title="{{ 'Summary' | trans }}" colspan="{{ summaryColspan }}">{{ 'Summary' | trans }}</td>
             {% if enable_ranking %}
                 {% if scoreboard.showPoints %}
                     <td class="scorenc"></td>
                 {% else %}
-                    <td title="total solved" class="scorenc">
+                    <td title="{{ 'total solved' | trans }}" class="scorenc">
                         {{ scoreboard.summary.numberOfPoints(sortOrder) }}
                     </td>
                 {% endif %}
@@ -36,29 +36,29 @@
                     {% endif %}
                     <a {% if link %}href="{{ link }}"{% endif %}>
                         <i class="fas fa-thumbs-up fa-fw"></i>
-                        <span class="submcorrect" style="font-size:90%;" title="number of accepted submissions">
+                        <span class="submcorrect" style="font-size:90%;" title="{{ 'number of accepted submissions' | trans }}">
                                 {{ summary.numSubmissionsCorrect[sortOrder] ?? 0 }}
                             </span>
                         <br/>
 
                         <i class="fas fa-thumbs-down fa-fw"></i>
-                        <span class="submreject" style="font-size:90%;" title="number of rejected submissions">
+                        <span class="submreject" style="font-size:90%;" title="{{ 'number of rejected submissions' | trans }}">
                                 {{ (summary.numSubmissions[sortOrder] ?? 0) - (summary.numSubmissionsCorrect[sortOrder] ?? 0) }}
                             </span>
                         <br/>
 
                         <i class="fas fa-question-circle fa-fw"></i>
-                        <span class="submpend" style="font-size:90%;" title="number of pending submissions">
+                        <span class="submpend" style="font-size:90%;" title="{{ 'number of pending submissions' | trans }}">
                                 {{ summary.numSubmissionsPending[sortOrder] ?? 0 }}
                             </span>
                         <br/>
 
                         <i class="fas fa-clock fa-fw"></i>
-                        <span style="font-size:90%;" title="first solved">
+                        <span style="font-size:90%;" title="{{ 'first solved' | trans }}">
                             {% if summary.bestTimeInMinutes(sortOrder) is not null %}
                                 {{ summary.bestTimeInMinutes(sortOrder) }}min
                             {% else %}
-                                n/a
+                                {{ 'n/a' | trans }}
                             {% endif %}
                         </span>
                     </a>

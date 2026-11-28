@@ -1,6 +1,6 @@
 {% extends "team/base.html.twig" %}
 
-{% block title %}Contest problems {{ current_team_contest.shortname | default('') }} - {{ parent() }}{% endblock %}
+{% block title %}{{ 'Contest problems' | trans }} {{ current_team_contest.shortname | default('') }} - {{ parent() }}{% endblock %}
 
 {% block content %}
     {% if current_team_contest is not empty and not current_team_contest.allowSubmit %}

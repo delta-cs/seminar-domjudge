@@ -3,34 +3,34 @@
 {% set id = 'Communication' %}
 
 {% block header %}
-    Komunikace
+    Communication
 {% endblock %}
 
 {% block body %}
     <p>
-        V průběhu semináře budeme účastníkům posílat informativní zprávy.
-        K tomuto účelu slouží sekce Messages na stránce Team.
+        During the seminar we will send participants informational messages.
+        They appear in the Messages section of the Team page.
     </p>
-    <img src="{{ asset('images/help/messages.png') }}" alt="Odevzdání" class="mb-3 rounded-3 img-fluid help-img">
+    <img src="{{ asset('images/help/messages.png') }}" alt="Messages" class="mb-3 rounded-3 img-fluid help-img">
     <p>
-        Nepřečtené zprávy se zobrazí žlutě v navigační liště.
+        Unread messages are shown in yellow in the navigation bar.
     </p>
-    <img src="{{ asset('images/help/messages-unread.png') }}" alt="Výsledky odevzdání"
+    <img src="{{ asset('images/help/messages-unread.png') }}" alt="Unread messages"
          class="mb-3 rounded-3 img-fluid help-img">
     <p>
-        Může se stát, že budete potřebovat objasnit zadání úlohy nebo výsledek kontroly. V případě nejasností se
-        neváhejte ozvat, využijte k tomu tlačítko v sekci Clarification Request pod Messages.
+        You may need to clarify a problem statement or a judging result. If anything is unclear, do not hesitate to
+        get in touch: use the button in the Clarification Request section under Messages.
     </p>
-    <img src="{{ asset('images/help/clarification-request.png') }}" alt="Výsledky odevzdání"
+    <img src="{{ asset('images/help/clarification-request.png') }}" alt="Clarification request"
          class="mb-3 rounded-3 img-fluid help-img">
     <p>
-        Do stejné sekce vám dorazí i odpověď.
+        The answer will arrive in the same section.
     </p>
 
     {% if discord_invite_url is not empty %}
         <p>
-            Případně můžete zavítat na náš <a target="_blank" href="{{ discord_invite_url }}">Discord</a>
-            a položit dotaz tam.
+            You can also visit our <a target="_blank" href="{{ discord_invite_url }}">Discord</a>
+            and ask there.
         </p>
     {% endif %}
 {% endblock %}

@@ -10,18 +10,20 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TeamClarificationType extends AbstractType
 {
     public function __construct(
         protected readonly DOMJudgeService $dj,
-        protected readonly ConfigurationService $config
+        protected readonly ConfigurationService $config,
+        protected readonly TranslatorInterface $translator,
     ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('recipient', TextType::class, [
-            'data' => 'Jury',
+            'data' => $this->translator->trans('Jury'),
             'disabled' => true,
         ]);
 

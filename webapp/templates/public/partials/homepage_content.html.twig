@@ -1,0 +1,71 @@
+    <div class="hp-cover">
+        <div class="hp-logo-bar hp-cover-overlay">
+            <div class="container">
+                <img src="{{ asset("images/hacker/logo-white.svg") }}" alt="Pardubický Hacker - logo">
+            </div>
+        </div>
+
+        <div class="w-100 d-flex align-content-center justify-content-start justify-content-md-end container">
+            <div class="hp-cover-headline text-left text-md-center">
+                <p>
+                    Are you a <b>primary school</b> pupil who enjoys <b>programming</b>?
+                    <span class="d-inline-block">Are you just starting</span> with programming and want to learn more, or
+                    are you a pro ready to take on the very best?
+                </p>
+                <p>
+                    Pardubický Hacker - programming for primary schools has a <b>competition</b> part and a
+                    <b>study</b> part. You can program in
+                    <b>Python</b>, <b>Java</b>, <b>JavaScript</b>, <b>C</b>, <b>C++</b> or <b>C#</b>.
+                </p>
+            </div>
+        </div>
+
+        <div class="hp-cover-details hp-cover-overlay">
+            <div class="d-flex flex-column flex-md-row container">
+                <div class="hp-cover-details-segment hp-cover-details-segment-larger">
+                    <h2>Competition</h2>
+                    <p>
+                        Every month, 3 competition problems will be waiting for you. The system checks online whether
+                        you solved a problem correctly. Whoever solves the problems first and in the fewest attempts
+                        gets the most points. The points for the individual problems add up.
+                    </p>
+                    <p>
+                        The competition has two semesters, winter and summer. Each semester has online rounds and an
+                        in-person final held in Pardubice. The winter semester has 3 online rounds: October, November
+                        and December, with the final in January. The summer semester has 4 online rounds: February,
+                        March, April and May, with the final in June. You can join during the year too.
+                    </p>
+
+                    <a class="btn btn-lg btn-outline-light" href="{{ path('register') }}">
+                        Sign up
+                    </a>
+                </div>
+
+                <div class="hp-cover-details-segment">
+                    <h2>On-line course</h2>
+                    <p>
+                        Every month we explain a programming topic and bring exercises to practise it. We try to
+                        prepare exercises that will be interesting for you even if you can already program. You can
+                        check whether your solution is correct online.
+                    </p>
+
+                    <a class="btn btn-lg btn-outline-light" href="https://github.com/delta-cs/seminar">
+                        Start studying
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="d-flex flex-row align-items-center">
+            <h2 class="me-3">News</h2>
+            <a class="btn btn-sm btn-info" href="{{ path('blog_list') }}">Read all</a>
+        </div>
+
+        <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
+            {% for post in blogPosts %}
+                {% include 'blog/partials/blog_post_on_homepage.html.twig' with {'post': post} %}
+            {% endfor %}
+        </div>
+    </div>

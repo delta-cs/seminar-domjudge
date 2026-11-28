@@ -32,6 +32,7 @@ use Symfony\Component\Intl\Countries;
 use Symfony\Component\Intl\Exception\MissingResourceException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Twig\Environment;
@@ -57,6 +58,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
         protected readonly TokenStorageInterface $tokenStorage,
         protected readonly AuthorizationCheckerInterface $authorizationChecker,
         protected readonly RouterInterface $router,
+        protected readonly TranslatorInterface $translator,
         #[Autowire('%kernel.project_dir%')]
         protected readonly string $projectDir,
         protected array $renderedSources = []
@@ -584,8 +586,9 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
                 }
         }
 
+        // The verdict code is the translation key, so jury pages (English) keep the code itself.
         return sprintf('<span class="sol %s">%s</span>', $valid ? $style : 'disabled',
-                       htmlspecialchars($result));
+                       htmlspecialchars($this->translator->trans($result)));
     }
 
     /**
@@ -593,7 +596,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
      */
     public function resultExplanation(?string $result): ?string
     {
-        return match (strtolower($result ?? '')) {
+        $explanation = match (strtolower($result ?? '')) {
             'correct' => 'Your program gave the right output on every test.',
             'wrong-answer' => 'Your program ran, but its output differs from the expected output on at least one test. '
                 . 'Check the output format, the edge cases, and that you print nothing extra.',
@@ -609,6 +612,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             'too-late' => 'The submission arrived after the contest ended, so it does not count.',
             default => null,
         };
+        return $explanation === null ? null : $this->translator->trans($explanation);
     }
 
     public function printValidJuryResult(?string $result): string
@@ -1077,18 +1081,17 @@ HTML;
 
     public function printContestStart(Contest $contest): string
     {
-        $res = "scheduled to start ";
-        if (!$contest->getStarttimeEnabled()) {
-            $res = "start delayed, was scheduled ";
-        }
+        $delayed = !$contest->getStarttimeEnabled();
         if ($this->printtime(Utils::now(), 'Ymd') == $this->printtime($contest->getStarttime(false), 'Ymd')) {
             // Today
-            $res .= "at " . $this->printtime($contest->getStarttime(false));
+            $message = $delayed ? 'start delayed, was scheduled at %time%' : 'scheduled to start at %time%';
+            $time = $this->printtime($contest->getStarttime(false));
         } else {
             // Print full date
-            $res .= "on " . $this->printtime($contest->getStarttime(false), 'D d M Y H:i:s T');
+            $message = $delayed ? 'start delayed, was scheduled on %time%' : 'scheduled to start on %time%';
+            $time = $this->printtime($contest->getStarttime(false), 'D d M Y H:i:s T');
         }
-        return $res;
+        return $this->translator->trans($message, ['%time%' => $time]);
     }
 
     /**

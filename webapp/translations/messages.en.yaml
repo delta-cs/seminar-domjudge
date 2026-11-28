@@ -1,0 +1,8 @@
+# English needs no catalogue: the key is the English text. These keys are the exception,
+# because their Czech form depends on the sentence they are used in (#149).
+'years ago (unit)': 'years'
+'months ago (unit)': 'months'
+'days ago (unit)': 'days'
+'hours ago (unit)': 'hours'
+'minutes ago (unit)': 'minutes'
+'seconds ago (unit)': 'seconds'

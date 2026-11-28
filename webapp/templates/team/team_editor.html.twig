@@ -1,6 +1,6 @@
 {% extends 'team/base.html.twig' %}
 
-{% block title %}Editor ({{ language.name }}) for {{ problem.name }} - {{ parent() }}{% endblock %}
+{% block title %}{{ 'Editor (%language%) for %problem%' | trans({'%language%': language.name, '%problem%': problem.name}) }} - {{ parent() }}{% endblock %}
 
 {% block extrahead %}
     {{ parent() }}
@@ -328,7 +328,7 @@
 
             <div class="alert alert-info alert-dismissible fade show" role="alert">
                 {% if problem_available_contests is not empty %}
-                    This problem is now available in the following contests
+                    {{ 'This problem is now available in the following contests' | trans }}
 
                     <ul class="list-unstyled ms-4 mt-1 mb-1">
                         {% for contest_problem in problem_available_contests %}
@@ -341,10 +341,10 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    This problem is no longer available in any contest.
+                    {{ 'This problem is no longer available in any contest.' | trans }}
                 {% endif %}
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ 'Close' | trans }}"></button>
             </div>
         </div>
     {% endif %}
@@ -358,7 +358,7 @@
                         <a class="btn btn-outline-secondary" href="{{ path('team_problem_statement', {'probId': problem.probid}) }}" download>
                             <i class="fa-solid fa-download"></i>
                         </a>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close' | trans }}"></button>
                     </div>
                     <div class="modal-body">
                         <iframe src="{{ path('team_problem_statement', {'probId': problem.probid}) }}"
@@ -376,31 +376,31 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Submission History</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">{{ 'Submission History' | trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close' | trans }}"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4 mb-3 mb-md-0">
                             <div class="list-group" id="revisionList" style="max-height: 60vh; overflow-y: auto;">
                                 <div class="text-center p-3">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                                    <i class="fas fa-spinner fa-spin"></i> {{ 'Loading...' | trans }}
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div id="revisionDiffContainer" style="max-height: 60vh; overflow-y: auto;">
                                 <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> Select a submission from the list to view its source code
+                                    <i class="fas fa-info-circle"></i> {{ 'Select a submission from the list to view its source code' | trans }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close' | trans }}</button>
                     <button type="button" class="btn btn-primary" id="loadRevisionButton" style="display:none;">
-                        <i class="fas fa-code"></i> Load in Editor
+                        <i class="fas fa-code"></i> {{ 'Load in Editor' | trans }}
                     </button>
                 </div>
             </div>
@@ -423,11 +423,11 @@
                         data-bs-toggle="modal"
                         data-bs-target="#problemText">
                     <i class="fas fa-file-{{ problem.problemstatementType }}"></i>
-                    Problem
+                    {{ 'Problem' | trans }}
                 </button>
             {% else %}
                 <span class="px-2 text-danger">
-                    Missing problem definition
+                    {{ 'Missing problem definition' | trans }}
                 </span>
             {% endif %}
         </li>
@@ -442,9 +442,9 @@
                     data-bs-toggle="modal"
                     data-bs-target="#revisionHistory"
                     id="revisionHistoryButton"
-                    title="View revision history">
+                    title="{{ 'View revision history' | trans }}">
                 <i class="fas fa-history"></i>
-                <span class="d-none d-md-inline">Revisions</span>
+                <span class="d-none d-md-inline">{{ 'Revisions' | trans }}</span>
             </button>
         </li>
         <li class="nav-item my-1 me-2 d-flex align-items-center">
@@ -470,8 +470,8 @@
 
     <div id="editorDraftNotice" class="alert alert-info d-none d-flex align-items-center gap-2 mb-2" role="status">
         <span class="me-auto" id="editorDraftNoticeText"></span>
-        <button type="button" class="btn btn-sm btn-primary d-none" id="editorDraftRestore">Restore it</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary" id="editorDraftDiscard">Discard it</button>
+        <button type="button" class="btn btn-sm btn-primary d-none" id="editorDraftRestore">{{ 'Restore it' | trans }}</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="editorDraftDiscard">{{ 'Discard it' | trans }}</button>
     </div>
 
     <ul class="nav nav-tabs source-tab-nav">
@@ -504,7 +504,7 @@
             {% include 'team/partials/team_editor_status.html.twig' %}
         </div>
         <div class="text-end">
-            Refreshes automatically each {{ refresh.after }} seconds
+            {{ 'Refreshes automatically each %seconds% seconds' | trans({'%seconds%': refresh.after}) }}
         </div>
     {% endif %}
 {% endblock %}
@@ -587,7 +587,7 @@
                         window.localStorage.setItem(draftKey, JSON.stringify({
                             files: files, savedAt: Date.now(), base: serverFiles
                         }));
-                        setStatus('Draft kept in this browser at ' + new Date().toLocaleTimeString());
+                        setStatus('{{ 'Draft kept in this browser at %time%' | trans | e('js') }}'.replace('%time%', new Date().toLocaleTimeString()));
                     }
                 } catch (e) {
                     setStatus('');
@@ -630,13 +630,13 @@
                     } else if (draft.base && sameFiles(draft.base, serverFiles)) {
                         // Nothing was saved since the draft: carry on where the team left off.
                         loadIntoEditors(draft.files);
-                        notice('Your unsaved changes from ' + when + ' were restored. Save or submit to keep them.', false);
+                        notice('{{ 'Your unsaved changes from %when% were restored. Save or submit to keep them.' | trans | e('js') }}'.replace('%when%', when), false);
                     } else {
                         // The code was saved elsewhere since; let the team choose.
-                        notice('This browser has unsaved changes from ' + when + ', older than the saved code below.', true);
+                        notice('{{ 'This browser has unsaved changes from %when%, older than the saved code below.' | trans | e('js') }}'.replace('%when%', when), true);
                         $('#editorDraftRestore').one('click', function () {
                             loadIntoEditors(draft.files);
-                            notice('Your unsaved changes from ' + when + ' were restored. Save or submit to keep them.', false);
+                            notice('{{ 'Your unsaved changes from %when% were restored. Save or submit to keep them.' | trans | e('js') }}'.replace('%when%', when), false);
                         });
                     }
                 }
@@ -648,7 +648,7 @@
                 });
                 $('#editorDraftDiscard').on('click', function () {
                     if (readDraft() && !sameFiles(currentFiles(), serverFiles)
-                        && !confirm('Go back to the saved code? Your unsaved changes will be lost.')) {
+                        && !confirm('{{ 'Go back to the saved code? Your unsaved changes will be lost.' | trans | e('js') }}')) {
                         return;
                     }
                     loadIntoEditors(serverFiles);
@@ -679,7 +679,7 @@
                     return undefined;
                 }
                 // The draft is kept, but say so anyway: it only lives in this browser.
-                var confirmationMessage = 'You have unsaved changes. They are kept in this browser only.';
+                var confirmationMessage = '{{ 'You have unsaved changes. They are kept in this browser only.' | trans | e('js') }}';
                 (e || window.event).returnValue = confirmationMessage;
                 return confirmationMessage;
             });
@@ -698,6 +698,13 @@
     </script>
 
     <script>
+        // Verdict names as the team sees them elsewhere; the server sends the verdict code.
+        var revisionResultNames = {
+            {%- for code in ['correct', 'wrong-answer', 'timelimit', 'run-error', 'memory-limit', 'output-limit', 'no-output', 'compiler-error', 'pending', 'judging', 'queued'] %}
+            '{{ code }}': '{{ code | trans | e('js') }}'{% if not loop.last %},{% endif %}
+            {%- endfor %}
+        };
+
         // Revision history functionality
         $(function() {
             var currentRevisions = [];
@@ -720,7 +727,7 @@
                         renderRevisionList();
                     },
                     error: function() {
-                        $('#revisionList').html('<div class="alert alert-danger">Failed to load revisions</div>');
+                        $('#revisionList').html('<div class="alert alert-danger">{{ 'Failed to load revisions' | trans | e('js') }}</div>');
                     }
                 });
             }
@@ -728,11 +735,11 @@
             function renderRevisionList() {
                 var html = '';
                 if (currentRevisions.length === 0) {
-                    html = '<div class="alert alert-info">No saves or submissions found</div>';
+                    html = '<div class="alert alert-info">{{ 'No saves or submissions found' | trans | e('js') }}</div>';
                     $('#revisionDiffContainer').html(
                         '<div class="alert alert-secondary">' +
-                        '<i class="fas fa-info-circle"></i> No saves or submissions to display yet. ' +
-                        'Save or submit your solution to create revision history.' +
+                        '<i class="fas fa-info-circle"></i> {{ 'No saves or submissions to display yet.' | trans | e('js') }} ' +
+                        '{{ 'Save or submit your solution to create revision history.' | trans | e('js') }}' +
                         '</div>'
                     );
                 } else {
@@ -747,7 +754,7 @@
                         
                         // Show submission status in small secondary text
                         if (revision.valid) {
-                            html += '<small class="text-secondary">Submitted</small>';
+                            html += '<small class="text-secondary">{{ 'Submitted' | trans | e('js') }}</small>';
                         }
                         
                         html += '</div>';
@@ -755,7 +762,7 @@
                         // Only show result for valid submissions
                         if (revision.valid && revision.result !== null) {
                             var resultClass = revision.result ? revision.result.replace(/ /g, '-').toLowerCase() : 'pending';
-                            var resultText = revision.result || 'pending';
+                            var resultText = revisionResultNames[revision.result || 'pending'] || revision.result;
                             html += '<span class="revision-result ' + resultClass + '">' + resultText + '</span>';
                         }
                         
@@ -763,7 +770,7 @@
                         
                         if (index === 0) {
                             html += '<div class="mt-1">';
-                            html += '<small class="text-primary"><i class="fas fa-clock"></i> Most recent</small>';
+                            html += '<small class="text-primary"><i class="fas fa-clock"></i> {{ 'Most recent' | trans | e('js') }}</small>';
                             html += '</div>';
                         }
                         
@@ -782,7 +789,7 @@
                         $(this).removeClass('active');
                         selectedRevision = null;
                         $('#loadRevisionButton').hide();
-                        $('#revisionDiffContainer').html('<div class="alert alert-info">Select a revision to view or compare</div>');
+                        $('#revisionDiffContainer').html('<div class="alert alert-info">{{ 'Select a revision to view or compare' | trans | e('js') }}</div>');
                     } else {
                         // Select new revision
                         $('.revision-item').removeClass('active');
@@ -795,7 +802,7 @@
             }
 
             function loadRevisionSource(submitId) {
-                $('#revisionDiffContainer').html('<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i> Loading source...</div>');
+                $('#revisionDiffContainer').html('<div class="text-center p-3"><i class="fas fa-spinner fa-spin"></i> {{ 'Loading source...' | trans | e('js') }}</div>');
                 
                 $.ajax({
                     url: '{{ path('team_editor_submission_source', {'submitId': '999999'}) }}'.replace('999999', submitId),
@@ -804,7 +811,7 @@
                         displayRevisionSource(data.files);
                     },
                     error: function() {
-                        $('#revisionDiffContainer').html('<div class="alert alert-danger">Failed to load source code</div>');
+                        $('#revisionDiffContainer').html('<div class="alert alert-danger">{{ 'Failed to load source code' | trans | e('js') }}</div>');
                     }
                 });
             }
@@ -828,23 +835,23 @@
                         html += '<div class="source-container">';
                         html += '<div class="source-toolbar">';
                         html += '<div class="btn-group btn-group-sm" role="group">';
-                        html += '<button class="btn btn-light view-source-btn active" data-rank="' + file.rank + '" title="View source">';
+                        html += '<button class="btn btn-light view-source-btn active" data-rank="' + file.rank + '" title="{{ 'View source' | trans | e('js') }}">';
                         html += '<i class="fas fa-code"></i>';
                         html += '</button>';
-                        html += '<button class="btn btn-light compare-current-btn" data-rank="' + file.rank + '" title="Compare with current editor">';
+                        html += '<button class="btn btn-light compare-current-btn" data-rank="' + file.rank + '" title="{{ 'Compare with current editor' | trans | e('js') }}">';
                         html += '<i class="fas fa-code-compare"></i>';
                         html += '</button>';
                         
                         // Add compare with previous button if not the last revision
                         var selectedIndex = currentRevisions.findIndex(function(r) { return r.submitid === selectedRevision.submitid; });
                         if (selectedIndex < currentRevisions.length - 1) {
-                            html += '<button class="btn btn-light compare-previous-btn" data-rank="' + file.rank + '" title="Compare with previous revision">';
+                            html += '<button class="btn btn-light compare-previous-btn" data-rank="' + file.rank + '" title="{{ 'Compare with previous revision' | trans | e('js') }}">';
                             html += '<i class="fas fa-clock-rotate-left"></i>';
                             html += '</button>';
                         }
                         
                         html += '</div>';
-                        html += '<span class="toolbar-label ms-3 text-muted">View source</span>';
+                        html += '<span class="toolbar-label ms-3 text-muted">{{ 'View source' | trans | e('js') }}</span>';
                         html += '</div>';
                         html += '<div class="source-preview" data-rank="' + file.rank + '">';
                         html += '<pre><code>' + escapeHtml(file.sourcecode) + '</code></pre>';
@@ -860,23 +867,23 @@
                     html += '<div class="source-toolbar">';
                     html += '<h6 class="mb-0 me-3">' + file.filename + '</h6>';
                     html += '<div class="btn-group btn-group-sm" role="group">';
-                    html += '<button class="btn btn-light view-source-btn active" data-rank="' + file.rank + '" title="View source">';
+                    html += '<button class="btn btn-light view-source-btn active" data-rank="' + file.rank + '" title="{{ 'View source' | trans | e('js') }}">';
                     html += '<i class="fas fa-code"></i>';
                     html += '</button>';
-                    html += '<button class="btn btn-light compare-current-btn" data-rank="' + file.rank + '" title="Compare with current editor">';
+                    html += '<button class="btn btn-light compare-current-btn" data-rank="' + file.rank + '" title="{{ 'Compare with current editor' | trans | e('js') }}">';
                     html += '<i class="fas fa-code-compare"></i>';
                     html += '</button>';
                     
                     // Add compare with previous button if not the last revision
                     var selectedIndex = currentRevisions.findIndex(function(r) { return r.submitid === selectedRevision.submitid; });
                     if (selectedIndex < currentRevisions.length - 1) {
-                        html += '<button class="btn btn-light compare-previous-btn" data-rank="' + file.rank + '" title="Compare with previous revision">';
+                        html += '<button class="btn btn-light compare-previous-btn" data-rank="' + file.rank + '" title="{{ 'Compare with previous revision' | trans | e('js') }}">';
                         html += '<i class="fas fa-clock-rotate-left"></i>';
                         html += '</button>';
                     }
                     
                     html += '</div>';
-                    html += '<span class="toolbar-label ms-3 text-muted">View source</span>';
+                    html += '<span class="toolbar-label ms-3 text-muted">{{ 'View source' | trans | e('js') }}</span>';
                     html += '</div>';
                     html += '<div class="source-preview" data-rank="' + file.rank + '">';
                     html += '<pre><code>' + escapeHtml(file.sourcecode) + '</code></pre>';
@@ -897,7 +904,7 @@
                     var rank = $(this).data('rank');
                     $('.source-toolbar .btn[data-rank="' + rank + '"]').removeClass('active');
                     $(this).addClass('active');
-                    $('.toolbar-label').text('View source');
+                    $('.toolbar-label').text('{{ 'View source' | trans | e('js') }}');
                     loadRevisionSource(selectedRevision.submitid);
                 });
                 
@@ -905,7 +912,7 @@
                     var rank = $(this).data('rank');
                     $('.source-toolbar .btn[data-rank="' + rank + '"]').removeClass('active');
                     $(this).addClass('active');
-                    $('.toolbar-label').text('Comparing with current editor');
+                    $('.toolbar-label').text('{{ 'Comparing with current editor' | trans | e('js') }}');
                     compareWithCurrent(rank);
                 });
                 
@@ -913,7 +920,7 @@
                     var rank = $(this).data('rank');
                     $('.source-toolbar .btn[data-rank="' + rank + '"]').removeClass('active');
                     $(this).addClass('active');
-                    $('.toolbar-label').text('Comparing with previous revision');
+                    $('.toolbar-label').text('{{ 'Comparing with previous revision' | trans | e('js') }}');
                     compareWithPrevious(rank);
                 });
             }
@@ -923,7 +930,7 @@
                 var editorId = 'editor' + rank;
                 var currentEditor = document.getElementById(editorId);
                 if (!currentEditor || !currentEditor.editor) {
-                    alert('Could not find editor for this file');
+                    alert('{{ 'Could not find editor for this file' | trans | e('js') }}');
                     return;
                 }
                 
@@ -937,7 +944,7 @@
                 // Check if files are identical
                 if (currentSource === revisionSource) {
                     var html = '<div class="alert alert-success mb-3">';
-                    html += '<i class="fas fa-check-circle"></i> The current editor content is identical to this submission.';
+                    html += '<i class="fas fa-check-circle"></i> {{ 'The current editor content is identical to this submission.' | trans | e('js') }}';
                     html += '</div>';
                     html += '<pre><code>' + escapeHtml(revisionSource) + '</code></pre>';
                     
@@ -993,8 +1000,8 @@
                 // Convert back to line-based output
                 var html = '<div class="mb-3">';
                 var selectedDate = new Date(selectedRevision.submittime * 1000).toLocaleString();
-                html += '<h6>Comparing: ' + selectedDate + ' → Current Editor</h6>';
-                html += '<small class="text-muted"><i class="fas fa-minus-square"></i> Removed lines &nbsp;&nbsp; <i class="fas fa-plus-square"></i> Added lines</small>';
+                html += '<h6>' + '{{ 'Comparing: %from% → Current Editor' | trans | e('js') }}'.replace('%from%', selectedDate) + '</h6>';
+                html += '<small class="text-muted"><i class="fas fa-minus-square"></i> {{ 'Removed lines' | trans | e('js') }} &nbsp;&nbsp; <i class="fas fa-plus-square"></i> {{ 'Added lines' | trans | e('js') }}</small>';
                 html += '</div>';
                 html += '<div class="diff-wrapper">';
                 
@@ -1032,7 +1039,7 @@
                 // Find the previous revision
                 var selectedIndex = currentRevisions.findIndex(function(r) { return r.submitid === selectedRevision.submitid; });
                 if (selectedIndex >= currentRevisions.length - 1) {
-                    alert('No previous revision available');
+                    alert('{{ 'No previous revision available' | trans | e('js') }}');
                     return;
                 }
                 
@@ -1046,7 +1053,7 @@
                         // Find the file with matching rank
                         var previousFile = data.files.find(function(f) { return f.rank === rank; });
                         if (!previousFile) {
-                            alert('Could not find matching file in previous revision');
+                            alert('{{ 'Could not find matching file in previous revision' | trans | e('js') }}');
                             return;
                         }
                         
@@ -1060,7 +1067,7 @@
                         // Check if files are identical
                         if (currentSource === previousSource) {
                             var html = '<div class="alert alert-success mb-3">';
-                            html += '<i class="fas fa-check-circle"></i> This revision is identical to the previous revision.';
+                            html += '<i class="fas fa-check-circle"></i> {{ 'This revision is identical to the previous revision.' | trans | e('js') }}';
                             html += '</div>';
                             html += '<pre><code>' + escapeHtml(currentSource) + '</code></pre>';
                             
@@ -1107,8 +1114,8 @@
                         var html = '<div class="mb-3">';
                         var previousDate = new Date(previousRevision.submittime * 1000).toLocaleString();
                         var currentDate = new Date(selectedRevision.submittime * 1000).toLocaleString();
-                        html += '<h6>Comparing: ' + previousDate + ' → ' + currentDate + '</h6>';
-                        html += '<small class="text-muted"><i class="fas fa-minus-square"></i> Removed lines &nbsp;&nbsp; <i class="fas fa-plus-square"></i> Added lines</small>';
+                        html += '<h6>' + '{{ 'Comparing: %from% → %to%' | trans | e('js') }}'.replace('%from%', previousDate).replace('%to%', currentDate) + '</h6>';
+                        html += '<small class="text-muted"><i class="fas fa-minus-square"></i> {{ 'Removed lines' | trans | e('js') }} &nbsp;&nbsp; <i class="fas fa-plus-square"></i> {{ 'Added lines' | trans | e('js') }}</small>';
                         html += '</div>';
                         html += '<div class="diff-wrapper">';
                         
@@ -1139,7 +1146,7 @@
                         $('.source-preview[data-rank="' + rank + '"]').html(html);
                     },
                     error: function() {
-                        alert('Failed to load previous revision source code');
+                        alert('{{ 'Failed to load previous revision source code' | trans | e('js') }}');
                     }
                 });
             }
@@ -1148,7 +1155,7 @@
             $('#loadRevisionButton').click(function() {
                 if (!selectedRevision || !currentFiles) return;
                 
-                if (confirm('This will replace the current editor content with the selected revision. Are you sure?')) {
+                if (confirm('{{ 'This will replace the current editor content with the selected revision. Are you sure?' | trans | e('js') }}')) {
                     // Load each file into its corresponding editor
                     Object.keys(currentFiles).forEach(function(rank) {
                         var editorId = 'editor' + rank;
@@ -1166,7 +1173,7 @@
                     });
                     
                     $('#revisionHistory').modal('hide');
-                    alert('Revision loaded into editor');
+                    alert('{{ 'Revision loaded into editor' | trans | e('js') }}');
                 }
             });
 

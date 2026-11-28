@@ -188,7 +188,8 @@ class UserRegistrationType extends AbstractType
                         'spellcheck' => 'false',
                         'minlength' => $this->minimumPasswordLength,
                     ],
-                    'help' => sprintf('Minimum length: %d characters', $this->minimumPasswordLength),
+                    'help' => 'Minimum length: %count% characters',
+                    'help_translation_parameters' => ['%count%' => $this->minimumPasswordLength],
                 ],
                 'second_options' => [
                     'label' => false,

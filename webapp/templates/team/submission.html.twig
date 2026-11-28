@@ -2,10 +2,10 @@
 
 {# @var judgingRun \App\Entity\JudgingRun #}
 
-{% block title %}Submission details - {{ parent() }}{% endblock %}
+{% block title %}{{ 'Submission details' | trans }} - {{ parent() }}{% endblock %}
 
 {% block content %}
-    <h1 class="text-center mt-4">Submission details</h1>
+    <h1 class="text-center mt-4">{{ 'Submission details' | trans }}</h1>
 
     {% include 'team/partials/submission.html.twig' %}
 {% endblock %}

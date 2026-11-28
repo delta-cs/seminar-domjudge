@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% block title %}{{ website_title }} Login{% endblock %}
+{% block title %}{{ website_title }} {{ 'Login page' | trans }}{% endblock %}
 
 {% block extrahead %}
     <link rel="stylesheet" href="{{ asset('style_login.css') }}">
@@ -18,8 +18,8 @@
         <img class="mb-4" src="{{ asset('images/DOMjudgelogo.svg') }}" alt="DOMjudge" width="72">
         {% include 'partials/messages.html.twig' %}
         {% if app.user is not null %}
-            {% set message = 'You are currently automatically logged in as ' ~ app.user.username ~ '.
-Use the form below to change login.' %}
+            {% set message = 'You are currently automatically logged in as %username%.
+Use the form below to change login.' | trans({'%username%': app.user.username}) %}
             {% include 'partials/alert.html.twig' with {type: 'success'} %}
         {% endif %}
 
@@ -27,25 +27,24 @@ Use the form below to change login.' %}
 
         {% if hasaltmethods %}
             <div class="additional-logins me-2">
-                <a class="float-end text-muted" href="#" title="more auth methods"
+                <a class="float-end text-muted" href="#" title="{{ 'more auth methods' | trans }}"
                    onclick="collapse('.regularLoginform'); return false;" role="button">
                     <i class="fas fa-user-ninja"></i>
                 </a>
                 {% if "xheaders" in allowed_authmethods and auth_xheaders_present %}
-                    <h1 class="h3 mb-3 fw-normal">Preconfigured Sign In</h1>
+                    <h1 class="h3 mb-3 fw-normal">{{ 'Preconfigured Sign In' | trans }}</h1>
                     <form action="{{ path('login') }}" method="post">
                         <input type="hidden" name="_csrf_token"
                                value="{{ csrf_token('authenticate') }}">
                         <input type="hidden" name="_username" value="__INVALID__">
                         <div class="login-content">
                             <p>
-                                You can log in using credentials that have been configured by your
-                                administrator.
+                                {{ 'You can log in using credentials that have been configured by your administrator.' | trans }}
                             </p>
                         </div>
                         <button class="mt-auto btn btn-lg btn-success w-100" type="submit"
                                 name="loginmethod" value="xheaders">
-                            Log in using computer credentials
+                            {{ 'Log in using computer credentials' | trans }}
                         </button>
                     </form>
                     <script>
@@ -56,23 +55,23 @@ Use the form below to change login.' %}
                 {% endif %}
 
                 {% if "ipaddress" in allowed_authmethods and auth_ipaddress_users|length > 0 %}
-                    <h1 class="h3 mb-3 fw-normal">Sign in with IP</h1>
+                    <h1 class="h3 mb-3 fw-normal">{{ 'Sign in with IP' | trans }}</h1>
                     <form action="{{ path('login') }}" method="post">
                         <input type="hidden" name="_csrf_token"
                                value="{{ csrf_token('authenticate') }}">
                         <input type="hidden" name="loginmethod" value="ipaddress">
                         <div class="login-content">
                             <p>
-                                You can log in automatically to an account based on your IP Address.
-                                {% if auth_ipaddress_users == 1 %}The accounts associated with your IP are shown below.
-                                {% else %}The account associated with your IP is shown below.{% endif %}
+                                {{ 'You can log in automatically to an account based on your IP Address.' | trans }}
+                                {% if auth_ipaddress_users == 1 %}{{ 'The accounts associated with your IP are shown below.' | trans }}
+                                {% else %}{{ 'The account associated with your IP is shown below.' | trans }}{% endif %}
                             </p>
                         </div>
 
                         {% for u in auth_ipaddress_users %}
                             <button class="btn btn-lg btn-success w-100" type="submit"
                                     name="_username" value="{{ u.username }}">
-                                Log in as {{ u.username }}
+                                {{ 'Log in as %username%' | trans({'%username%': u.username}) }}
                             </button>
                         {% endfor %}
                     </form>
@@ -88,31 +87,31 @@ Use the form below to change login.' %}
         {% endif %}
 
         <div class="main-login ms-2 regularLoginform {% if not showregular %} d-none{% endif %}">
-            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            <h1 class="h3 mb-3 fw-normal">{{ 'Please sign in' | trans }}</h1>
             <form action="{{ path('login') }}" method="post">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                 <div class="login-content">
                     {% if error %}
-                        <div class="alert alert-danger">{{ error.messageKey }}</div>
+                        <div class="alert alert-danger">{{ error.messageKey | trans(error.messageData, 'security') }}</div>
                     {% endif %}
 
                     <div class="form-floating">
                         <input type="text" id="username" name="_username" class="form-control"
-                               placeholder="Username" required autofocus>
-                        <label for="username">Username</label>
+                               placeholder="{{ 'Username' | trans }}" required autofocus>
+                        <label for="username">{{ 'Username' | trans }}</label>
                     </div>
                     <div class="form-floating">
                         <input type="password" id="inputPassword" name="_password"
                                class="form-control" spellcheck="false"
-                               placeholder="Password" required autocomplete="current-password">
-                        <label for="inputPassword">Password</label>
+                               placeholder="{{ 'Password' | trans }}" required autocomplete="current-password">
+                        <label for="inputPassword">{{ 'Password' | trans }}</label>
                     </div>
                 </div>
-                <button class="btn btn-lg btn-primary w-100" type="submit">Sign in</button>
+                <button class="btn btn-lg btn-primary w-100" type="submit">{{ 'Sign in' | trans }}</button>
                 {% if allow_registration %}
                     <div class="mt-3">
-                        Don't have an account?<br/>
-                        <a href="{{ path('register') }}">Register now</a>.
+                        {{ 'Don\'t have an account?' | trans }}<br/>
+                        <a href="{{ path('register') }}">{{ 'Register now' | trans }}</a>.
                     </div>
                 {% endif %}
             </form>

@@ -1,11 +1,11 @@
 {% extends "team/base.html.twig" %}
 
-{% block title %}Print - {{ parent() }}{% endblock %}
+{% block title %}{{ 'Print' | trans }} - {{ parent() }}{% endblock %}
 
 {% block content %}
 
     <div class="container submitform pt-5">
-        <h1 class="text-center">Print source</h1>
+        <h1 class="text-center">{{ 'Print source' | trans }}</h1>
         {{ form(form) }}
     </div>
 

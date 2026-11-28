@@ -7,18 +7,15 @@
 
 {% block content %}
     <div class="container">
-        <h1>Nápověda</h1>
+        <h1>{{ 'Help' | trans }}</h1>
         <p>
-            Na této stránce najdete informace o tom, jak se pohybovat na webu a jak soutěžit.
+            {{ 'This page explains how to find your way around the site and how to compete.' | trans }}
         </p>
         <div class="accordion">
-            {% include 'help/partials/visitors.html.twig' %}
-            {% include 'help/partials/registration.html.twig' %}
-            {% include 'help/partials/forgotten_password.html.twig' %}
-            {% include 'help/partials/problemset.html.twig' %}
-            {% include 'help/partials/submissions.html.twig' %}
-            {% include 'help/partials/scoreboard.html.twig' %}
-            {% include 'help/partials/communication.html.twig' %}
+            {# The partials are prose: the base file is English, the Czech copy sits next to it (*.cs.html.twig). #}
+            {% for part in ['visitors', 'registration', 'forgotten_password', 'problemset', 'submissions', 'scoreboard', 'communication'] %}
+                {% include ['help/partials/' ~ part ~ '.' ~ app.request.locale ~ '.html.twig', 'help/partials/' ~ part ~ '.html.twig'] %}
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

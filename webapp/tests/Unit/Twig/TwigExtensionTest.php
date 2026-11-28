@@ -19,6 +19,7 @@ use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Twig\Environment;
@@ -62,6 +63,7 @@ class TwigExtensionTest extends TestCase
             $this->createMock(TokenStorageInterface::class),
             $this->createMock(AuthorizationCheckerInterface::class),
             $this->router,
+            new IdentityTranslator(),
             '/tmp'
         );
     }

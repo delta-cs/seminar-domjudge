@@ -9,7 +9,7 @@
 {% endif %}
 
 {% if current_contest is null %}
-    <p class="nodata">No active contest</p>
+    <p class="nodata">{{ 'No active contest' | trans }}</p>
 {% else %}
     {% if current_contest.warningMessage %}
         <div class="alert alert-danger" role="alert">
@@ -29,22 +29,22 @@
                         {{ current_contest | printContestStart }}
                     {% elseif scoreboard.freezeData.showFinal(jury) %}
                         {% if current_contest.finalizetime is empty %}
-                            preliminary results - not final
+                            {{ 'preliminary results - not final' | trans }}
                         {% else %}
-                            final standings
+                            {{ 'final standings' | trans }}
                         {% endif %}
                     {% elseif scoreboard.freezeData.stopped %}
-                        contest over, waiting for results
+                        {{ 'contest over, waiting for results' | trans }}
                     {% elseif static %}
                         {% set now = 'now'|date('U') %}
                         {{ current_contest.starttime | printelapsedminutes(now) }}
                     {% else %}
                         {% if current_contest.freezeData.started %}
-                            started:
+                            {{ 'started:' | trans }}
                         {% else %}
-                            starts:
+                            {{ 'starts:' | trans }}
                         {% endif %}
-                        {{ current_contest.starttime | printtime }} - ends: {{ current_contest.endtime | printtime }}
+                        {{ current_contest.starttime | printtime }} - {{ 'ends:' | trans }} {{ current_contest.endtime | printtime }}
                     {% endif %}
                 </span>
                 </div>
@@ -104,7 +104,7 @@
 
         {% if show_balloon_public_message is defined and show_balloon_public_message %}
             <div class="alert alert-warning" role="alert" style="font-size: 80%;">
-                You are seeing the public scoreboard, since you are a balloon runner.
+                {{ 'You are seeing the public scoreboard, since you are a balloon runner.' | trans }}
             </div>
         {% endif %}
 
@@ -115,8 +115,11 @@
                     was frozen with {{ current_contest.minutesRemaining }} minutes remaining.
                     {% if showPending %}Submissions after the freeze are indicated with a blue corner.{% endif %}
                 {% else %}
-                    The scoreboard was frozen with {{ current_contest.minutesRemaining }} minutes remaining - solutions
-                    submitted in the last {{ current_contest.minutesRemaining }} minutes of the contest {% if showPending %}are still shown as pending{% else %}are not shown{% endif %}.
+                    {% if showPending %}
+                        {{ 'The scoreboard was frozen with %minutes% minutes remaining - solutions submitted in the last %minutes% minutes of the contest are still shown as pending.' | trans({'%minutes%': current_contest.minutesRemaining}) }}
+                    {% else %}
+                        {{ 'The scoreboard was frozen with %minutes% minutes remaining - solutions submitted in the last %minutes% minutes of the contest are not shown.' | trans({'%minutes%': current_contest.minutesRemaining}) }}
+                    {% endif %}
                 {% endif %}
             </div>
         {% endif %}
@@ -130,9 +133,10 @@
                 aria-haspopup="true" aria-expanded="false" id="filter-toggle">
                 <i class="fas fa-filter"></i>
                 {% if scoreFilter.filteredOn is empty %}
-                    Filter
+                    {{ 'Filter' | trans }}
                 {% else %}
-                    Filtered ({{ scoreFilter.filteredOn }})
+                    {# filteredOn is a comma-separated list of: affiliations, countries, categories, teams. #}
+                    {{ 'Filtered (%on%)' | trans({'%on%': scoreFilter.filteredOn | split(', ') | map(f => f | trans) | join(', ')}) }}
                 {% endif %}
             </button>
 
@@ -142,7 +146,7 @@
                         <div class="row mb-3">
                         {% if filterValues.affiliations | length > 1 %}
                             <div class="col">
-                            <label for="scoreboard-filter-affil">Affiliations</label>
+                            <label for="scoreboard-filter-affil">{{ 'Affiliations' | trans }}</label>
                             <select id="scoreboard-filter-affil" class="form-control me-2" multiple size="8" name="affiliations[]">
                                 {% for affiliationId, affiliation in filterValues.affiliations %}
                                     <option {% if affiliationId in scoreFilter.affiliations %}selected{% endif %}
@@ -153,7 +157,7 @@
                         {% endif %}
                         {% if filterValues.countries | length > 1 %}
                             <div class="col">
-                            <label for="scoreboard-filter-country">Countries</label>
+                            <label for="scoreboard-filter-country">{{ 'Countries' | trans }}</label>
                             <select id="scoreboard-filter-country" class="form-control me-2" multiple size="8" name="countries[]">
                                 {% for country in filterValues.countries %}
                                     {% if country is not empty %}
@@ -166,7 +170,7 @@
                         {% endif %}
                         {% if filterValues.categories | length > 1 %}
                             <div class="col">
-                            <label for="scoreboard-filter-category">Categories</label>
+                            <label for="scoreboard-filter-category">{{ 'Categories' | trans }}</label>
                             <select id="scoreboard-filter-category" class="form-control me-2" multiple size="8" name="categories[]">
                                 {% for categoryId, category in filterValues.categories %}
                                     <option {% if categoryId in scoreFilter.categories %}selected{% endif %}
@@ -176,8 +180,8 @@
                             </div>
                         {% endif %}
                         </div>
-                        <input type="submit" class="btn btn-primary btn-sm align-top" name="filter" value="filter"/>
-                        <input type="submit" class="btn btn-secondary btn-sm align-top" name="clear" value="clear"/>
+                        <input type="submit" class="btn btn-primary btn-sm align-top" name="filter" value="{{ 'filter' | trans }}"/>
+                        <input type="submit" class="btn btn-secondary btn-sm align-top" name="clear" value="{{ 'clear' | trans }}"/>
                     </div>
                 </form>
             </div>
@@ -191,7 +195,7 @@
     {% endif %} {# not scoreboard is null and not jury #}
 
     <p id="lastmod">
-        Last Update: {{ null | printtime('D d M Y H:i:s T') }}<br/>
-        using <a href="https://www.domjudge.org/" target="_top">DOMjudge</a>
+        {{ 'Last Update:' | trans }} {{ null | printtime('D d M Y H:i:s T') }}<br/>
+        {{ 'using' | trans }} <a href="https://www.domjudge.org/" target="_top">DOMjudge</a>
     </p>
 {% endif %}

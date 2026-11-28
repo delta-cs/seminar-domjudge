@@ -1,15 +1,15 @@
 {% extends "partials/modal.html.twig" %}
 
 {% block title %}
-    Submissions for team
+    {{ 'Submissions for team' | trans }}
     <span data-team></span>
-    on problem
+    {{ 'on problem' | trans }}
     <span data-problem-badge></span>
     <span data-problem-name></span>
 {% endblock %}
 
 {% block content %}
     <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="sr-only">{{ 'Loading...' | trans }}</span>
     </div>
 {% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'help/partials/base.html.twig' %}
+
+{% set id = 'Submissions' %}
+
+{% block header %}
+    Odevzdání
+{% endblock %}
+
+{% block body %}
+    <p>
+        Své řešení odevzdávejte pomocí zeleného tlačítka buď v navigačním menu, nebo u dané úlohy na stránce Úlohy.
+    </p>
+    <img src="{{ asset('images/help/submit.png') }}" alt="Odevzdání"
+         class="mb-3 rounded-3 img-fluid help-img">
+    <p>
+        Řešení se odešle k automatické kontrole. Výsledky kontrol můžete sledovat na stránce Výsledky nebo na stránce Tým
+        v sekci Odevzdání. Modrá znamená probíhající kontrolu, zelená správné řešení, červená nesprávné.
+    </p>
+    <img src="{{ asset('images/help/submissions.png') }}" alt="Výsledky odevzdání"
+         class="mb-3 rounded-3 img-fluid help-img">
+    <p>Chybová hláška může nabýt následujících hodnot:</p>
+    <ul>
+        <li>
+            <b>chyba kompilace</b> (compiler-error): Při kompilaci vašeho programu došlo k chybě. Hlášení kompilátoru uvidíte v detailu odevzdání.
+        </li>
+        <li>
+            <b>překročen časový limit</b> (timelimit): Program běžel déle, než je maximální povolený čas pro tuto úlohu, proto byl přerušen. To může
+            znamenat, že váš program visí ve smyčce nebo že vaše řešení není dostatečně efektivní.
+        </li>
+        <li>
+            <b>chyba za běhu</b> (run-error): Během provádění vašeho programu došlo k chybě. To může mít různé příčiny, například dělení nulou,
+            indexování pole za jeho hranicemi apod.
+        </li>
+        <li>
+            <b>překročen limit paměti</b> (memory-limit): Program spotřeboval víc paměti, než je pro tuto úlohu povoleno, například kvůli velmi velkým polím
+            nebo příliš hluboké rekurzi.
+        </li>
+        <li>
+            <b>žádný výstup</b> (no-output): Program nevytvořil žádný výstup.
+        </li>
+        <li>
+            <b>příliš mnoho výstupu</b> (output-limit): Váš program vygeneroval více výstupu, než je povolený limit.
+        </li>
+        <li>
+            <b>chybná odpověď</b> (wrong-answer): Odpověď vašeho řešení byla nesprávná. To se může stát jednoduše chybou ve vašem řešení.
+            Zároveň však musí výstup přesně odpovídat formě uvedené v zadání.
+        </li>
+        <li>
+            <b>pozdě</b> (too-late): Své řešení jste neodeslali včas před ukončením soutěže. Je uloženo, ale nebude již zpracováno.
+        </li>
+    </ul>
+
+    <p>
+        Vězte, že vzorové vstupy <span class="font-weight-bold">neobsahují</span> všechny testy, kterými řešení musí
+        projít.
+        Zčervená-li váš pokus, neznamená to, že byl celý špatně! Jen třeba neprošel určitým případem.
+    </p>
+{% endblock %}

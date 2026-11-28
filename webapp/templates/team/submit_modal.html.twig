@@ -3,16 +3,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    Submit {% if problem is not null %}problem {{ problem.name }}{% endif %}
+                    {% if problem is not null %}{{ 'Submit problem %name%' | trans({'%name%': problem.name}) }}{% else %}{{ 'Submit' | trans }}{% endif %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close' | trans }}"></button>
             </div>
             {% if current_team_contest is empty or (not is_granted('ROLE_JURY') and not current_team_contest.freezeData.started) %}
                 <div class="modal-body">
-                    <div class="alert alert-danger" role="alert">Contest has not yet started - cannot submit.</div>
+                    <div class="alert alert-danger" role="alert">{{ 'Contest has not yet started - cannot submit.' | trans }}</div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Close' | trans }}</button>
                 </div>
             {% elseif not current_team_contest.allowSubmit %}
                 <div class="modal-body">
@@ -28,9 +28,9 @@
                     {{ form_row(form.entry_point) }}
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel' | trans }}</button>
                     <button type="submit" class="btn-success btn">
-                        <i class="fas fa-cloud-upload-alt"></i> Submit
+                        <i class="fas fa-cloud-upload-alt"></i> {{ 'Submit' | trans }}
                     </button>
                 </div>
                 {{ form_end(form) }}
@@ -52,7 +52,11 @@
             atLeastOneFileRecent = false;
             for (let file of files) {
                 const date = new Date(file.lastModified);
-                const ago = humanReadableTimeDiff((now - date)/1000) + ' ago';
+                const ago = '{{ '%time% ago' | trans | e('js') }}'.replace('%time%', humanReadableTimeDiff((now - date)/1000, {
+                    years: '{{ 'years ago (unit)' | trans | e('js') }}', months: '{{ 'months ago (unit)' | trans | e('js') }}',
+                    days: '{{ 'days ago (unit)' | trans | e('js') }}', hours: '{{ 'hours ago (unit)' | trans | e('js') }}',
+                    minutes: '{{ 'minutes ago (unit)' | trans | e('js') }}', seconds: '{{ 'seconds ago (unit)' | trans | e('js') }}'
+                }));
                 if(date > now - five_minutes_in_ms) {
                     atLeastOneFileRecent = true;
                 }
@@ -60,26 +64,26 @@
                 size = humanReadableBytes(file.size);
 
                 className = '';
-                message = `size ${size}`;
-                message += `, last modified ${ago}`;
+                message = `{{ 'size' | trans | e('js') }} ${size}`;
+                message += `, {{ 'last modified' | trans | e('js') }} ${ago}`;
                 if(!fileValidChars) {
                     className = 'bg-danger';
-                    message += ', invalid filename';
+                    message += ', {{ 'invalid filename' | trans | e('js') }}';
                     if(!file.name.match(/^[a-zA-Z0-9]/)) {
-                        message += ', Filename should start with only alphanumeric characters without diacritics or a digit. ';
+                        message += ', {{ 'Filename should start with only alphanumeric characters without diacritics or a digit.' | trans | e('js') }} ';
                     } else {
-                        message += ', Filename should only contain alphanumeric characters without diacritics, "+" or "-" or "_" or "."';
+                        message += ', {{ 'Filename should only contain alphanumeric characters without diacritics, "+" or "-" or "_" or "."' | trans | e('js') }}';
                     }
                 }
                 if(file.size == 0) {
                     className = 'bg-warning';
-                    message += ', empty file';
+                    message += ', {{ 'empty file' | trans | e('js') }}';
                 }
                 fileInfoHtml += `<li class="${className}"><span class="filename">${file.name}</span> ${message}</li>`;
             }
             result = '<ul>' + fileInfoHtml + '</ul>';
             if(!atLeastOneFileRecent) {
-                result += '<div class="alert alert-warning">None of the selected files have been recently modified</div>';
+                result += '<div class="alert alert-warning">{{ 'None of the selected files have been recently modified' | trans | e('js') }}</div>';
             }
             filesSelected.html(result);
             filesSelected.removeClass('d-none');

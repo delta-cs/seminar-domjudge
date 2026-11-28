@@ -1,6 +1,6 @@
 {% extends 'team/base.html.twig' %}
 
-{% block title %}View clarifications for problem {{ problem.name }}{% endblock %}
+{% block title %}{{ 'View clarifications for problem' | trans }} {{ problem.name }}{% endblock %}
 
 {% block extrahead %}
     {{ parent() }}
@@ -23,10 +23,10 @@
 {% endblock %}
 
 {% block content %}
-    <h2 class="text-center mt-4">Clarifications for {{ problem | problemBadgeForContest }} {{ problem.name }}</h2>
+    <h2 class="text-center mt-4">{{ 'Clarifications for' | trans }} {{ problem | problemBadgeForContest }} {{ problem.name }}</h2>
 
     {% if clarifications is empty %}
-        <p class="nodata">No clarifications.</p>
+        <p class="nodata">{{ 'No clarifications.' | trans }}</p>
     {% else %}
         {% include 'team/partials/clarification_list.html.twig' with {clarifications: clarifications} %}
     {% endif %}

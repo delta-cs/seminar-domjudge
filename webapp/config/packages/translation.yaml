@@ -1,0 +1,14 @@
+# The team and public pages are Czech by default with an English switch (#149).
+# Templates keep the English text as the translation key, so English needs no
+# catalogue: a missing Czech translation simply shows the English text.
+framework:
+    default_locale: cs
+    enabled_locales: ['cs', 'en']
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks: ['en']
+
+# The test suite asserts the English text.
+when@test:
+    framework:
+        default_locale: en

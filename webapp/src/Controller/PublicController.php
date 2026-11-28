@@ -8,6 +8,7 @@ use App\Entity\Contest;
 use App\Entity\ContestProblem;
 use App\Entity\Submission;
 use App\Entity\Team;
+use App\EventSubscriber\LocaleSubscriber;
 use App\Entity\TeamCategory;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
@@ -193,6 +194,28 @@ class PublicController extends BaseController
         }
         return $this->dj->setCookie('domjudge_cid', (string)$contestId, 0, null, '', false, false,
                                                  $response);
+    }
+
+    /**
+     * Switch the interface language (#149) and go back to the page it was chosen on.
+     */
+    #[Route(path: '/change-language/{locale<cs|en>}', name: 'public_change_language')]
+    public function changeLanguageAction(Request $request, RouterInterface $router, string $locale): Response
+    {
+        if ($this->isLocalReferer($router, $request)) {
+            $response = new RedirectResponse($request->headers->get('referer'));
+        } else {
+            $response = $this->redirectToRoute('root');
+        }
+
+        $user = $this->dj->getUser();
+        if ($user !== null) {
+            $user->setLocale($locale);
+            $this->em->flush();
+        }
+
+        return $this->dj->setCookie(LocaleSubscriber::COOKIE, $locale, time() + 365 * 24 * 3600, null, '', false, false,
+                                    $response);
     }
 
     #[Route(path: '/team/{teamId<\d+>}', name: 'public_team')]

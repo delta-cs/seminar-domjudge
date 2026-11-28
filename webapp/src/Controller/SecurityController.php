@@ -20,6 +20,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Translation\TranslatableMessage;
 
 class SecurityController extends AbstractController
 {
@@ -107,7 +108,8 @@ class SecurityController extends AbstractController
         if ($registration_form->isSubmitted() && $registration_form->isValid()) {
             $plainPass = $registration_form->get('plainPassword')->getData();
             if (strlen($plainPass) < $this->minimumPasswordLength) {
-                $this->addFlash('danger', "Password should be " . $this->minimumPasswordLength . "+ chars.");
+                $this->addFlash('danger', new TranslatableMessage('Password should be %count%+ chars.',
+                    ['%count%' => $this->minimumPasswordLength]));
                 return $this->redirectToRoute('register');
             }
 

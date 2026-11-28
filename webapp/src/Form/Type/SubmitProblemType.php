@@ -19,12 +19,14 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SubmitProblemType extends AbstractType
 {
     public function __construct(
         protected readonly DOMJudgeService $dj,
         protected readonly ConfigurationService $config,
+        protected readonly TranslatorInterface $translator,
         protected readonly EntityManagerInterface $em
     ) {}
 
@@ -74,10 +76,9 @@ class SubmitProblemType extends AbstractType
                     /** @var Language $language */
                     $language = $form->get('language')->getData();
                     if ($language->getRequireEntryPoint() && empty($value)) {
-                        $message = sprintf('%s required, but not specified',
-                                           $language->getEntryPointDescription() ?: 'Entry point');
                         $context
-                            ->buildViolation($message)
+                            ->buildViolation('%entry_point% required, but not specified')
+                            ->setParameter('%entry_point%', $language->getEntryPointDescription() ?: $this->translator->trans('Entry point'))
                             ->atPath('entry_point')
                             ->addViolation();
                     }

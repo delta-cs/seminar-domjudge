@@ -5,7 +5,7 @@
     {% set badge_color = (contest is not empty and contest.getState().finalized) ? "red" : "green" %}
 
     <a class="nav-link dropdown-toggle"
-       href="#" id="navbarDropdownContests" role="button" aria-label="Soutěž" title="Soutěž" data-bs-toggle="dropdown"
+       href="#" id="navbarDropdownContests" role="button" aria-label="{{ 'Contest' | trans }}" title="{{ 'Contest' | trans }}" data-bs-toggle="dropdown"
        aria-haspopup="true" aria-expanded="false">
         <div class="faicon-badge-container">
             <i class="fas fa-trophy"></i>
@@ -18,13 +18,13 @@
     </a>
     <div class="dropdown-menu dropdown-menu-end scrollable-menu" aria-labelledby="navbarDropdown" data-current-contest="{{ current_contest_id }}">
         {% if show_no_contest and contest is not empty %}
-            <a class="dropdown-item" href="{{ path(change_path, {'contestId': -1}) }}">no contest</a>
+            <a class="dropdown-item" href="{{ path(change_path, {'contestId': -1}) }}">{{ 'no contest' | trans }}</a>
             <div class="dropdown-divider"></div>
         {% endif %}
 
         {% if active_contests is not empty %}
             <span class="dropdown-header px-3 text-center">
-                Active Contests
+                {{ 'Active Contests' | trans }}
                 {% if finalized_contests is not empty %}
                     <i class="fa-solid fa-circle fa-sm faicon-dot-green"></i>
                 {% endif %}
@@ -39,7 +39,7 @@
 
         {% if finalized_contests is not empty %}
             <span class="dropdown-header px-3 text-center">
-                Finalized Contests
+                {{ 'Finalized Contests' | trans }}
                 {% if finalized_contests is not empty %}
                     <i class="fa-solid fa-circle fa-sm faicon-dot-red"></i>
                 {% endif %}

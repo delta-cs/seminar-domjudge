@@ -3,7 +3,7 @@
 {% set contest_problemset_add_cid = contest_problemset_add_cid | default(false) %}
 
 <h1 class="mt-4 text-center">
-    {{ contest.name | default('Contest') }} problems
+    {{ '%contest% problems' | trans({'%contest%': contest.name | default('Contest' | trans)}) }}
     {% if contest and show_contest_problemset and contest.contestProblemsetType is not empty %}
         {% if contest_problemset_add_cid %}
             {% set contest_problemset_url = path(contest_problemset_path, {'cid': contest.cid}) %}
@@ -13,24 +13,24 @@
         <a class="btn btn-secondary" role="button"
            href="{{ contest_problemset_url }}">
             <i class="fas fa-file-{{ contest.contestProblemsetType }}"></i>
-            problemset
+            {{ 'problemset' | trans }}
         </a>
     {% endif %}
 </h1>
 
 {% if problems is empty %}
-    <div class="alert alert-secondary">No problem texts available at this point.</div>
+    <div class="alert alert-secondary">{{ 'No problem texts available at this point.' | trans }}</div>
 {% else %}
     <div class="container">
         {% if show_jury_warning is defined and show_jury_warning %}
             <div class="alert alert-warning">
-                This is a preview of how the page will look like for teams and the public after the contest has started.
+                {{ 'This is a preview of how the page will look like for teams and the public after the contest has started.' | trans }}
             </div>
         {% endif %}
 
         <div class="d-flex justify-content-center mb-4">
             <a href="https://github.com/delta-cs/seminar" class="btn btn-primary" target="_blank">
-                <i class="fa-brands fa-github"></i> View study materials and solutions
+                <i class="fa-brands fa-github"></i> {{ 'View study materials and solutions' | trans }}
             </a>
         </div>
 
@@ -46,7 +46,7 @@
                                         {% set matrixItem = teamScoreboard.matrix[current_team.teamid][problem.probid] %}
                                         {% if matrixItem.isCorrect %}
                                             <div class="card-header bg-success text-white font-weight-bold">
-                                                Solved
+                                                {{ 'Solved' | trans }}
                                             </div>
                                         {% else %}
                                             <div class="card-header">
@@ -63,9 +63,7 @@
                                         </h3>
                                         {% if showLimits %}
                                             <h4 class="card-subtitle mb-2 text-muted">
-                                                Limits: {{ problem.problem.timelimit }}
-                                                second
-                                                {%- if problem.problem.timelimit > 1 %}s{% endif %}
+                                                {{ 'Limits:' | trans }} {{ '%count% second|%count% seconds' | trans({'%count%': problem.problem.timelimit}) }}
                                                 {%- if timeFactorDiffers -%}
                                                     <sup>*</sup>
                                                 {% endif %}
@@ -74,7 +72,7 @@
                                             </h4>
                                         {% endif %}
                                         <h4 class="card-subtitle mb-2 text-muted">
-                                            Type: {{ problem.problem.typesAsString }}
+                                            {{ 'Type:' | trans }} {{ problem.problem.typesAsString }}
                                         </h4>
 
                                         {% if stats is defined %}
@@ -96,26 +94,21 @@
                                                             {% else %}
                                                                 {% set bucket = (count / maxBucketSize * 9) | round(0, 'ceil') %}
                                                             {% endif %}
-                                                            {% if count == 1 %}
-                                                                {% set submissionText = 'submission' %}
-                                                            {% else %}
-                                                                {% set submissionText = 'submissions' %}
-                                                            {% endif %}
                                                             {% if not contest.freezeData.showFinal and contest.freezetime and stat.end.timestamp >= contest.freezetime %}
                                                                 {% set maxBucketSize = max(1, stats.maxBucketSizeCorrect, stats.maxBucketSizeIncorrect) %}
                                                                 {% set bucket = (count / maxBucketSize * 9) | round(0, 'ceil') %}
                                                                 {% set itemClass = 'frozen' ~ '-' ~ bucket %}
-                                                                {% set label = count ~ ' ' ~ submissionText ~ ' in freeze' %}
+                                                                {% set label = '%count% submission in freeze|%count% submissions in freeze' | trans({'%count%': count}) %}
                                                             {% else %}
                                                                 {% set itemClass = index ~ '-' ~ bucket %}
-                                                                {% set label = count ~ ' ' ~ index ~ ' ' ~ submissionText %}
+                                                                {% set label = (index == 'correct' ? '%count% correct submission|%count% correct submissions' : '%count% incorrect submission|%count% incorrect submissions') | trans({'%count%': count}) %}
                                                             {% endif %}
                                                             <div
                                                                 class="problem-stats-item {{ itemClass }}"
                                                                 data-bs-toggle="tooltip"
                                                                 data-bs-placement="top"
                                                                 data-bs-html="true"
-                                                                title="Between {{ stat.start.timestamp | printtime(null, contest) }} and {{ stat.end.timestamp | printtime(null, contest) }}:<br/>{{ label }}">
+                                                                title="{{ 'Between %start% and %end%:' | trans({'%start%': stat.start.timestamp | printtime(null, contest), '%end%': stat.end.timestamp | printtime(null, contest)}) }}<br/>{{ label }}">
                                                             </div>
                                                         {% endfor %}
                                                     </div>
@@ -131,7 +124,7 @@
                                                 <a class="btn btn-secondary" role="button"
                                                    href="{{ path(problem_statement_path, {'probId': problem.probid}) }}">
                                                     <i class="fas fa-file-{{ problem.problem.problemstatementType }}"></i>
-                                                    Problem
+                                                    {{ 'Problem' | trans }}
                                                 </a>
                                             {% endif %}
 
@@ -139,13 +132,13 @@
                                                 {% if is_granted('ROLE_JURY') or (current_team_contest is not null and current_team_contest.freezeData.started) %}
                                                     <a class="justify-content-center" data-ajax-modal data-ajax-modal-after="initSubmitModal" href="{{ path('team_submit', {problem: problem.probid}) }}">
                                                         <span class="btn btn-success">
-                                                            <i class="fas fa-cloud-upload-alt"></i> Submit
+                                                            <i class="fas fa-cloud-upload-alt"></i> {{ 'Submit' | trans }}
                                                         </span>
                                                     </a>
                                                 {% else %}
                                                     <a class="justify-content-center">
                                                         <span class="btn btn-success disabled" disabled>
-                                                            <i class="fas fa-cloud-upload-alt"></i> Submit
+                                                            <i class="fas fa-cloud-upload-alt"></i> {{ 'Submit' | trans }}
                                                         </span>
                                                     </a>
                                                 {% endif %}
@@ -172,7 +165,7 @@
                                                         {% endif %}
                                                         <span class="badge {{ badgeClass }}">{{ clarificationsCount }}</span>
                                                     {% endif %}
-                                                    clarifications
+                                                    {{ 'clarifications' | trans }}
                                                 </a>
                                             {% endif %}
 
@@ -183,14 +176,14 @@
                                                 <a class="btn btn-secondary" role="button"
                                                    href="{{ path(problem_statement_path, {'probId': problem.probid}) }}">
                                                     <i class="fas fa-file-{{ problem.problem.problemstatementType }}"></i>
-                                                    statement
+                                                    {{ 'statement' | trans }}
                                                 </a>
                                             {% endif %}
 
                                             {% if numsamples > 0 %}
                                                 <a class="btn btn-secondary" role="button"
                                                    href="{{ path(problem_sample_zip_path, {'probId': problem.probid}) }}">
-                                                    <i class="fas fa-file-archive"></i> samples
+                                                    <i class="fas fa-file-archive"></i> {{ 'samples' | trans }}
                                                 </a>
                                             {% endif %}
                                         </div>
@@ -200,7 +193,7 @@
                                                 <div class="text-center mt-2">
                                                     <div class="btn-group">
                                                         <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <i class="fa-solid fa-code"></i> Open in online editor
+                                                            <i class="fa-solid fa-code"></i> {{ 'Open in online editor' | trans }}
                                                         </button>
                                                         <div class="dropdown-menu">
                                                             {% for lang in submission_languages %}
@@ -219,13 +212,13 @@
                                             <div class="text-center mt-2">
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fa-solid fa-download"></i> Attachments
+                                                        <i class="fa-solid fa-download"></i> {{ 'Attachments' | trans }}
                                                     </button>
                                                     <div class="dropdown-menu">
                                                         {% if numsamples > 0 %}
                                                             <a class="dropdown-item" role="button"
                                                                href="{{ path(problem_sample_zip_path, {'probId': problem.probid}) }}">
-                                                                <i class="fas fa-file-archive"></i> samples
+                                                                <i class="fas fa-file-archive"></i> {{ 'samples' | trans }}
                                                             </a>
                                                             <div class="dropdown-divider"></div>
                                                         {% endif %}
@@ -251,7 +244,7 @@
             <div class="row">
                 <div class="col-md-12 my-sm-3">
                     <div class=" alert alert-secondary" role="alert">
-                        * language time factors apply
+                        * {{ 'language time factors apply' | trans }}
                     </div>
                 </div>
             </div>

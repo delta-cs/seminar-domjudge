@@ -1,0 +1,16 @@
+{# Interface language switch (#149). The language names stay in their own language. #}
+<ul class="navbar-nav ps-xl-2">
+    <li class="nav-item dropdown">
+        <button class="nav-link" id="navbarDropdownLanguage" type="button" aria-label="{{ 'Language' | trans }}" title="{{ 'Language' | trans }}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-language"></i> <span class="small text-uppercase">{{ app.request.locale }}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownLanguage">
+            {% for locale, name in {'cs': 'Čeština', 'en': 'English'} %}
+                <li>
+                    <a class="dropdown-item {{ app.request.locale == locale ? 'active' : '' }}" lang="{{ locale }}"
+                       href="{{ path('public_change_language', {'locale': locale}) }}">{{ name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </li>
+</ul>
