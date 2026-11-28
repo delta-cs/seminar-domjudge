@@ -578,6 +578,21 @@ class ContestController extends BaseController
             /** @var ContestProblem[] $deletedProblems */
             $deletedProblems = $getDeletedEntities($contest->getProblems(), 'getProbid');
 
+            // Replacing a problem with another one under the same shortname removes one row and
+            // adds one. Doctrine inserts before it deletes, so the new row would hit the unique
+            // (cid, shortname) index (#114). Delete the removed rows first; the orphan removal in
+            // the flush below then finds nothing left to delete.
+            if ($deletedProblems) {
+                $this->em->createQueryBuilder()
+                    ->delete(ContestProblem::class, 'cp')
+                    ->andWhere('cp.contest = :contest')
+                    ->andWhere('cp.problem IN (:problems)')
+                    ->setParameter('contest', $contest)
+                    ->setParameter('problems', array_map(fn(ContestProblem $cp) => $cp->getProbid(), $deletedProblems))
+                    ->getQuery()
+                    ->execute();
+            }
+
             $this->assetUpdater->updateAssets($contest);
             $this->saveEntity($contest, $contest->getCid(), false);
 

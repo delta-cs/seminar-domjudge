@@ -2,8 +2,10 @@
 
 namespace App\Tests\Unit\Controller\Jury;
 
+use App\DataFixtures\Test\DummyProblemFixture;
 use App\Entity\Contest;
 use App\Entity\JudgeTask;
+use App\Entity\Problem;
 use App\Entity\QueueTask;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -373,6 +375,45 @@ class ContestControllerTest extends JuryControllerTestCase
         // This should add more queue and judge tasks.
         self::assertEquals(2, $queueTaskQuery->getSingleScalarResult());
         self::assertEquals(8, $judgeTaskQuery->getSingleScalarResult());
+    }
+
+    /**
+     * Replacing a contest's problem with another one under the same shortname used to fail on
+     * the unique (cid, shortname) index, because Doctrine inserts before it deletes (#114).
+     */
+    public function testReplaceProblemKeepingShortname(): void
+    {
+        $this->loadFixture(DummyProblemFixture::class);
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $contest = $em->getRepository(Contest::class)->findOneBy(['shortname' => 'demo']);
+        $contestId = $contest->getCid();
+        $dummy = $em->getRepository(Problem::class)->findOneBy(['name' => 'Dummy problem']);
+        $fltcmp = $em->getRepository(Problem::class)->findOneBy(['externalid' => 'fltcmp']);
+
+        $this->verifyPageResponse('GET', "/jury/contests/$contestId/edit", 200);
+        $form = $this->getCurrentCrawler()->filter('form')->form();
+        $formData = $form->getValues();
+        $replaced = false;
+        foreach ($formData as $key => $value) {
+            if (preg_match('/^contest\[problems\]\[(\d+)\]\[problem\]$/', $key, $matches) === 1
+                && (int)$value === $fltcmp->getProbid()) {
+                $formData[$key] = (string)$dummy->getProbid();
+                $replaced = true;
+            }
+        }
+        self::assertTrue($replaced, 'the edit form should list fltcmp');
+
+        $this->client->submit($form, $formData);
+
+        self::assertResponseRedirects("/jury/contests/$contestId");
+        $em->clear();
+        $shortnames = [];
+        foreach ($em->getRepository(Contest::class)->find($contestId)->getProblems() as $contestProblem) {
+            $shortnames[$contestProblem->getShortname()] = $contestProblem->getProblem()->getName();
+        }
+        self::assertSame('Dummy problem', $shortnames['B']);
+        self::assertNotContains($fltcmp->getName(), $shortnames);
     }
 
     public function testCheckAddMultipleTimezonesAdmin(): void
