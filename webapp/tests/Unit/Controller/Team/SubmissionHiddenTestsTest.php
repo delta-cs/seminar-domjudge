@@ -36,6 +36,8 @@ class SubmissionHiddenTestsTest extends BaseTestCase
 
         static::assertResponseIsSuccessful();
         static::assertSelectorTextContains('#hiddenTestSummary', $expected);
+        // The result comes with what it means (#130).
+        static::assertSelectorExists('#resultExplanation');
         if ($warning) {
             static::assertSelectorExists('#hiddenTestSummary .alert-warning');
         } else {
@@ -55,6 +57,21 @@ class SubmissionHiddenTestsTest extends BaseTestCase
             'Hidden tests: not run, because judging stopped at the first failed test.', false];
         yield 'everything passes' => ['correct', ['correct', 'correct', 'correct', 'correct'],
             'Hidden tests: all 3 passed.', false];
+    }
+
+    /**
+     * Hovering a result in the team's submission list explains it (#130).
+     */
+    public function testSubmissionListExplainsResult(): void
+    {
+        $this->judgedSubmission('timelimit', ['correct', 'timelimit', null, null]);
+        $this->logIn();
+        $this->client->followRedirects();
+
+        $this->client->request('GET', '/team');
+
+        static::assertResponseIsSuccessful();
+        static::assertSelectorExists('a[title^="Your program ran longer than the time limit"]');
     }
 
     public function testNoSummaryForCompilerError(): void

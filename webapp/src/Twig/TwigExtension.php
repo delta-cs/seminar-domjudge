@@ -83,6 +83,7 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
             new TwigFilter('printHumanTimeDiff', $this->printHumanTimeDiff(...)),
             new TwigFilter('printtimeHover', $this->printtimeHover(...), ['is_safe' => ['html']]),
             new TwigFilter('printResult', $this->printResult(...), ['is_safe' => ['html']]),
+            new TwigFilter('resultExplanation', $this->resultExplanation(...)),
             new TwigFilter('printValidJuryResult', $this->printValidJuryResult(...), ['is_safe' => ['html']]),
             new TwigFilter('printValidJurySubmissionResult', $this->printValidJurySubmissionResult(...),
                            ['is_safe' => ['html']]),
@@ -585,6 +586,29 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
 
         return sprintf('<span class="sol %s">%s</span>', $valid ? $style : 'disabled',
                        htmlspecialchars($result));
+    }
+
+    /**
+     * What a result means for a team and what to check (#130), or null if there is nothing to say.
+     */
+    public function resultExplanation(?string $result): ?string
+    {
+        return match (strtolower($result ?? '')) {
+            'correct' => 'Your program gave the right output on every test.',
+            'wrong-answer' => 'Your program ran, but its output differs from the expected output on at least one test. '
+                . 'Check the output format, the edge cases, and that you print nothing extra.',
+            'timelimit' => 'Your program ran longer than the time limit on at least one test. '
+                . 'Look for an endless loop, waiting for input that never comes, or an algorithm that is too slow.',
+            'run-error' => 'Your program crashed or ended with an exit code other than 0, for example by dividing by zero, '
+                . 'reading outside an array, or returning something other than 0 from main.',
+            'memory-limit' => 'Your program used more memory than allowed. Look for very large arrays or recursion that goes too deep.',
+            'output-limit' => 'Your program printed much more output than expected, often from printing inside an endless loop.',
+            'no-output' => 'Your program ended without printing anything. Check that it prints the answer.',
+            'compiler-error' => 'Your code did not compile, so no tests ran. Open the submission to see the compiler messages.',
+            '', 'judging', 'queued', 'pending' => 'Your submission is waiting to be judged or is being judged.',
+            'too-late' => 'The submission arrived after the contest ended, so it does not count.',
+            default => null,
+        };
     }
 
     public function printValidJuryResult(?string $result): string

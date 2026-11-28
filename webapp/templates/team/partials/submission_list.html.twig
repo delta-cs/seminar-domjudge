@@ -52,7 +52,14 @@
                     </a>
                 </td>
                 <td>
-                    <a data-ajax-modal data-ajax-modal-after="markSeen" {% if link %}href="{{ link }}"{% endif %}>
+                    {%- set shownResult = submission.judgings.first is empty or submission.judgings.first.result is empty
+                        or (verificationRequired and not submission.judgings.first.verified)
+                        ? '' : submission.judgings.first.result %}
+                    {%- if submission.submittime >= submission.contest.endtime and not showTooLateResult %}
+                        {%- set shownResult = 'too-late' %}
+                    {%- endif %}
+                    <a data-ajax-modal data-ajax-modal-after="markSeen" {% if link %}href="{{ link }}"{% endif %}
+                       title="{{ shownResult | resultExplanation }}">
                         {%- if submission.submittime >= submission.contest.endtime %}
                             {{ 'too-late' | printResult }}
                         {%- endif %}
@@ -68,6 +75,7 @@
                                 {{- submission.judgings.first.result | printResult -}}
                             {%- endif %}
                         {%- endif %}
+                        <i class="fas fa-circle-question text-body-secondary ms-1 result-help" aria-hidden="true"></i>
                     </a>
                 </td>
         {% if contest.getRuntimeAsScoreTiebreaker() %}

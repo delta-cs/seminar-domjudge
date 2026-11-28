@@ -66,6 +66,20 @@ class TwigExtensionTest extends TestCase
         );
     }
 
+    /**
+     * Every final verdict a team can see comes with an explanation (#130).
+     */
+    public function testEveryFinalVerdictHasAnExplanation(): void
+    {
+        $verdicts = include __DIR__ . '/../../../../etc/verdicts.php';
+        foreach (array_keys($verdicts['final']) as $verdict) {
+            self::assertNotEmpty($this->twigExtension->resultExplanation($verdict), $verdict);
+        }
+        self::assertNotEmpty($this->twigExtension->resultExplanation('too-late'));
+        self::assertNotEmpty($this->twigExtension->resultExplanation(null));
+        self::assertNull($this->twigExtension->resultExplanation('something-else'));
+    }
+
     public function testPrintMetadataNull(): void
     {
         self::assertSame('', $this->twigExtension->printMetadata(null));

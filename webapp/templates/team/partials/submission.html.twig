@@ -41,6 +41,9 @@
             <div class="d-flex flex-row">
                 <div class="p-2">
                     Result: {{ judging.result | printResult }}
+                    {% if judging.result | resultExplanation %}
+                        <div class="small text-body-secondary mt-1" id="resultExplanation">{{ judging.result | resultExplanation }}</div>
+                    {% endif %}
                 </div>
                 {% if judging.result == 'correct' and judging.submission.contest.getRuntimeAsScoreTiebreaker() %}
                     <div class="p-2">
