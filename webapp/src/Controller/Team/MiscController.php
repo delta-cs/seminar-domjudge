@@ -28,6 +28,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -163,11 +164,47 @@ class MiscController extends BaseController
         if ($this->isLocalReferer($router, $request)) {
             $uri = new Uri($request->headers->get('referer'));
             $response = new RedirectResponse((string)$uri->withQuery(''));
+            // A page about one clarification, submission or problem belongs to the contest
+            // we are leaving, so going back to it would show a 404 (#26). Go to the list instead.
+            if ($fallback = $this->contestNeutralRoute($router, $request, $uri->getPath())) {
+                $response = $this->redirectToRoute($fallback);
+            }
         } else {
             $response = $this->redirectToRoute('team_index');
         }
         return $this->dj->setCookie('domjudge_cid', (string)$contestId, 0, null, '', false, false,
                                                  $response);
+    }
+
+    /**
+     * The overview to go to instead of a contest-specific page, or null to stay on the page.
+     */
+    private function contestNeutralRoute(RouterInterface $router, Request $request, string $refererPath): ?string
+    {
+        $path = substr($refererPath, strlen($request->getBasePath()));
+        $context = $router->getContext();
+        $method = $context->getMethod();
+        $context->setMethod('GET');
+        try {
+            $parameters = $router->match($path);
+        } catch (ExceptionInterface) {
+            return null;
+        } finally {
+            $context->setMethod($method);
+        }
+
+        if (!str_starts_with($parameters['_route'] ?? '', 'team_')) {
+            return null;
+        }
+        $ids = array_diff(array_keys($parameters), ['_route', '_controller', 'teamId']);
+        $ids = array_filter($ids, fn(string $name) => !str_starts_with($name, '_'));
+        if (!$ids) {
+            return null;
+        }
+        if (array_intersect($ids, ['probId', 'problem'])) {
+            return 'team_problems';
+        }
+        return 'team_index';
     }
 
     #[Route(path: '/print', name: 'team_print')]
