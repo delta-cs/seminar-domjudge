@@ -95,9 +95,7 @@ class ProblemControllerTest extends JuryControllerTestCase
 
         $links = $this->getCurrentCrawler()->filter('a[title^="delete testcase"]');
         self::assertGreaterThan(0, $links->count());
-        foreach ($links as $link) {
-            self::assertStringStartsWith('return confirm(', $link->getAttribute('onclick'));
-        }
+        $links->each(fn(Crawler $link) => self::assertStringStartsWith('return confirm(', (string)$link->attr('onclick')));
     }
 
     public function testLockedContest(): void
