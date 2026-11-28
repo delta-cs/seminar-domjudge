@@ -6,6 +6,9 @@ liip_imagine:
     # The legacy Twig integration is deprecated since 2.7.
     twig:
         mode: lazy
+    # The symfony/templating integration is deprecated too and loads the
+    # deprecated FilterTrait (#88). DOMjudge only uses the Twig filter.
+    templating: false
 
     resolvers:
         default:
