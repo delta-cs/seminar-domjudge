@@ -46,7 +46,7 @@
                         <td rowspan="2">
                             <a href="{{  path('jury_testcase_delete', {'testcaseId': testcase.testcaseid}) }}"
                                title="delete testcase {{ testcase.testcaseid }}"
-                               onclick="confirm('Proceed with the deletion of testcase {{ testcase.testcaseid }}?');">
+                               onclick="return confirm('Proceed with the deletion of testcase {{ testcase.testcaseid }}?');">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>

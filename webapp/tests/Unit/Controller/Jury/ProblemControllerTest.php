@@ -77,6 +77,29 @@ class ProblemControllerTest extends JuryControllerTestCase
         parent::testDeleteExtraEntity();
     }
 
+    /**
+     * Cancelling the confirmation must stop the delete link (#107). Without the `return`,
+     * the browser followed the link whatever the jury clicked.
+     */
+    public function testTestcaseDeleteLinkHonoursConfirmation(): void
+    {
+        $this->roles = ['admin'];
+        $this->logOut();
+        $this->logIn();
+
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $probId = $em->getRepository(Problem::class)->findOneBy(['externalid' => 'fltcmp'])->getProbid();
+
+        $this->verifyPageResponse('GET', "/jury/problems/$probId/testcases", 200);
+
+        $links = $this->getCurrentCrawler()->filter('a[title^="delete testcase"]');
+        self::assertGreaterThan(0, $links->count());
+        foreach ($links as $link) {
+            self::assertStringStartsWith('return confirm(', $link->getAttribute('onclick'));
+        }
+    }
+
     public function testLockedContest(): void
     {
         $this->roles = ['admin'];
