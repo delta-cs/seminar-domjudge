@@ -4,6 +4,7 @@ namespace App\Controller\Team;
 
 use App\Controller\BaseController;
 use App\Entity\Judging;
+use App\Entity\JudgingRun;
 use App\Entity\Language;
 use App\Entity\Problem;
 use App\Entity\Submission;
@@ -190,6 +191,11 @@ class SubmissionController extends BaseController
                 ->getResult();
         }
 
+        $hiddenTests = null;
+        if ($judging && $judging->getResult() !== null && $judging->getResult() !== 'compiler-error') {
+            $hiddenTests = $this->hiddenTestSummary($judging);
+        }
+
         $actuallyShowCompile = $showCompile == self::ALWAYS_SHOW_COMPILE_OUTPUT
             || ($showCompile == self::ONLY_SHOW_COMPILE_OUTPUT_ON_ERROR && $judging->getResult() === 'compiler-error');
 
@@ -200,6 +206,7 @@ class SubmissionController extends BaseController
             'allowDownload' => $allowDownload,
             'showSampleOutput' => $showSampleOutput,
             'runs' => $runs,
+            'hiddenTests' => $hiddenTests,
             'showTooLateResult' => $showTooLateResult,
             'thumbnailSize' => $this->config->get('thumbnail_size'),
         ];
@@ -249,5 +256,55 @@ class SubmissionController extends BaseController
         }
 
         return $this->submissionService->getSubmissionZipResponse($submission);
+    }
+
+    /**
+     * How the judging did on the tests teams cannot see (#186, #111). Only counts, no details:
+     * teams kept seeing all sample tests green next to a wrong answer and asking what failed.
+     *
+     * @return array{total: int, passed: int, failed: int, notRun: int, samplesFailed: int}|null
+     *         null when the problem has no hidden tests
+     */
+    private function hiddenTestSummary(Judging $judging): ?array
+    {
+        $total = (int)$this->em->createQueryBuilder()
+            ->from(Testcase::class, 't')
+            ->select('COUNT(t.testcaseid)')
+            ->andWhere('t.problem = :problem')
+            ->andWhere('t.sample = 0')
+            ->andWhere('t.deleted = 0')
+            ->setParameter('problem', $judging->getSubmission()->getProblem())
+            ->getQuery()
+            ->getSingleScalarResult();
+        if ($total === 0) {
+            return null;
+        }
+
+        $counts = $this->em->createQueryBuilder()
+            ->from(JudgingRun::class, 'jr')
+            ->join('jr.testcase', 't')
+            ->select('t.sample AS sample',
+                "SUM(CASE WHEN jr.runresult = 'correct' THEN 1 ELSE 0 END) AS passed",
+                "SUM(CASE WHEN jr.runresult IS NOT NULL AND jr.runresult <> 'correct' THEN 1 ELSE 0 END) AS failed")
+            ->andWhere('jr.judging = :judging')
+            ->andWhere('t.deleted = 0')
+            ->setParameter('judging', $judging)
+            ->groupBy('t.sample')
+            ->getQuery()
+            ->getArrayResult();
+
+        $summary = ['total' => $total, 'passed' => 0, 'failed' => 0, 'notRun' => 0, 'samplesFailed' => 0];
+        foreach ($counts as $row) {
+            if ($row['sample']) {
+                $summary['samplesFailed'] = (int)$row['failed'];
+            } else {
+                $summary['passed'] = (int)$row['passed'];
+                $summary['failed'] = (int)$row['failed'];
+            }
+        }
+        // Lazy evaluation stops at the first failure, so later tests never run.
+        $summary['notRun'] = max(0, $total - $summary['passed'] - $summary['failed']);
+
+        return $summary;
     }
 }

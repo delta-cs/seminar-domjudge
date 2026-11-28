@@ -50,6 +50,28 @@
             </div>
         {% endif %}
 
+        {% if hiddenTests is defined and hiddenTests is not null %}
+            {% set notRunNote = hiddenTests.notRun > 0
+                ? ' ' ~ hiddenTests.notRun ~ ' did not run, because judging stopped at the first failed test.'
+                : '' %}
+            <div class="p-2" id="hiddenTestSummary">
+                {% if hiddenTests.failed > 0 and hiddenTests.samplesFailed == 0 %}
+                    <div class="alert alert-warning mb-0">
+                        All sample tests passed, but your program failed on hidden tests:
+                        <b>{{ hiddenTests.failed }} of {{ hiddenTests.total }}</b> failed.{{ notRunNote }}
+                    </div>
+                {% elseif hiddenTests.failed > 0 %}
+                    Hidden tests: <b>{{ hiddenTests.failed }} of {{ hiddenTests.total }}</b> failed.{{ notRunNote }}
+                {% elseif hiddenTests.notRun == 0 %}
+                    Hidden tests: all <b>{{ hiddenTests.total }}</b> passed.
+                {% elseif hiddenTests.passed == 0 %}
+                    Hidden tests: not run, because judging stopped at the first failed test.
+                {% else %}
+                    Hidden tests: <b>{{ hiddenTests.passed }} of {{ hiddenTests.total }}</b> passed.{{ notRunNote }}
+                {% endif %}
+            </div>
+        {% endif %}
+
         {% if judging.pointsScored is not null %}
             <div>
                 <div class="p-2">
