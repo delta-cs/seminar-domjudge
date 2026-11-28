@@ -190,7 +190,10 @@ class DOMJudgeService
         $contests = $this->getCurrentContests($onlyOfTeam, onlyPublic: $onlyPublic);
         if ($this->requestStack->getCurrentRequest()) {
             $selected_cid = $this->getCurrentContestCookie();
-            if ($selected_cid == -1) {
+            // "No contest" is a jury choice; the team menu does not offer it. The cookie is
+            // shared, so a jury member who picked it would otherwise see no contest at all
+            // on their team's pages (#74).
+            if ($selected_cid == -1 && $onlyOfTeam === null) {
                 return null;
             }
 
