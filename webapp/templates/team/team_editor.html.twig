@@ -447,6 +447,9 @@
                 <span class="d-none d-md-inline">Revisions</span>
             </button>
         </li>
+        <li class="nav-item my-1 me-2 d-flex align-items-center">
+            <span id="editorDraftStatus" class="small text-body-secondary" aria-live="polite"></span>
+        </li>
         <li class="nav-item my-1 me-2">
             {{ form_widget(form.save, {
                 'attr': {
@@ -464,6 +467,12 @@
             }) }}
         </li>
     </ul>
+
+    <div id="editorDraftNotice" class="alert alert-info d-none d-flex align-items-center gap-2 mb-2" role="status">
+        <span class="me-auto" id="editorDraftNoticeText"></span>
+        <button type="button" class="btn btn-sm btn-primary d-none" id="editorDraftRestore">Restore it</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="editorDraftDiscard">Discard it</button>
+    </div>
 
     <ul class="nav nav-tabs source-tab-nav">
         {%- for file in files %}
@@ -531,34 +540,151 @@
     </script>
 
     <script>
-        // https://stackoverflow.com/questions/38879742/is-it-possible-to-display-a-custom-message-in-the-beforeunload-popup
+        // Autosave (#70): keep a draft of the code in this browser while the team types, so
+        // closing the tab, a crash or a lost connection does not lose work. Saving to the
+        // server would create a submission, and saved submissions are judged, so the draft
+        // stays in the browser until the team saves or submits.
+        (function () {
+            var draftKey = 'domjudge_editor_draft:{{ submission.team.teamid }}:{{ submission.contest.cid }}:{{ problem.probid }}:{{ language.langid }}';
+            var ranks = [{% for file in files %}{{ file.rank }}{% if not loop.last %}, {% endif %}{% endfor %}];
+            var serverFiles = {};
+            var submitting = false;
 
-        var teamEditorFormChanged = false,
-            teamEditorFormSubmitted = false;
-
-        document.querySelectorAll('#teamEditorForm input, #teamEditorForm select, #teamEditorForm textarea').forEach(function (input) {
-            input.addEventListener('change', function () {
-                teamEditorFormChanged = true;
-            });
-        });
-
-        document.querySelectorAll('#teamEditorForm button[type=submit]').forEach(function (button) {
-            button.addEventListener('click', function () {
-                teamEditorFormSubmitted = true;
-            });
-        });
-
-        window.addEventListener('beforeunload', function (e) {
-            if (!teamEditorFormChanged || teamEditorFormSubmitted) {
-                return undefined;
+            function currentFiles() {
+                var result = {};
+                ranks.forEach(function (rank) {
+                    var textarea = document.getElementById('form_source' + rank);
+                    result[rank] = textarea ? textarea.value : '';
+                });
+                return result;
             }
 
-            var confirmationMessage = 'It looks like you have been editing something. ' +
-                'If you leave before saving, your changes will be lost.';
-            (e || window.event).returnValue = confirmationMessage;
-            return confirmationMessage;
-        });
-        
+            // Forms send textareas with \r\n line endings and the form trims the code, so the
+            // saved code can differ from the draft in those ways only.
+            function normalize(text) {
+                return (text || '').replace(/\r\n/g, '\n').trim();
+            }
+
+            function sameFiles(a, b) {
+                return ranks.every(function (rank) { return normalize(a[rank]) === normalize(b[rank]); });
+            }
+
+            function readDraft() {
+                try {
+                    var draft = JSON.parse(window.localStorage.getItem(draftKey) || 'null');
+                    return draft && draft.files ? draft : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function writeDraft(files) {
+                try {
+                    if (sameFiles(files, serverFiles)) {
+                        window.localStorage.removeItem(draftKey);
+                        setStatus('');
+                    } else {
+                        window.localStorage.setItem(draftKey, JSON.stringify({
+                            files: files, savedAt: Date.now(), base: serverFiles
+                        }));
+                        setStatus('Draft kept in this browser at ' + new Date().toLocaleTimeString());
+                    }
+                } catch (e) {
+                    setStatus('');
+                }
+            }
+
+            function discardDraft() {
+                try { window.localStorage.removeItem(draftKey); } catch (e) {}
+                $('#editorDraftNotice').addClass('d-none');
+                setStatus('');
+            }
+
+            function setStatus(text) {
+                $('#editorDraftStatus').text(text);
+            }
+
+            function loadIntoEditors(files) {
+                ranks.forEach(function (rank) {
+                    var element = document.getElementById('editor' + rank);
+                    if (element && element.editor && files[rank] !== undefined) {
+                        element.editor.setValue(files[rank]);
+                    }
+                });
+            }
+
+            function notice(text, offerRestore) {
+                $('#editorDraftNoticeText').text(text);
+                $('#editorDraftRestore').toggleClass('d-none', !offerRestore);
+                $('#editorDraftNotice').removeClass('d-none');
+            }
+
+            function start() {
+                serverFiles = currentFiles();
+                var draft = readDraft();
+                if (draft) {
+                    var when = new Date(draft.savedAt).toLocaleString();
+                    if (sameFiles(draft.files, serverFiles)) {
+                        // Saved or submitted since: the draft is no longer needed.
+                        discardDraft();
+                    } else if (draft.base && sameFiles(draft.base, serverFiles)) {
+                        // Nothing was saved since the draft: carry on where the team left off.
+                        loadIntoEditors(draft.files);
+                        notice('Your unsaved changes from ' + when + ' were restored. Save or submit to keep them.', false);
+                    } else {
+                        // The code was saved elsewhere since; let the team choose.
+                        notice('This browser has unsaved changes from ' + when + ', older than the saved code below.', true);
+                        $('#editorDraftRestore').one('click', function () {
+                            loadIntoEditors(draft.files);
+                            notice('Your unsaved changes from ' + when + ' were restored. Save or submit to keep them.', false);
+                        });
+                    }
+                }
+
+                ranks.forEach(function (rank) {
+                    document.getElementById('editor' + rank).editor.getModel().onDidChangeContent(
+                        $.debounce(function () { writeDraft(currentFiles()); }, 1000)
+                    );
+                });
+                $('#editorDraftDiscard').on('click', function () {
+                    if (readDraft() && !sameFiles(currentFiles(), serverFiles)
+                        && !confirm('Go back to the saved code? Your unsaved changes will be lost.')) {
+                        return;
+                    }
+                    loadIntoEditors(serverFiles);
+                    discardDraft();
+                });
+            }
+
+            // The editors are created asynchronously; wait until all of them exist.
+            var waitForEditors = setInterval(function () {
+                var ready = ranks.every(function (rank) {
+                    var element = document.getElementById('editor' + rank);
+                    return element && element.editor;
+                });
+                if (ready) {
+                    clearInterval(waitForEditors);
+                    start();
+                }
+            }, 100);
+
+            document.querySelectorAll('#teamEditorForm button[type=submit]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    submitting = true;
+                });
+            });
+
+            window.addEventListener('beforeunload', function (e) {
+                if (submitting || sameFiles(currentFiles(), serverFiles)) {
+                    return undefined;
+                }
+                // The draft is kept, but say so anyway: it only lives in this browser.
+                var confirmationMessage = 'You have unsaved changes. They are kept in this browser only.';
+                (e || window.event).returnValue = confirmationMessage;
+                return confirmationMessage;
+            });
+        })();
+
         // Add keyboard shortcut for save (Ctrl+S / Cmd+S)
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -1029,7 +1155,6 @@
                         var editor = document.getElementById(editorId);
                         if (editor && editor.editor) {
                             editor.editor.setValue(currentFiles[rank]);
-                            editor.editor.clearSelection();
                             
                             // Trigger change event on the textarea
                             var textarea = document.getElementById('form_source' + rank);
