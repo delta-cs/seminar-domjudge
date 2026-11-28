@@ -98,6 +98,28 @@ class ProblemControllerTest extends JuryControllerTestCase
         $links->each(fn(Crawler $link) => self::assertStringStartsWith('return confirm(', (string)$link->attr('onclick')));
     }
 
+    /**
+     * Testcases open as plain text in the browser, which guesses a legacy encoding unless
+     * told otherwise and garbles Czech letters (#52).
+     */
+    public function testTestcaseFetchDeclaresUtf8(): void
+    {
+        $this->roles = ['admin'];
+        $this->logOut();
+        $this->logIn();
+
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $probId = $em->getRepository(Problem::class)->findOneBy(['externalid' => 'fltcmp'])->getProbid();
+
+        foreach (['input', 'output'] as $type) {
+            $this->client->request('GET', "/jury/problems/$probId/testcases/1/fetch/$type");
+            self::assertResponseIsSuccessful();
+            self::assertStringContainsString('charset=utf-8',
+                (string)$this->client->getResponse()->headers->get('Content-Type'));
+        }
+    }
+
     public function testLockedContest(): void
     {
         $this->roles = ['admin'];

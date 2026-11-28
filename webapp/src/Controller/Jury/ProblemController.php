@@ -972,7 +972,7 @@ class ProblemController extends BaseController
         $response->setCallback(function () use ($content) {
             echo $content;
         });
-        $response->headers->set('Content-Type', sprintf('%s; name="%s"', $mimetype, $filename));
+        $response->headers->set('Content-Type', sprintf('%s; name="%s"%s', $mimetype, $filename, $type === 'image' ? '' : '; charset=utf-8'));
         $response->headers->set('Content-Disposition', sprintf('inline; filename="%s"', $filename));
         $response->headers->set('Content-Length', (string)strlen($content));
 
