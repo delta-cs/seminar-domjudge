@@ -55,7 +55,7 @@
                             {%- if clarification.problem -%}
                                 {{ 'problem' | trans }} {{ clarification.contestProblem | problemBadge -}}
                             {%- elseif clarification.category -%}
-                                {{- categories[clarification.category]|default('general' | trans) -}}
+                                {{- (categories[clarification.category] ?? 'general') | trans -}}
                             {%- else -%}
                                 {{ 'general' | trans }}
                             {%- endif -%}

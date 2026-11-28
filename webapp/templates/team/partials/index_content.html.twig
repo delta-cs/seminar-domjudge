@@ -4,7 +4,7 @@
 {% elseif not contest.freezeData.started %}
     <h1 id="teamwelcome" class="text-center">{{ 'Welcome team' | trans }} <span id="teamwelcometeam">{{ team.effectiveName }}</span>!</h1>
     <h2 id="contestnotstarted" class="text-center">
-        {{ 'Contest' | trans }} {{ contest | printContestStart }}
+        {{ 'Contest' | trans }}: {{ contest | printContestStart }}
     </h2>
 {% else %}
 
@@ -16,7 +16,7 @@
     <div class="mt-4" data-flash-messages>
         {% include 'partials/messages.html.twig' %}
         {% if not contest.allowSubmit %}
-            {% include 'partials/alert.html.twig' with {'type': 'danger', 'message': 'Submissions disabled.\nPlease switch to the active contest using trophy icon in the top navigation.' | trans} %}
+            {% include 'partials/alert.html.twig' with {'type': 'danger', 'message': 'Submissions disabled.\nPlease switch to the active contest using trophy icon in the top navigation.'} %}
         {% endif %}
     </div>
 

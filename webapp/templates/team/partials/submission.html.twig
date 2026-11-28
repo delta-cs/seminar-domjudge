@@ -41,7 +41,7 @@
                 <div class="p-2">
                     {{ 'Result:' | trans }} {{ judging.result | printResult }}
                     {% if judging.result | resultExplanation %}
-                        <div class="small text-body-secondary mt-1" id="resultExplanation">{{ judging.result | resultExplanation | trans }}</div>
+                        <div class="small text-body-secondary mt-1" id="resultExplanation">{{ judging.result | resultExplanation }}</div>
                     {% endif %}
                 </div>
                 {% if judging.result == 'correct' and judging.submission.contest.getRuntimeAsScoreTiebreaker() %}

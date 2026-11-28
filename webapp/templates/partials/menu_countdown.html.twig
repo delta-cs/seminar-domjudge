@@ -9,7 +9,11 @@
         {%- if countdown in ['no contest', 'start delayed'] -%}
             {{ countdown | trans }}
         {%- else -%}
-            {{ countdown }}
+            {%- if countdown starts with 'time to start: ' -%}
+                {{ 'time to start:' | trans }} {{ countdown[15:] }}
+            {%- else -%}
+                {{ countdown }}
+            {%- endif -%}
         {%- endif -%}
     </span>
 </div>

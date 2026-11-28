@@ -14,36 +14,40 @@
     <img src="{{ asset('images/help/submit.png') }}" alt="Submitting"
          class="mb-3 rounded-3 img-fluid help-img">
     <p>
-        The solution is sent for automatic checking. You can follow the results on the Scoreboard or on Home in the
-        Submissions section. Blue means the check is running, green a correct solution, red an incorrect one.
+        The solution is sent for automatic checking. You can follow the results on the Scoreboard or on the Team
+        page in the Submissions section. Blue means the check is running, green a correct solution, red an incorrect one.
     </p>
     <img src="{{ asset('images/help/submissions.png') }}" alt="Submission results"
          class="mb-3 rounded-3 img-fluid help-img">
     <p>The result can be one of the following:</p>
     <ul>
         <li>
-            COMPILER-ERROR: Compiling your program failed. How to see the exact error is shown below.
+            <b>compiler-error</b>: Your program failed to compile. Open the submission to see the compiler's error messages.
         </li>
         <li>
-            TIMELIMIT: The program ran longer than the time allowed for this problem, so it was stopped. This can mean
+            <b>timelimit</b>: The program ran longer than the time allowed for this problem, so it was stopped. This can mean
             that your program is stuck in a loop or that your solution is not efficient enough.
         </li>
         <li>
-            RUN-ERROR: An error occurred while your program was running. This can have various causes, for example
-            dividing by zero, indexing an array outside its bounds, trying to use more memory than the limit, and so on.
+            <b>run-error</b>: An error occurred while your program was running. This can have various causes, for example
+            dividing by zero, indexing an array outside its bounds, and so on.
         </li>
         <li>
-            NO-OUTPUT: The program produced no output.
+            <b>memory-limit</b>: The program used more memory than this problem allows, for example because of very large arrays or
+            recursion that goes too deep.
         </li>
         <li>
-            OUTPUT-LIMIT: Your program produced more output than the limit allows.
+            <b>no-output</b>: The program produced no output.
         </li>
         <li>
-            WRONG-ANSWER: Your solution's answer was incorrect. This may simply be a mistake in your solution, but
+            <b>output-limit</b>: Your program produced more output than the limit allows.
+        </li>
+        <li>
+            <b>wrong-answer</b>: Your solution's answer was incorrect. This may simply be a mistake in your solution, but
             the output also has to match the format given in the problem statement exactly.
         </li>
         <li>
-            TOO-LATE: You did not submit your solution before the contest ended. It is stored but will not be judged.
+            <b>too-late</b>: You did not submit your solution before the contest ended. It is stored but will not be judged.
         </li>
     </ul>
 
@@ -51,15 +55,5 @@
         Keep in mind that the sample inputs do <span class="font-weight-bold">not</span> contain all the tests the
         solution has to pass.
         If your attempt turns red, it does not mean it was entirely wrong! It may just have failed a particular case.
-        When you open a failed result, you will see under "Diff output" the difference between the expected answer and
-        your program's output. It often shows where the solution fails.
-    </p>
-
-    <img src="{{ asset('images/help/diff-output.png') }}" alt="Submission results"
-         class="mb-3 rounded-3 img-fluid help-img">
-
-    <p>
-        The picture shows a case where the program should have printed <code>up</code> but wrongly printed
-        <code>down</code>.
     </p>
 {% endblock %}

@@ -59,7 +59,7 @@
                         {%- set shownResult = 'too-late' %}
                     {%- endif %}
                     <a data-ajax-modal data-ajax-modal-after="markSeen" {% if link %}href="{{ link }}"{% endif %}
-                       title="{{ shownResult | resultExplanation | trans }}">
+                       title="{{ shownResult | resultExplanation }}">
                         {%- if submission.submittime >= submission.contest.endtime %}
                             {{ 'too-late' | printResult }}
                         {%- endif %}

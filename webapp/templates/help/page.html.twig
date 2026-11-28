@@ -12,7 +12,7 @@
             {{ 'This page explains how to find your way around the site and how to compete.' | trans }}
         </p>
         <div class="accordion">
-            {# The partials are prose, so English has its own copy (*.en.html.twig) next to the Czech one. #}
+            {# The partials are prose: the base file is English, the Czech copy sits next to it (*.cs.html.twig). #}
             {% for part in ['visitors', 'registration', 'forgotten_password', 'problemset', 'submissions', 'scoreboard', 'communication'] %}
                 {% include ['help/partials/' ~ part ~ '.' ~ app.request.locale ~ '.html.twig', 'help/partials/' ~ part ~ '.html.twig'] %}
             {% endfor %}

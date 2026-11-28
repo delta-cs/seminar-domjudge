@@ -135,7 +135,8 @@
                 {% if scoreFilter.filteredOn is empty %}
                     {{ 'Filter' | trans }}
                 {% else %}
-                    {{ 'Filtered (%on%)' | trans({'%on%': scoreFilter.filteredOn}) }}
+                    {# filteredOn is a comma-separated list of: affiliations, countries, categories, teams. #}
+                    {{ 'Filtered (%on%)' | trans({'%on%': scoreFilter.filteredOn | split(', ') | map(f => f | trans) | join(', ')}) }}
                 {% endif %}
             </button>
 
