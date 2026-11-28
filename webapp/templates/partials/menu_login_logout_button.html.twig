@@ -3,15 +3,15 @@
     {% if confirmLogout is defined %}
         onclick="return confirmLogout();"
     {% endif %}>
-        <i class="fas fa-sign-out-alt fa-fw"></i> Logout
+        <i class="fas fa-sign-out-alt fa-fw"></i> {{ 'Logout' | trans }}
     </a>
 {% else %}
     <a class="dropdown-item" href="{{ path('login') }}">
-        <i class="fas fa-sign-in-alt fa-fw"></i> Login
+        <i class="fas fa-sign-in-alt fa-fw"></i> {{ 'Login' | trans }}
     </a>
     {% if allow_registration %}
         <a class="dropdown-item" href="{{ path('register') }}">
-            <i class="fas fa-user-plus fa-fw"></i> Register
+            <i class="fas fa-user-plus fa-fw"></i> {{ 'Register' | trans }}
         </a>
     {% endif %}
 {% endif %}

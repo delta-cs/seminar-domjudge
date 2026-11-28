@@ -2,13 +2,13 @@
     <div class="card-header">
         <div class="row">
             <div class="col-sm">
-                Subject:
+                {{ 'Subject:' | trans }}
                 {% if clarification.problem %}
-                    Problem {{ clarification.contestProblem.shortname }}: {{ clarification.problem.name }}
+                    {{ 'Problem' | trans }} {{ clarification.contestProblem.shortname }}: {{ clarification.problem.name }}
                 {% elseif clarification.category %}
-                    {{ categories[clarification.category]|default('general') }}
+                    {{ categories[clarification.category]|default('general' | trans) }}
                 {% else %}
-                    General issue
+                    {{ 'General issue' | trans }}
                 {% endif %}
             </div>
             <div class="col-sm text-muted text-end">{{ clarification.submittime | printtimeHover(clarification.contest) }}</div>
@@ -18,20 +18,20 @@
         <div class="card-title">
             <div class="row">
                 <div class="col-sm">
-                    From:
+                    {{ 'From:' | trans }}
                     {% if clarification.sender is not empty %}
                         {{ clarification.sender.effectiveName }} (t{{ clarification.sender.teamid }})
                     {% else %}
-                        Jury
+                        {{ 'Jury' | trans }}
                     {% endif %}
                 </div>
-                <div class="col-sm">To:
+                <div class="col-sm">{{ 'To:' | trans }}
                     {% if clarification.recipient is not empty %}
                         {{ clarification.recipient.effectiveName }} (t{{ clarification.recipient.teamid }})
                     {% elseif clarification.sender is not null %}
-                        Jury
+                        {{ 'Jury' | trans }}
                     {% else %}
-                        <strong>All</strong>
+                        <strong>{{ 'All' | trans }}</strong>
                     {% endif %}
                 </div>
             </div>

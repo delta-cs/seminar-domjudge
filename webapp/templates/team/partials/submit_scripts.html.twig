@@ -140,14 +140,14 @@
             }
             var extrafiles = '';
             if (auxfileno > 0) {
-                extrafiles = "Additional source files: " + auxfileno + '\n';
+                extrafiles = '{{ 'Additional source files:' | trans | e('js') }} ' + auxfileno + '\n';
             }
             var question =
-                'Main source file: ' + filename + '\n' +
+                '{{ 'Main source file:' | trans | e('js') }} ' + filename + '\n' +
                 extrafiles + '\n' +
-                'Problem: ' + problemtxt + '\n' +
-                'Language: ' + languagetxt + '\n' +
-                '\nMake submission?';
+                '{{ 'Problem:' | trans | e('js') }} ' + problemtxt + '\n' +
+                '{{ 'Language:' | trans | e('js') }} ' + languagetxt + '\n' +
+                '\n{{ 'Make submission?' | trans | e('js') }}';
             return confirm(question);
         });
 

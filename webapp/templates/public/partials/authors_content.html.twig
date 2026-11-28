@@ -1,0 +1,67 @@
+    <div class="hp-logo-bar hp-cover-overlay mb-3" style="margin-top: -15px">
+        <div class="container">
+            <img src="{{ asset("images/hacker/logo-white.svg") }}" alt="Pardubický Hacker - logo">
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Who is behind Pardubický Hacker?</h2>
+        <div class="d-flex flex-column flex-md-row mb-4">
+            <p class="me-md-3">
+                Pardubický Hacker is run by a community of graduates, students and teachers of the private school
+                <a href="https://delta-skola.cz/">DELTA - Střední škola informatiky a ekonomie, Pardubice</a>. DELTA has
+                focused on teaching programming since 2004. From the start it has worked closely with Unicorn, the
+                largest Czech software company, whose employees teach at the school directly. Its teaching staff are
+                people from software companies, university teachers and enthusiastic "regular" teachers. The school
+                runs the <a href="https://www.delta-skola.cz/talentovy-program-delta-topgun">DELTA TopGun talent
+                    programme</a> for pupils who come from primary school with advanced programming skills. In the last
+                6 years, the school's students have won first place 3 times and second place 2 times in the national
+                round of the Středoškolská odborná činnost (secondary school research competition) in Computer
+                Science. DELTA is also known for the active community of its graduates and students, who often work with
+                the school on joint projects.
+            </p>
+            <img class="align-self-center" style="max-height: 150px" src="{{ asset('images/hacker/school-logo.webp') }}"
+                 alt="DELTA logo">
+        </div>
+
+        <img class="img-fluid mb-3" src="{{ asset('images/hacker/soc.webp') }}" alt="DELTA's results in SOČ">
+
+        <h2>Contacts</h2>
+        <p>
+            <b>Matouš Volf, "the hands of the project"</b>,
+            <a href="mailto:volfma@delta-studenti.cz">volfma@delta-studenti.cz</a>:
+            Matouš is currently a 3rd-year student. He creates all the educational content of Pardubický Hacker:
+            every exercise, the automated tests, the study texts and the links to further study materials. He also
+            works on the technical development of the web portal.
+        </p>
+        <p>
+            <b>Bc. Luboš Zápotočný, "the technical brain of the project"</b>,
+            <a href="mailto:zapotocnylubos@gmail.com">zapotocnylubos@gmail.com</a>:
+            Luboš is currently in the 5th year at FIT ČVUT (Faculty of Information Technology, Czech Technical
+            University in Prague) and is a DELTA graduate. He is also one of the lecturers and mentors of the DELTA
+            TopGun talent programme. He is responsible for the technology behind Pardubický Hacker and guides Matouš
+            on both the technical and the teaching side.
+        </p>
+        <p>
+            <b>Ing. Jiří Formánek, "the ideologist and sponsor of the project"</b>,
+            <a href="mailto:jiri.formanek@delta-skola.cz">jiri.formanek@delta-skola.cz</a>:
+            He is the head of DELTA. He came up with Pardubický Hacker, handed out the tasks and takes care of raising
+            money for the whole project.
+        </p>
+        {% if discord_invite_url is not empty %}
+            <p class="mt-3">
+                To communicate with the participants, we have also set up a
+                <a target="_blank" href="{{ discord_invite_url }}">Discord server</a>. Participants can ask questions
+                there. The questions are visible to all members, who may run into a similar problem.
+            </p>
+        {% endif %}
+
+        <h2>
+            The project is financially supported by
+        </h2>
+        <p>
+            <b>The Ministry of Education, Youth and Sports of the Czech Republic</b> within the grant programme Support
+            of gifted pupils of primary and secondary schools in 2023,<br><b>The National Pedagogical Institute of the
+            Czech Republic</b> within DIGIakce.
+        </p>
+    </div>

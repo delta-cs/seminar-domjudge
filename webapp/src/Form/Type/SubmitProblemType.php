@@ -74,10 +74,9 @@ class SubmitProblemType extends AbstractType
                     /** @var Language $language */
                     $language = $form->get('language')->getData();
                     if ($language->getRequireEntryPoint() && empty($value)) {
-                        $message = sprintf('%s required, but not specified',
-                                           $language->getEntryPointDescription() ?: 'Entry point');
                         $context
-                            ->buildViolation($message)
+                            ->buildViolation('%entry_point% required, but not specified')
+                            ->setParameter('%entry_point%', $language->getEntryPointDescription() ?: 'Entry point')
                             ->atPath('entry_point')
                             ->addViolation();
                     }

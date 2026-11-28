@@ -13,12 +13,12 @@
         $(function () {
             var $body = $('body');
             $body.on('submit', 'form[name=team_clarification]', function () {
-                return confirm("Send clarification request to Jury?");
+                return confirm('{{ 'Send clarification request to Jury?' | trans | e('js') }}');
             });
 
             window.replaceClarificationReplyButton = function() {
                 var $replyButton = $('#clarification-reply-button');
-                var $submitButton = $('<button type="submit" name="submit" class="btn btn-primary"><i class="fas fa-envelope"></i> Send</button>');
+                var $submitButton = $('<button type="submit" name="submit" class="btn btn-primary"><i class="fas fa-envelope"></i> {{ 'Send' | trans | e('js') }}</button>');
                 $replyButton.replaceWith($submitButton);
 
                 $submitButton.on('click', function() {

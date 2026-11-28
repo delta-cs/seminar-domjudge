@@ -1,9 +1,9 @@
 {% extends "team/base.html.twig" %}
 
-{% block title %}Allowed Languages{% endblock %}
+{% block title %}{{ 'Allowed Languages' | trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="mt-4 text-center">Allowed Languages</h1>
+    <h1 class="mt-4 text-center">{{ 'Allowed Languages' | trans }}</h1>
 
         <div class="container">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-2">
@@ -13,8 +13,7 @@
                     <div class="card-body">
                         <h2 class="card-title">
                             <code>{{ lang.name }}</code>
-                            <span style="font-size:50%; font-weight: normal;"> with
-                                extension{% if lang.extensions|length > 1 %}s{% endif %}:
+                            <span style="font-size:50%; font-weight: normal;"> {% if lang.extensions|length > 1 %}{{ 'with extensions:' | trans }}{% else %}{{ 'with extension:' | trans }}{% endif %}
                             {% for ext in lang.extensions %}
                                 <code>.{{ ext }}</code>{% if not loop.last %}, {% endif %}
                             {% endfor %}

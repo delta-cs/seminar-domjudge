@@ -2,19 +2,19 @@
 {# @var submission \App\Entity\Submission #}
 
 {% if submissions is empty %}
-    <div class="alert alert-warning">No submissions</div>
+    <div class="alert alert-warning">{{ 'No submissions' | trans }}</div>
 {% else %}
     <table class="data-table table table-hover table-striped table-sm align-middle submissions-table">
         <thead class="thead-light">
         <tr>
-            <th scope="col">time</th>
-            <th scope="col">problem</th>
-            <th scope="col">lang</th>
-            <th scope="col">result</th>
+            <th scope="col">{{ 'time' | trans }}</th>
+            <th scope="col">{{ 'problem' | trans }}</th>
+            <th scope="col">{{ 'lang' | trans }}</th>
+            <th scope="col">{{ 'result' | trans }}</th>
             {% if contest.getRuntimeAsScoreTiebreaker() %}
-                <th scope="col">runtime</th>
+                <th scope="col">{{ 'runtime' | trans }}</th>
             {% endif %}
-            <th scope="col">points</th>
+            <th scope="col">{{ 'points' | trans }}</th>
             <th scope="col"></th>
             {% if allowDownload %}
                 <th scope="col"></th>
@@ -59,7 +59,7 @@
                         {%- set shownResult = 'too-late' %}
                     {%- endif %}
                     <a data-ajax-modal data-ajax-modal-after="markSeen" {% if link %}href="{{ link }}"{% endif %}
-                       title="{{ shownResult | resultExplanation }}">
+                       title="{{ shownResult | resultExplanation | trans }}">
                         {%- if submission.submittime >= submission.contest.endtime %}
                             {{ 'too-late' | printResult }}
                         {%- endif %}
@@ -102,7 +102,7 @@
                 </td>
         {% if allowDownload %}
                 <td>
-                    <a title="Download submission ZIP" aria-label="download submission zip" class="btn" href="{{ path('team_submission_download', {'submitId': submission.submitid}) }}">
+                    <a title="{{ 'Download submission ZIP' | trans }}" aria-label="{{ 'Download submission ZIP' | trans }}" class="btn" href="{{ path('team_submission_download', {'submitId': submission.submitid}) }}">
                         <i class="fa fa-file-archive"></i>
                     </a>
                 </td>

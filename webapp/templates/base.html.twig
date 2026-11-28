@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
+<html lang="{{ app.request.locale }}" data-bs-theme="auto">
 <head>
     <!-- DOMjudge version {{ DOMJUDGE_VERSION }} -->
     <meta charset="{{ DJ_CHARACTER_SET }}">
@@ -23,6 +23,14 @@
     <script src="{{ asset("js/bootstrap.bundle.min.js") }}"></script>
     <script src="{{ asset("js/bootstrap-auto-dark-mode.js") }}"></script>
 
+    <script>
+        {# Strings the shared JavaScript shows (#149). #}
+        window.domjudgeTranslations = {
+            timeToStart: '{{ 'time to start:' | trans | e('js') }} ',
+            contestOver: '{{ 'contest over' | trans | e('js') }}',
+            confirmLogout: '{{ 'Really log out?' | trans | e('js') }}'
+        };
+    </script>
     <script src="{{ asset("js/domjudge.js") }}"></script>
     {% for file in customAssetFiles('js') %}
         <script src="{{ asset('js/custom/' ~ file) }}"></script>

@@ -3,23 +3,23 @@
 {% set id = 'Visitors' %}
 
 {% block header %}
-    Pro návštěvníky
+    For visitors
 {% endblock %}
 
 {% block body %}
     <p>
-        Web je rozdělen do stránek:
+        The site is divided into these pages:
     </p>
     <ul>
-        <li>news: články a zajímavosti z průběhu semináře,</li>
-        <li>scoreboard: výsledková tabulka účastníků a jejich postup úlohami,</li>
-        <li>problemset: aktuální sada úloh,</li>
-        <li>study: odkaz na zadání úloh a studijní materiály aktuálního ročníku,</li>
-        <li>archive: odkaz na zdrojový kód všech úloh z minulosti.</li>
+        <li>news: articles and updates from the course of the seminar,</li>
+        <li>scoreboard: the participants' results and their progress through the problems,</li>
+        <li>problemset: the current set of problems,</li>
+        <li>study: a link to the problem statements and study materials of the current year,</li>
+        <li>archive: a link to the source code of all past problems.</li>
     </ul>
     <p>
-        Vpravo nahoře je vidět zbývající čas na nynější sadu úloh a také lze přepínat mezi výukovými a soutěžními
-        úlohami (ovlivňuje stránky Scoreboard a Problemset).
+        The top right corner shows the time left for the current problem set, and there you can also switch between
+        the practice and the competition problems (this affects the Scoreboard and Problemset pages).
     </p>
-    <img src="{{ asset('images/help/contests.png') }}" alt="Přepínání soutěže" class="mb-3 rounded-3 help-img">
+    <img src="{{ asset('images/help/contests.png') }}" alt="Switching contests" class="mb-3 rounded-3 help-img">
 {% endblock %}

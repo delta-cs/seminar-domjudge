@@ -2,9 +2,9 @@
 
 {% block title %}
 {% if clarification.sender and clarification.sender.teamid == team.teamid %}
-Clarification Request
+{{ 'Clarification Request' | trans }}
 {% else %}
-View message
+{{ 'View message' | trans }}
 {% endif %}
 {% endblock %}
 
@@ -14,6 +14,6 @@ View message
 {% block extraButton %}
         <button class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#collapsereplyform"
                 aria-expanded="false" aria-controls="collapsereplyform" id="clarification-reply-button">
-            <i class="fa fa-reply"></i> reply to this clarification
+            <i class="fa fa-reply"></i> {{ 'reply to this clarification' | trans }}
         </button>
 {% endblock %}

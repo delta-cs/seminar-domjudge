@@ -1,22 +1,22 @@
 <ul class="navbar-nav ps-xl-2">
     <li class="nav-item dropdown">
-        <button class="nav-link" id="navbarDropdownTheme" type="button" aria-label="Vzhled" title="Vzhled" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button class="nav-link" id="navbarDropdownTheme" type="button" aria-label="{{ 'Appearance' | trans }}" title="{{ 'Appearance' | trans }}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-circle-half-stroke"></i>
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownTheme">
             <li>
                 <button class="dropdown-item" type="button" data-theme="auto">
-                    <i class="fas fa-fw fa-circle-half-stroke"></i> Auto
+                    <i class="fas fa-fw fa-circle-half-stroke"></i> {{ 'Auto' | trans }}
                 </button>
             </li>
             <li>
                 <button class="dropdown-item" type="button" data-theme="light">
-                    <i class="fas fa-fw fa-lightbulb"></i> Light Mode
+                    <i class="fas fa-fw fa-lightbulb"></i> {{ 'Light Mode' | trans }}
                 </button>
             </li>
             <li>
                 <button class="dropdown-item" type="button" data-theme="dark">
-                    <i class="fas fa-fw fa-moon"></i> Dark Mode
+                    <i class="fas fa-fw fa-moon"></i> {{ 'Dark Mode' | trans }}
                 </button>
             </li>
         </ul>

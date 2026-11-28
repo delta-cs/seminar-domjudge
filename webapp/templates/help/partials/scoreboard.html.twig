@@ -3,19 +3,21 @@
 {% set id = 'Scoreboard' %}
 
 {% block header %}
-    Výsledková tabulka
+    Scoreboard
 {% endblock %}
 
 {% block body %}
     <p>
-        Výsledky své a ostatních účastníků najdete na stránce Scoreboard. Skóre při vyřešení úlohy se rovná počtu minut
-        uběhlých od začátku soutěže. Za každý neúspěšný pokus se přičítá penaltový čas. Výsledky jsou tedy řazeny podle
-        počtu vyřešených úloh sestupně a poté podle skóre vzestupně.
+        You will find your results and those of the other participants on the Scoreboard page. The score for a solved
+        problem equals the number of minutes since the start of the contest. Each unsuccessful attempt adds penalty
+        time. Results are therefore sorted by the number of solved problems, highest first, and then by score, lowest
+        first.
     </p>
     <p>
-        Řádky tabulky označují účastníky a sloupce úlohy. Jednotlivé buňky obsahují skóre účastníka v dané úloze (bez
-        penalty) a pod ním počet pokusů. Barva značí stav hodnocení - vizte legendu v levém dolním rohu. Ve sloupci
-        "score" se nachází počet vyřešených úloh a celkové skóre i s penaltou.
+        The rows of the table are the participants and the columns are the problems. Each cell holds the participant's
+        score on that problem (without penalty) and, below it, the number of attempts. The colour shows the state of
+        the judging; see the legend in the bottom left corner. The "score" column holds the number of solved problems
+        and the total score including penalty.
     </p>
-    <img src="{{ asset('images/help/scoreboard.png') }}" alt="Zadání" class="mb-3 rounded-3 img-fluid help-img">
+    <img src="{{ asset('images/help/scoreboard.png') }}" alt="Scoreboard" class="mb-3 rounded-3 img-fluid help-img">
 {% endblock %}
